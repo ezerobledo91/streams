@@ -1,0 +1,37 @@
+{
+  "providers": [
+    {
+      "id": "thepiratebay-plus",
+      "name": "ThePirateBay+",
+      "manifestUrl": "https://thepiratebay-plus.strem.fun/manifest.json",
+      "active": true,
+      "priority": 100,
+      "categories": ["movie", "series"]
+    },
+       {
+      "id": "torrentio",
+      "name": "Torrentio",
+      "manifestUrl": "https://torrentio.strem.fun/manifest.json",
+      "active": true,
+      "priority": 110,
+      "categories": ["movie", "series"]
+    },
+       {
+      "id": "comet",
+      "name": "Comet",
+      "manifestUrl": "https://comet.elfhosted.com/eyJtYXhSZXN1bHRzUGVyUmVzb2x1dGlvbiI6MCwibWF4U2l6ZSI6MCwiY2FjaGVkT25seSI6ZmFsc2UsInNvcnRDYWNoZWRVbmNhY2hlZFRvZ2V0aGVyIjpmYWxzZSwicmVtb3ZlVHJhc2giOnRydWUsInJlc3VsdEZvcm1hdCI6WyJhbGwiXSwiZGVicmlkU2VydmljZXMiOltdLCJlbmFibGVUb3JyZW50IjpmYWxzZSwiZGVkdXBsaWNhdGVTdHJlYW1zIjpmYWxzZSwiZGVicmlkU3RyZWFtUHJveHlQYXNzd29yZCI6IiIsImxhbmd1YWdlcyI6eyJyZXF1aXJlZCI6W10sImFsbG93ZWQiOltdLCJleGNsdWRlIjpbXSwicHJlZmVycmVkIjpbXX0sInJlc29sdXRpb25zIjp7fSwib3B0aW9ucyI6eyJyZW1vdmVfcmFua3NfdW5kZXIiOi0xMDAwMDAwMDAwMCwiYWxsb3dfZW5nbGlzaF9pbl9sYW5ndWFnZXMiOmZhbHNlLCJyZW1vdmVfdW5rbm93bl9sYW5ndWFnZXMiOmZhbHNlfX0=/manifest.json",
+      "active": true,
+      "priority": 120,
+      "categories": ["movie", "series"]
+    },
+      {
+        "id": "torrentdb",
+        "name": "TorrentDB",
+        "manifestUrl": "https://torrentsdb.com/eyJzb3J0Ijoic2VlZGVycyIsImxhbmd1YWdlIjpbImxhdGlubyIsInNwYW5pc2giXX0=/manifest.json",
+        "active": true,
+        "priority": 130,
+        "categories": ["movie", "series"]
+      }
+  ]
+ 
+}

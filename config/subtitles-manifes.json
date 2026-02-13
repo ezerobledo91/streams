@@ -1,0 +1,29 @@
+{
+  "providers": [
+    {
+      "id": "opensubtitlesv3-pro",
+      "name": "OpenSubtitlesV3 Pro",
+      "manifestUrl": "https://opensubtitlesv3-pro.dexter21767.com/eyJsYW5ncyI6WyJzcGFuaXNoIl0sInNvdXJjZSI6ImFsbCIsImFpVHJhbnNsYXRlZCI6ZmFsc2UsImF1dG9BZGp1c3RtZW50Ijp0cnVlfQ==/manifest.json",
+      "active": false,
+      "priority": 100,
+      "categories": ["movie", "series"]
+    },
+    {
+      "id": "yifysubtitles",
+      "name": "Yify Subtitles",
+      "manifestUrl": "https://2ecbbd610840-yifysubtitles.baby-beamup.club/spanish/manifest.json",
+      "active": true,
+      "priority": 110,
+      "categories": ["movie", "series"]
+    },
+    {
+      "id": "opensubtitles-v2",
+      "name": "OpenSubtitles V2",
+      "manifestUrl": "https://subtitlesv2.strem.io/manifest.json",
+      "active": true,
+      "priority": 120,
+      "categories": ["movie", "series"]
+    }
+  ]
+ 
+}

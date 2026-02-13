@@ -1,0 +1,19 @@
+{
+  "providers": [
+    {
+      "id": "NexPlus",
+      "name": "Catalogo NexPlus",
+      "manifestUrl": "https://7a82163c306e-stremio-netflix-catalog-addon.baby-beamup.club/bmZ4LGRucCxhbXAsYXRwLGhibSxwbXA6OjoxNzcwODUzNzUwMzE5OjA6MDo%3D/manifest.json",
+      "active": true,
+      "priority": 100,
+      "categories": ["movie", "series"]
+    },   {
+      "id": "PortHu",
+      "name": "Catalogo PortHu",
+      "manifestUrl": "https://port-hu-stremio-addon.vercel.app/manifest.json",
+      "active": true,
+      "priority": 110,
+      "categories": ["movie", "series"]
+    }
+  ]
+}

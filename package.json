@@ -1,0 +1,34 @@
+{
+  "name": "streams-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MVP demonstrativo para explorar addons compatibles con Stremio y reproducir torrents legalmente.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:web\"",
+    "dev:server": "nodemon server.js",
+    "dev:web": "npm run dev --prefix web",
+    "build": "npm run build:web",
+    "build:web": "npm run build --prefix web",
+    "setup:web": "npm install --prefix web",
+    "curate:m3u": "node scripts/curate_m3u.js",
+    "curate:m3u:probe": "node scripts/curate_m3u.js --probe --probe-timeout 3000 --probe-concurrency 20",
+    "curate:m3u:movies": "node scripts/curate_m3u.js --probe --probe-timeout 3000 --probe-concurrency 20 --channel hbo --channel tnt --channel cinemax --channel cinecanal --channel space",
+    "probe:m3u:alive": "node scripts/probe_m3u_alive.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "dotenv": "^17.2.4",
+    "express": "^4.21.2",
+    "mime-types": "^3.0.2",
+    "webtorrent": "^2.8.5"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.11"
+  }
+}

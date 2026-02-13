@@ -1,0 +1,82 @@
+const fs = require("fs");
+const path = require("path");
+const express = require("express");
+
+const {
+  PORT,
+  WEB_DIST_DIR,
+  LEGACY_PUBLIC_DIR,
+  STREAM_RELIABILITY_FILE,
+  PLAYBACK_HLS_DIR
+} = require("./lib/config");
+const { ensureDirSync } = require("./lib/utils");
+const { loadReliabilityFromDisk } = require("./lib/reliability/persistence");
+const { loadSourcesFromDisk } = require("./lib/sources/loader");
+const { loadLiveTvFromDisk } = require("./lib/live-tv/manager");
+const { cleanupPlaybackSessions } = require("./lib/playback/sessions");
+const { registerApiRoutes } = require("./lib/routes");
+
+const app = express();
+
+app.use(express.json({ limit: "1mb" }));
+
+const clientDir = fs.existsSync(path.join(WEB_DIST_DIR, "index.html"))
+  ? WEB_DIST_DIR
+  : LEGACY_PUBLIC_DIR;
+
+app.get("/service-worker.js", (req, res) => {
+  res.setHeader("Content-Type", "application/javascript; charset=utf-8");
+  res.setHeader("Cache-Control", "no-store, max-age=0");
+  res.send(`
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", (event) => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+    await self.registration.unregister();
+    const clients = await self.clients.matchAll({ type: "window" });
+    clients.forEach((client) => client.navigate(client.url));
+  })());
+});
+`);
+});
+
+app.use(express.static(clientDir));
+
+registerApiRoutes(app);
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(clientDir, "index.html"));
+});
+
+function startServer() {
+  loadReliabilityFromDisk();
+  console.log(`Confiabilidad de streams cargada desde ${STREAM_RELIABILITY_FILE}`);
+  ensureDirSync(PLAYBACK_HLS_DIR);
+
+  try {
+    const summary = loadSourcesFromDisk();
+    console.log(
+      `Fuentes cargadas. Catalogos: ${summary.catalogCount} | Streams: ${summary.streamCount} | Subtitulos: ${summary.subtitleCount}`
+    );
+  } catch (error) {
+    console.error("No se pudieron cargar fuentes iniciales:", error.message);
+  }
+
+  try {
+    const liveTvSummary = loadLiveTvFromDisk();
+    console.log(
+      `Live TV cargado. Existe: ${liveTvSummary.exists ? "si" : "no"} | Archivos: ${liveTvSummary.fileCount} | Categorias: ${liveTvSummary.categoryCount} | Canales: ${liveTvSummary.channelCount}`
+    );
+  } catch (error) {
+    console.error("No se pudieron cargar listas Live TV:", error.message);
+  }
+
+  app.listen(PORT, () => {
+    console.log(`Streams MVP escuchando en http://localhost:${PORT}`);
+  });
+}
+
+setInterval(cleanupPlaybackSessions, 5 * 60 * 1000);
+
+startServer();

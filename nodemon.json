@@ -1,0 +1,20 @@
+{
+  "watch": [
+    "server.js",
+    "scripts",
+    "config/catalog-manifests.json",
+    "config/stream-manifests.json",
+    "config/subtitles-manifest.json",
+    "config/subtitles-manifests.json",
+    "config/subtitles-manifes.json"
+  ],
+  "ext": "js,json",
+  "ignore": [
+    "web/**",
+    "public/**",
+    "node_modules/**",
+    "config/prowlarr/**",
+    "config/stream-reliability.json",
+    "config/stream-reliability.json.tmp"
+  ]
+}

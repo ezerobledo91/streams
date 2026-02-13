@@ -1,0 +1,302 @@
+{
+  "loadedAt": "2026-02-12T15:27:36.8440834-03:00",
+  "updatedAt": "2026-02-13T23:37:02.244Z",
+  "providers": {
+    "torrentdb": {
+      "successes": 20,
+      "failures": 3,
+      "consecutiveFailures": 0,
+      "lastSuccessAt": 1770957081427,
+      "lastFailureAt": 1770956836511,
+      "lastFailureReason": "Timeout generando playlist HLS.",
+      "breakerUntil": 0,
+      "sources": {
+        "c4939be1007141daa31ed8cfb9eefd61f16c4d3f": {
+          "successes": 6,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770950783929,
+          "lastFailureAt": 0
+        },
+        "32a1e8c8bda0fdb2497847bf065c49e3b52fb584": {
+          "successes": 7,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770953100627,
+          "lastFailureAt": 0
+        },
+        "574271be966a04118b59a0680bdacf169fff61a4": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770952120363,
+          "lastFailureAt": 0
+        },
+        "139975fe79643ebf2c7c8b4ebf3700c7af046215": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770955477163,
+          "lastFailureAt": 0
+        },
+        "06bb7f512a34f30b6485767658f76ef78f1cb522": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1770955628387
+        },
+        "2606a5830780074b089fab96904009da412c1c3d": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770955863818,
+          "lastFailureAt": 0
+        },
+        "23b8f7440384730becff8c4d0e93ab776ae9c52c": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770956076540,
+          "lastFailureAt": 0
+        },
+        "4fffd4b6307011d212e7e7f400bf399bf6e50339": {
+          "successes": 3,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770957081427,
+          "lastFailureAt": 0
+        },
+        "514103351f687c39d0073bbb7965e52443ee2f60": {
+          "successes": 0,
+          "failures": 2,
+          "consecutiveFailures": 2,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1770956836511
+        }
+      }
+    },
+    "torrentio": {
+      "successes": 18,
+      "failures": 1,
+      "consecutiveFailures": 0,
+      "lastSuccessAt": 1771025822244,
+      "lastFailureAt": 1770949752261,
+      "lastFailureReason": "Timeout generando playlist HLS.",
+      "breakerUntil": 0,
+      "sources": {
+        "274f9ead8b229a31a8ad551c914e879f09efe6fb": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1770949752261
+        },
+        "00e084013e65efbc0cd048ca98dbf42dfe086862": {
+          "successes": 2,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770955595959,
+          "lastFailureAt": 0
+        },
+        "e00255b007136a5b38f1141eb30f4e900ea0ace8": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770952766286,
+          "lastFailureAt": 0
+        },
+        "1510faa1f78ef0bf899cf5153b7f7b03c039af99": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770955636446,
+          "lastFailureAt": 0
+        },
+        "66672b822002b6f19af478fb7c886787afee5f9f": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770955782243,
+          "lastFailureAt": 0
+        },
+        "62e0fde02123657417679e0692b093b61716e8e2": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770955916101,
+          "lastFailureAt": 0
+        },
+        "5357179583d6d0f2c3adae8d683ce26c4e620d73": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770957517263,
+          "lastFailureAt": 0
+        },
+        "33d235fe2a2e1867d99c0e306a21574688ef0f7f": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770960529772,
+          "lastFailureAt": 0
+        },
+        "0ca4ee7671c432be2e6ea74d48061b304930c065": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770960696375,
+          "lastFailureAt": 0
+        },
+        "62c1d4e8f6a58209597b4198447544fb3cdcc96d": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771016158206,
+          "lastFailureAt": 0
+        },
+        "7cc675d26744d96c20048166e48cf1858b505fa0": {
+          "successes": 4,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771018220576,
+          "lastFailureAt": 0
+        },
+        "90cef35febf5ea4c7967e4f8720ffc983045c05b": {
+          "successes": 2,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771024090131,
+          "lastFailureAt": 0
+        },
+        "b1f2d2b9c009a559373b1ee90c5ef6bb787c0308": {
+          "successes": 2,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771025822244,
+          "lastFailureAt": 0
+        }
+      }
+    },
+    "thepiratebay-plus": {
+      "successes": 3,
+      "failures": 0,
+      "consecutiveFailures": 0,
+      "lastSuccessAt": 1770957214476,
+      "lastFailureAt": 0,
+      "lastFailureReason": "",
+      "breakerUntil": 0,
+      "sources": {
+        "22c0a0dc89af36bf2a718fe560ab30849851da3c": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770955525019,
+          "lastFailureAt": 0
+        },
+        "76b3f59eb8382c80b503c4fbb72da800b243fa91": {
+          "successes": 2,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770957214476,
+          "lastFailureAt": 0
+        }
+      }
+    },
+    "prowlarr": {
+      "successes": 7,
+      "failures": 9,
+      "consecutiveFailures": 7,
+      "lastSuccessAt": 1770959928134,
+      "lastFailureAt": 1771023294929,
+      "lastFailureReason": "Stream map '' matches no streams.\r\nTo ignore this, add a trailing '?' to the map.\r\nFailed to set value '0:v:0' for option 'map': Invalid argument\r\nError parsing options for output",
+      "breakerUntil": 1771026894929,
+      "sources": {
+        "24c51796a480000ae52c4f578be4777e657f7a0d": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1770955635725
+        },
+        "e0d00667650aba9ee05aacbbbd8b55ea8a51f534": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1770955828687
+        },
+        "50e7cae73c2d75d57713e2012cf4f3f558cd47f9": {
+          "successes": 5,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770959013617,
+          "lastFailureAt": 0
+        },
+        "0ca4ee7671c432be2e6ea74d48061b304930c065": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770959083481,
+          "lastFailureAt": 0
+        },
+        "cf109d8d0cfe46bfe7ac5378b587d27b71dd87a8": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1770959928134,
+          "lastFailureAt": 0
+        },
+        "def97aba09335e3d450c5bac0c6f80f8c263e427": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771016126001
+        },
+        "9b9918a913741ef109930bd45cfbc4abd7a0fc7b": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771016223811
+        },
+        "36a7522598abf7cab88eedff4bd3209adf1cb8d6": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771016230171
+        },
+        "2074db647cb1eb99049519653f80c43a9de88f05": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771016238506
+        },
+        "90cef35febf5ea4c7967e4f8720ffc983045c05b": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771023280666
+        },
+        "1b173583f4129eb6365d43af23193273eafa8d4e": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771023288922
+        },
+        "8b25546f4d9e43a9eaefaed8637db6f2c3d0c21e": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771023294929
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Streams MVP",
+  "short_name": "Streams",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f4ee",
+  "theme_color": "#d95f30",
+  "description": "Demo personal para explorar catalogs/streams estilo addons y reproducir en TV o celular via PWA.",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
