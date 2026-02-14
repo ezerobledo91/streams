@@ -130,6 +130,16 @@ Desarrollo:
 Produccion local:
 - `http://localhost:8787` (Express sirve `web/dist`)
 
+Exponer en red local (TV/celular):
+
+```bash
+npm run expose
+```
+
+El comando imprime tus URLs LAN y levanta:
+- Vite en `0.0.0.0:5173`
+- API en `0.0.0.0:8787`
+
 ## Flujo de uso
 
 1. Elegir categoria y usar busqueda/filtros del dashboard.

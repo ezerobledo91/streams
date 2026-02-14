@@ -1,0 +1,9 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#141414"/>
+
+  <!-- Bold letter S -->
+  <text x="256" y="360" font-family="Arial, sans-serif" font-size="320" font-weight="bold" fill="#e50914" text-anchor="middle" dominant-baseline="middle">
+    S
+  </text>
+</svg>

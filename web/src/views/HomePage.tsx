@@ -1,70 +1,43 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { RefreshCw, Search, SlidersHorizontal, Tv2, X } from "lucide-react";
+import { Clapperboard, Film, Radio, RefreshCw, Search, SlidersHorizontal, Tv2, X } from "lucide-react";
 import { fetchCatalogByCategory, fetchSources, reloadSources } from "../api";
 import { CategoryRail } from "../components/CategoryRail";
+import { ContinueWatchingRail } from "../components/ContinueWatchingRail";
 import { categoryTitle } from "../components/CategoryTabs";
 import { useAppStore } from "../store/AppStore";
+import { getContinueWatching } from "../lib/watch-history";
+import type { WatchHistoryEntry } from "../lib/watch-history";
 import type { CatalogItem, Category } from "../types";
 
-interface GenreOption {
+interface RowConfig {
   id: string;
-  label: string;
+  title: string;
+  genre?: string;
+  limit: number;
 }
 
-type SortMode = "trending" | "year" | "rating" | "name";
-
-const SORT_LABELS: Record<SortMode, string> = {
-  trending: "Tendencias",
-  year: "Anio (nuevo primero)",
-  rating: "Rating (alto primero)",
-  name: "Nombre (A-Z)"
-};
-
-const GENRE_OPTIONS: Record<Category, GenreOption[]> = {
+const GENRE_ROWS: Record<Category, RowConfig[]> = {
   movie: [
-    { id: "28", label: "Accion" },
-    { id: "12", label: "Aventura" },
-    { id: "16", label: "Animacion" },
-    { id: "35", label: "Comedia" },
-    { id: "80", label: "Crimen" },
-    { id: "99", label: "Documental" },
-    { id: "18", label: "Drama" },
-    { id: "10751", label: "Familiar" },
-    { id: "14", label: "Fantasia" },
-    { id: "27", label: "Terror" },
-    { id: "878", label: "Ciencia ficcion" },
-    { id: "53", label: "Suspenso" }
+    { id: "trending", title: "Tendencias", limit: 24 },
+    { id: "action", title: "Accion", genre: "28", limit: 20 },
+    { id: "comedy", title: "Comedia", genre: "35", limit: 20 },
+    { id: "drama", title: "Drama", genre: "18", limit: 20 },
+    { id: "scifi", title: "Ciencia ficcion", genre: "878", limit: 20 },
+    { id: "animation", title: "Animacion", genre: "16", limit: 20 },
+    { id: "horror", title: "Terror", genre: "27", limit: 20 },
   ],
   series: [
-    { id: "10759", label: "Accion y aventura" },
-    { id: "16", label: "Animacion" },
-    { id: "35", label: "Comedia" },
-    { id: "80", label: "Crimen" },
-    { id: "99", label: "Documental" },
-    { id: "18", label: "Drama" },
-    { id: "10751", label: "Familiar" },
-    { id: "10762", label: "Kids" },
-    { id: "9648", label: "Misterio" },
-    { id: "10765", label: "Sci-Fi y Fantasia" },
-    { id: "10768", label: "Guerra y politica" }
+    { id: "trending", title: "Tendencias", limit: 24 },
+    { id: "action", title: "Accion y aventura", genre: "10759", limit: 20 },
+    { id: "comedy", title: "Comedia", genre: "35", limit: 20 },
+    { id: "drama", title: "Drama", genre: "18", limit: 20 },
+    { id: "scifi", title: "Sci-Fi y Fantasia", genre: "10765", limit: 20 },
+    { id: "animation", title: "Animacion", genre: "16", limit: 20 },
   ],
-  tv: [
-    { id: "10759", label: "Accion" },
-    { id: "35", label: "Comedia" },
-    { id: "18", label: "Drama" },
-    { id: "10764", label: "Reality" },
-    { id: "10766", label: "Soap" },
-    { id: "10767", label: "Talk" },
-    { id: "10768", label: "Noticias" }
-  ]
+  tv: []
 };
-
-function toNumber(value: string | null): number {
-  const parsed = Number.parseInt(String(value || ""), 10);
-  return Number.isFinite(parsed) ? parsed : 0;
-}
 
 function dedupeItems(items: CatalogItem[]): CatalogItem[] {
   const out: CatalogItem[] = [];
@@ -79,22 +52,38 @@ function dedupeItems(items: CatalogItem[]): CatalogItem[] {
 }
 
 function normalizeText(value: string | null | undefined): string {
-  return String(value || "").trim().toLowerCase();
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function suggestionScore(item: CatalogItem, term: string): number {
   const name = normalizeText(item.name);
   const description = normalizeText(item.description);
   const year = normalizeText(item.year);
+  const terms = term.split(" ").filter((part) => part.length >= 2);
 
   let score = 0;
-  if (name === term) score += 140;
-  else if (name.startsWith(term)) score += 100;
-  else if (name.includes(term)) score += 70;
+  if (name === term) score += 160;
+  else if (name.startsWith(term)) score += 120;
+  else if (name.includes(term)) score += 85;
 
-  if (description.includes(term)) score += 18;
+  if (description.includes(term)) score += 24;
   if (year && year.includes(term)) score += 12;
-  if (item.rating) score += item.rating;
+
+  if (terms.length) {
+    const nameHits = terms.reduce((total, part) => total + (name.includes(part) ? 1 : 0), 0);
+    const descriptionHits = terms.reduce((total, part) => total + (description.includes(part) ? 1 : 0), 0);
+    score += nameHits * 24;
+    score += descriptionHits * 7;
+    if (nameHits === terms.length) score += 22;
+  }
+
+  if (score > 0 && item.rating) score += item.rating;
 
   return score;
 }
@@ -103,36 +92,39 @@ export function HomePage() {
   const { state, actions } = useAppStore();
   const navigate = useNavigate();
   const searchBoxRef = useRef<HTMLDivElement | null>(null);
-  const requestIdRef = useRef(0);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const searchRequestIdRef = useRef(0);
+  const loadRequestIdRef = useRef(0);
 
-  const [catalogByCategory, setCatalogByCategory] = useState<Record<Category, CatalogItem[]>>({
+  const [rowData, setRowData] = useState<Record<string, CatalogItem[]>>({});
+  const [searchCatalogByCategory, setSearchCatalogByCategory] = useState<Record<Category, CatalogItem[]>>({
     movie: [],
     series: [],
     tv: []
   });
+  const [continueWatching, setContinueWatching] = useState<WatchHistoryEntry[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [heroIndex, setHeroIndex] = useState(0);
-  const [searchInput, setSearchInput] = useState(state.query || "");
-  const [debouncedQuery, setDebouncedQuery] = useState(state.query || "");
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isHeaderScrolled, setIsHeaderScrolled] = useState(false);
-  const [sortMode, setSortMode] = useState<SortMode>("trending");
-  const [minYearInput, setMinYearInput] = useState("");
-  const [genreByCategory, setGenreByCategory] = useState<Record<Category, string>>({
-    movie: "",
-    series: "",
-    tv: ""
-  });
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const categories: Category[] = useMemo(() => ["movie", "series", "tv"], []);
-  const activeGenre = genreByCategory[state.category];
+  const categories: Category[] = useMemo(() => ["movie", "series"], []);
+  const activeHomeCategory: Category = state.category === "tv" ? "movie" : state.category;
 
   useEffect(() => {
-    setSearchInput(state.query || "");
-    setDebouncedQuery(state.query || "");
-  }, [state.query]);
+    if (state.category === "tv") {
+      actions.setCategory("movie");
+    }
+  }, [actions, state.category]);
+
+  useEffect(() => {
+    setContinueWatching(getContinueWatching());
+  }, []);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -142,14 +134,9 @@ export function HomePage() {
   }, [searchInput]);
 
   useEffect(() => {
-    actions.setQuery(debouncedQuery);
-  }, [actions, debouncedQuery]);
-
-  useEffect(() => {
     function onScroll() {
       setIsHeaderScrolled(window.scrollY > 16);
     }
-
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -161,7 +148,6 @@ export function HomePage() {
         setIsFilterOpen(false);
       }
     }
-
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
@@ -174,50 +160,98 @@ export function HomePage() {
       setIsSearchFocused(false);
       setActiveSuggestionIndex(-1);
     }
-
     window.addEventListener("pointerdown", onPointerDown);
     return () => window.removeEventListener("pointerdown", onPointerDown);
   }, []);
 
-  async function loadAllCatalog(query: string) {
-    const requestId = requestIdRef.current + 1;
-    requestIdRef.current = requestId;
+  useEffect(() => {
+    if (!isSearchFocused) return;
+    const timeout = window.setTimeout(() => {
+      searchInputRef.current?.focus();
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [isSearchFocused]);
+
+  const loadGenreRows = useCallback(async (category: Category) => {
+    const rows = GENRE_ROWS[category];
+    if (!rows.length) return;
+
+    const requestId = ++loadRequestIdRef.current;
     setLoading(true);
 
     try {
-      const trimmedQuery = query.trim();
+      const payloads = await Promise.all(
+        rows.map((row) =>
+          fetchCatalogByCategory({
+            category,
+            genre: row.genre,
+            limit: row.limit
+          })
+        )
+      );
+
+      if (requestId !== loadRequestIdRef.current) return;
+
+      const next: Record<string, CatalogItem[]> = {};
+      for (let i = 0; i < rows.length; i++) {
+        next[rows[i].id] = payloads[i].items;
+      }
+      setRowData(next);
+    } catch {
+      if (requestId === loadRequestIdRef.current) {
+        setRowData({});
+      }
+    } finally {
+      if (requestId === loadRequestIdRef.current) {
+        setLoading(false);
+      }
+    }
+  }, []);
+
+  async function loadSearchCatalog(query: string) {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.length < 2) {
+      searchRequestIdRef.current += 1;
+      setSearchLoading(false);
+      setSearchCatalogByCategory({ movie: [], series: [], tv: [] });
+      return;
+    }
+
+    const requestId = searchRequestIdRef.current + 1;
+    searchRequestIdRef.current = requestId;
+    setSearchLoading(true);
+
+    try {
       const payloads = await Promise.all(
         categories.map((category) =>
           fetchCatalogByCategory({
             category,
             query: trimmedQuery,
-            genre: genreByCategory[category],
-            limit: trimmedQuery ? 72 : 90
+            limit: 48
           })
         )
       );
 
-      if (requestId !== requestIdRef.current) return;
+      if (requestId !== searchRequestIdRef.current) return;
 
       const next: Record<Category, CatalogItem[]> = { movie: [], series: [], tv: [] };
       for (const payload of payloads) {
         next[payload.category] = payload.items;
       }
-      setCatalogByCategory(next);
+      setSearchCatalogByCategory(next);
     } catch {
-      if (requestId === requestIdRef.current) {
-        setCatalogByCategory({ movie: [], series: [], tv: [] });
+      if (requestId === searchRequestIdRef.current) {
+        setSearchCatalogByCategory({ movie: [], series: [], tv: [] });
       }
     } finally {
-      if (requestId === requestIdRef.current) {
-        setLoading(false);
+      if (requestId === searchRequestIdRef.current) {
+        setSearchLoading(false);
       }
     }
   }
 
   useEffect(() => {
     let mounted = true;
-
     (async () => {
       try {
         const sources = await fetchSources();
@@ -227,22 +261,24 @@ export function HomePage() {
         // no-op
       }
     })();
-
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, [actions]);
 
   useEffect(() => {
-    void loadAllCatalog(debouncedQuery);
-  }, [debouncedQuery, genreByCategory]);
+    void loadGenreRows(activeHomeCategory);
+  }, [activeHomeCategory, loadGenreRows]);
+
+  useEffect(() => {
+    void loadSearchCatalog(debouncedQuery);
+  }, [debouncedQuery]);
 
   async function handleReloadSources() {
     try {
       await reloadSources();
       const sources = await fetchSources();
       actions.setSources(sources);
-      await loadAllCatalog(debouncedQuery);
+      await loadGenreRows(activeHomeCategory);
+      await loadSearchCatalog(debouncedQuery);
     } catch {
       // no-op
     }
@@ -255,13 +291,28 @@ export function HomePage() {
     navigate(`/watch/${item.type}/${encodedId}`);
   }
 
-  function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const immediateQuery = searchInput.trim();
+  function handleSelectContinueWatching(entry: WatchHistoryEntry) {
+    const encodedId = encodeURIComponent(entry.itemId);
+    navigate(`/watch/${entry.type}/${encodedId}`);
+  }
+
+  function openSearchResults(rawQuery: string) {
+    const immediateQuery = rawQuery.trim();
     setDebouncedQuery(immediateQuery);
     actions.setQuery(immediateQuery);
+    if (!immediateQuery) {
+      setIsSearchFocused(false);
+      setActiveSuggestionIndex(-1);
+      return;
+    }
+    navigate(`/search?q=${encodeURIComponent(immediateQuery)}`);
     setIsSearchFocused(false);
     setActiveSuggestionIndex(-1);
+  }
+
+  function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    openSearchResults(searchInput);
   }
 
   function handleClearSearch() {
@@ -270,73 +321,57 @@ export function HomePage() {
     actions.setQuery("");
     setIsSearchFocused(false);
     setActiveSuggestionIndex(-1);
+    setSearchCatalogByCategory({ movie: [], series: [], tv: [] });
   }
 
-  function handleSetGenre(genreId: string) {
-    setGenreByCategory((prev) => ({
-      ...prev,
-      [state.category]: genreId
-    }));
+  function handleScrollToRow(rowId: string) {
+    setIsFilterOpen(false);
+    const section = document.querySelector(`[data-row-id="${rowId}"]`);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
 
-  function applyLocalFilters(items: CatalogItem[]): CatalogItem[] {
-    const minYear = toNumber(minYearInput);
-    const filtered = minYear > 0 ? items.filter((item) => toNumber(item.year) >= minYear) : items;
-
-    if (sortMode === "year") {
-      return [...filtered].sort((a, b) => toNumber(b.year) - toNumber(a.year));
+  function handleOpenSearchPage() {
+    const query = searchInput.trim();
+    if (query) {
+      openSearchResults(query);
+      return;
     }
-
-    if (sortMode === "rating") {
-      return [...filtered].sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    }
-
-    if (sortMode === "name") {
-      return [...filtered].sort((a, b) => a.name.localeCompare(b.name, "es", { sensitivity: "base" }));
-    }
-
-    return filtered;
+    navigate("/search");
   }
 
-  const filteredCatalogByCategory = useMemo(
-    () => ({
-      movie: applyLocalFilters(catalogByCategory.movie),
-      series: applyLocalFilters(catalogByCategory.series),
-      tv: applyLocalFilters(catalogByCategory.tv)
-    }),
-    [catalogByCategory, minYearInput, sortMode]
-  );
-
-  const allVisibleItems = useMemo(
+  const allSearchItems = useMemo(
     () =>
       dedupeItems([
-        ...filteredCatalogByCategory.movie,
-        ...filteredCatalogByCategory.series,
-        ...filteredCatalogByCategory.tv
+        ...searchCatalogByCategory.movie,
+        ...searchCatalogByCategory.series,
+        ...searchCatalogByCategory.tv
       ]),
-    [filteredCatalogByCategory]
+    [searchCatalogByCategory]
   );
 
   const normalizedSearchTerm = useMemo(() => normalizeText(searchInput), [searchInput]);
   const searchSuggestions = useMemo(() => {
     if (normalizedSearchTerm.length < 2) return [];
 
-    return allVisibleItems
+    const ranked = allSearchItems
       .map((item) => ({ item, score: suggestionScore(item, normalizedSearchTerm) }))
-      .filter((entry) => entry.score > 0)
       .sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score;
         return (b.item.rating || 0) - (a.item.rating || 0);
-      })
-      .slice(0, 10)
-      .map((entry) => entry.item);
-  }, [allVisibleItems, normalizedSearchTerm]);
+      });
+
+    const positive = ranked.filter((entry) => entry.score > 0);
+    const pool = positive.length ? positive : ranked;
+    return pool.slice(0, 10).map((entry) => entry.item);
+  }, [allSearchItems, normalizedSearchTerm]);
 
   const showSearchPanel = isSearchFocused && normalizedSearchTerm.length >= 2;
 
   useEffect(() => {
     setActiveSuggestionIndex(-1);
-  }, [normalizedSearchTerm, state.category]);
+  }, [normalizedSearchTerm, activeHomeCategory]);
 
   function handleSearchKeyDown(event: ReactKeyboardEvent<HTMLInputElement>) {
     if (event.key === "Escape") {
@@ -358,37 +393,13 @@ export function HomePage() {
       setActiveSuggestionIndex((current) => Math.max(-1, current - 1));
       return;
     }
-
-    if (event.key === "Enter" && activeSuggestionIndex >= 0) {
-      event.preventDefault();
-      handleSelectItem(searchSuggestions[activeSuggestionIndex]);
-      setIsSearchFocused(false);
-      setActiveSuggestionIndex(-1);
-    }
   }
 
-  const activeItems = filteredCatalogByCategory[state.category] || [];
-  const newestRow = useMemo(
-    () => [...activeItems].sort((a, b) => toNumber(b.year) - toNumber(a.year)).slice(0, 24),
-    [activeItems]
-  );
-  const topRatedRow = useMemo(
-    () => [...activeItems].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 24),
-    [activeItems]
-  );
-  const trendingRow = useMemo(() => activeItems.slice(0, 24), [activeItems]);
-  const mixedRow = useMemo(
-    () =>
-      dedupeItems([
-        ...filteredCatalogByCategory.movie.slice(0, 10),
-        ...filteredCatalogByCategory.series.slice(0, 10),
-        ...filteredCatalogByCategory.tv.slice(0, 10)
-      ]),
-    [filteredCatalogByCategory]
-  );
+  // Hero from trending row
+  const trendingItems = rowData["trending"] || [];
   const heroPool = useMemo(
-    () => dedupeItems([...newestRow, ...topRatedRow, ...trendingRow, ...mixedRow]).slice(0, 18),
-    [mixedRow, newestRow, topRatedRow, trendingRow]
+    () => trendingItems.filter((item) => item.background).slice(0, 12),
+    [trendingItems]
   );
   const heroItem = heroPool.length ? heroPool[heroIndex % heroPool.length] : null;
 
@@ -408,21 +419,9 @@ export function HomePage() {
     return () => window.clearInterval(interval);
   }, [heroPool.length]);
 
-  const heroRecommendations = useMemo(() => {
-    if (!heroPool.length) return [];
-    const amount = Math.min(4, heroPool.length);
-    return Array.from({ length: amount }, (_, offset) => {
-      const itemIndex = (heroIndex + offset) % heroPool.length;
-      return {
-        item: heroPool[itemIndex],
-        index: itemIndex
-      };
-    });
-  }, [heroIndex, heroPool]);
-
   const heroImage = heroItem ? heroItem.background || heroItem.poster || "" : "";
   const heroPosterFallback = Boolean(heroItem?.poster && !heroItem?.background);
-  const hasLocalFilters = sortMode !== "trending" || Boolean(minYearInput.trim());
+  const activeRows = GENRE_ROWS[activeHomeCategory] || [];
 
   return (
     <main className="home-shell">
@@ -432,31 +431,29 @@ export function HomePage() {
             <div className="brand-logo" aria-label="streams" onClick={() => {
               actions.setCategory("movie");
               actions.setQuery("");
+              setSearchInput("");
+              setDebouncedQuery("");
+              setSearchCatalogByCategory({ movie: [], series: [], tv: [] });
+              setIsSearchFocused(false);
+              setActiveSuggestionIndex(-1);
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}>
               streams
             </div>
             <nav className="home-nav">
-              <button 
-                type="button" 
-                className={`nav-link ${state.category === "movie" && !state.query ? "is-active" : ""}`}
+              <button
+                type="button"
+                className={`nav-link ${state.category === "movie" ? "is-active" : ""}`}
                 onClick={() => actions.setCategory("movie")}
               >
                 Peliculas
               </button>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className={`nav-link ${state.category === "series" ? "is-active" : ""}`}
                 onClick={() => actions.setCategory("series")}
               >
                 Series
-              </button>
-              <button 
-                type="button" 
-                className={`nav-link ${state.category === "tv" ? "is-active" : ""}`}
-                onClick={() => actions.setCategory("tv")}
-              >
-                Canales
               </button>
               <Link to="/live-tv" className="nav-link">
                 TV en vivo
@@ -467,10 +464,18 @@ export function HomePage() {
           <div className="home-header-right">
             <div className={`search-container ${isSearchFocused || searchInput ? "is-expanded" : ""}`} ref={searchBoxRef}>
               <form className="header-search-v2" onSubmit={handleSearchSubmit}>
-                <button type="button" className="search-icon-btn" onClick={() => setIsSearchFocused(true)}>
+                <button
+                  type="button"
+                  className="search-icon-btn"
+                  onClick={() => {
+                    setIsSearchFocused(true);
+                    searchInputRef.current?.focus();
+                  }}
+                >
                   <Search size={20} />
                 </button>
                 <input
+                  ref={searchInputRef}
                   type="search"
                   placeholder="Titulos, personas, generos..."
                   value={searchInput}
@@ -487,7 +492,7 @@ export function HomePage() {
 
               {showSearchPanel ? (
                 <div className="search-suggest-panel-v2" role="listbox">
-                  {loading ? <div className="search-loader">Buscando...</div> : null}
+                  {searchLoading ? <div className="search-loader">Buscando...</div> : null}
                   {searchSuggestions.map((item, index) => (
                     <button
                       key={`${item.type}:${item.id}`}
@@ -503,12 +508,20 @@ export function HomePage() {
                         <div className="suggest-title">{item.name}</div>
                         <div className="suggest-meta">
                           <span>{item.year}</span>
-                          <span className="dot">•</span>
+                          <span className="dot">|</span>
                           <span>{categoryTitle(item.type)}</span>
                         </div>
                       </div>
                     </button>
                   ))}
+                  {!searchLoading && !searchSuggestions.length ? (
+                    <div className="search-empty">No encontramos resultados para "{searchInput.trim()}".</div>
+                  ) : null}
+                  {searchInput.trim() ? (
+                    <button type="button" className="search-open-results-btn" onClick={() => openSearchResults(searchInput)}>
+                      Ver todos los resultados
+                    </button>
+                  ) : null}
                 </div>
               ) : null}
             </div>
@@ -529,14 +542,14 @@ export function HomePage() {
             src={heroImage}
             alt={heroItem?.name || "Titulo destacado"}
             className={heroPosterFallback ? "hero-image hero-image-poster" : "hero-image"}
-            key={heroItem?.id} // Add key to trigger transition if image changes
+            key={heroItem?.id}
           />
         ) : null}
         <div className="hero-overlay">
           <div className="hero-content-wrap">
-            <span className="hero-kicker">{categoryTitle(state.category)}</span>
+            <span className="hero-kicker">{categoryTitle(activeHomeCategory)}</span>
             <h1>{heroItem?.name || "Explora el catalogo"}</h1>
-            
+
             <div className="hero-meta">
               <span className="hero-rating">
                 {heroItem?.rating ? `${(heroItem.rating * 10).toFixed(0)}% para ti` : "Novedad"}
@@ -545,7 +558,7 @@ export function HomePage() {
             </div>
 
             <p>{heroItem?.description || "Peliculas, series y TV en vivo en una interfaz simple."}</p>
-            
+
             <div className="hero-actions">
               {heroItem ? (
                 <button type="button" className="primary-btn" onClick={() => handleSelectItem(heroItem)}>
@@ -557,7 +570,7 @@ export function HomePage() {
           </div>
         </div>
 
-        {heroRecommendations.length > 1 ? (
+        {heroPool.length > 1 ? (
           <div className="hero-selectors">
             {heroPool.slice(0, 6).map((_, index) => (
               <button
@@ -573,84 +586,72 @@ export function HomePage() {
       </section>
 
       <section className="home-rows">
-        {hasLocalFilters ? (
-          <p className="muted home-filter-summary">Orden: {SORT_LABELS[sortMode]} | Anio minimo: {minYearInput || "sin limite"}</p>
+        {loading ? <p className="muted" style={{ padding: "0 4%" }}>Cargando...</p> : null}
+
+        {continueWatching.length > 0 ? (
+          <ContinueWatchingRail items={continueWatching} onSelect={handleSelectContinueWatching} />
         ) : null}
-        {loading ? <p className="muted">Cargando...</p> : null}
-        {!loading && !activeItems.length ? <p className="muted">No hay resultados para los filtros actuales.</p> : null}
-        <CategoryRail title={`${categoryTitle(state.category)} | Estrenos`} items={newestRow} onSelect={handleSelectItem} />
-        <CategoryRail
-          title={`${categoryTitle(state.category)} | Mejor valoradas`}
-          items={topRatedRow}
-          onSelect={handleSelectItem}
-        />
-        <CategoryRail title={`${categoryTitle(state.category)} | Tendencias`} items={trendingRow} onSelect={handleSelectItem} />
-        <CategoryRail title="Para explorar" items={mixedRow} onSelect={handleSelectItem} />
+
+        {activeRows.map((row) => (
+          <div key={row.id} data-row-id={row.id}>
+            <CategoryRail
+              title={row.title}
+              items={rowData[row.id] || []}
+              onSelect={handleSelectItem}
+            />
+          </div>
+        ))}
       </section>
 
+      <nav className="mobile-dock" aria-label="Navegacion movil">
+        <button
+          type="button"
+          className={`mobile-dock-item ${state.category === "movie" ? "is-active" : ""}`}
+          onClick={() => actions.setCategory("movie")}
+        >
+          <Film size={17} />
+          <span>Pelis</span>
+        </button>
+        <button
+          type="button"
+          className={`mobile-dock-item ${state.category === "series" ? "is-active" : ""}`}
+          onClick={() => actions.setCategory("series")}
+        >
+          <Clapperboard size={17} />
+          <span>Series</span>
+        </button>
+        <button
+          type="button"
+          className="mobile-dock-item"
+          onClick={handleOpenSearchPage}
+        >
+          <Search size={17} />
+          <span>Buscar</span>
+        </button>
+        <Link to="/live-tv" className="mobile-dock-item">
+          <Radio size={17} />
+          <span>En vivo</span>
+        </Link>
+      </nav>
       {isFilterOpen ? <div className="offcanvas-backdrop" onClick={() => setIsFilterOpen(false)} /> : null}
       <aside className={`genre-offcanvas ${isFilterOpen ? "is-open" : ""}`} aria-hidden={!isFilterOpen}>
         <div className="genre-offcanvas-header">
-          <h3>Filtros de {categoryTitle(state.category)}</h3>
+          <h3>Generos de {categoryTitle(activeHomeCategory)}</h3>
           <button type="button" className="icon-only-btn" onClick={() => setIsFilterOpen(false)}>
             <X size={16} />
           </button>
         </div>
 
-        <div className="filter-stack">
-          <label className="season-select">
-            <span>Orden</span>
-            <select value={sortMode} onChange={(event) => setSortMode(event.target.value as SortMode)}>
-              <option value="trending">Tendencias</option>
-              <option value="year">Anio (nuevo primero)</option>
-              <option value="rating">Rating (alto primero)</option>
-              <option value="name">Nombre (A-Z)</option>
-            </select>
-          </label>
-
-          <label className="season-select">
-            <span>Anio minimo</span>
-            <input
-              type="number"
-              inputMode="numeric"
-              min={1900}
-              max={2100}
-              step={1}
-              value={minYearInput}
-              onChange={(event) => setMinYearInput(event.target.value.replace(/[^\d]/g, "").slice(0, 4))}
-              placeholder="Ej: 2018"
-            />
-          </label>
-
-          <button
-            type="button"
-            className="secondary-btn"
-            onClick={() => {
-              setSortMode("trending");
-              setMinYearInput("");
-            }}
-          >
-            Limpiar filtros locales
-          </button>
-        </div>
-
-        <p className="muted">Selecciona un genero para refinar recomendaciones.</p>
+        <p className="muted">Toca un genero para ir a su fila.</p>
         <div className="genre-grid">
-          <button
-            type="button"
-            className={`genre-chip ${!activeGenre ? "is-active" : ""}`}
-            onClick={() => handleSetGenre("")}
-          >
-            Todos
-          </button>
-          {GENRE_OPTIONS[state.category].map((genre) => (
+          {activeRows.map((row) => (
             <button
-              key={genre.id}
+              key={row.id}
               type="button"
-              className={`genre-chip ${activeGenre === genre.id ? "is-active" : ""}`}
-              onClick={() => handleSetGenre(genre.id)}
+              className="genre-chip"
+              onClick={() => handleScrollToRow(row.id)}
             >
-              {genre.label}
+              {row.title}
             </button>
           ))}
         </div>

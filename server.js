@@ -1,8 +1,10 @@
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
 const express = require("express");
 
 const {
+  HOST,
   PORT,
   WEB_DIST_DIR,
   LEGACY_PUBLIC_DIR,
@@ -49,6 +51,18 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(clientDir, "index.html"));
 });
 
+function getLanIpv4List() {
+  const interfaces = os.networkInterfaces();
+  const out = [];
+  for (const rows of Object.values(interfaces || {})) {
+    for (const row of rows || []) {
+      if (!row || row.internal || row.family !== "IPv4") continue;
+      out.push(row.address);
+    }
+  }
+  return [...new Set(out)];
+}
+
 function startServer() {
   loadReliabilityFromDisk();
   console.log(`Confiabilidad de streams cargada desde ${STREAM_RELIABILITY_FILE}`);
@@ -72,8 +86,15 @@ function startServer() {
     console.error("No se pudieron cargar listas Live TV:", error.message);
   }
 
-  app.listen(PORT, () => {
-    console.log(`Streams MVP escuchando en http://localhost:${PORT}`);
+  app.listen(PORT, HOST, () => {
+    const localHostLabel = HOST === "0.0.0.0" ? "localhost" : HOST;
+    console.log(`Streams MVP escuchando en http://${localHostLabel}:${PORT}`);
+    if (HOST === "0.0.0.0") {
+      const lanIps = getLanIpv4List();
+      for (const ip of lanIps) {
+        console.log(`Red local: http://${ip}:${PORT}`);
+      }
+    }
   });
 }
 

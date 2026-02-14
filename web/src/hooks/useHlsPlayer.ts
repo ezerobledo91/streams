@@ -7,9 +7,18 @@ interface UseHlsPlayerOptions {
   onRuntimeFailure: (reason: string) => void;
 }
 
+interface AttachVideoSourceOptions {
+  forceHls?: boolean;
+}
+
 export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPlayerOptions) {
   const [isBuffering, setIsBuffering] = useState(false);
   const hlsRef = useRef<Hls | null>(null);
+  const onRuntimeFailureRef = useRef(onRuntimeFailure);
+
+  useEffect(() => {
+    onRuntimeFailureRef.current = onRuntimeFailure;
+  }, [onRuntimeFailure]);
 
   const destroyHls = useCallback(() => {
     if (!hlsRef.current) return;
@@ -18,7 +27,7 @@ export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPla
   }, []);
 
   const attachVideoSource = useCallback(
-    async (video: HTMLVideoElement, sourceUrl: string) => {
+    async (video: HTMLVideoElement, sourceUrl: string, options?: AttachVideoSourceOptions) => {
       const url = String(sourceUrl || "").trim();
       if (!url) {
         throw new Error("URL de reproduccion invalida.");
@@ -26,7 +35,7 @@ export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPla
 
       destroyHls();
 
-      const isHlsSource = /\.m3u8(?:$|\?)/i.test(url) || url.includes("/hls/");
+      const isHlsSource = Boolean(options?.forceHls) || /\.m3u8(?:$|\?)/i.test(url) || url.includes("/hls/");
       if (!isHlsSource) {
         video.src = url;
         video.load();
@@ -48,16 +57,16 @@ export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPla
           enableWorker: true,
           lowLatencyMode: false,
           backBufferLength: 90,
-          startPosition: 0,
+          startPosition: -1,
           liveSyncDurationCount: 6,
           liveMaxLatencyDurationCount: 12,
-          manifestLoadingRetryDelay: 1500,
-          manifestLoadingMaxRetryTimeout: 15000,
-          manifestLoadingMaxRetry: 6,
-          levelLoadingRetryDelay: 1500,
-          levelLoadingMaxRetryTimeout: 15000,
-          levelLoadingMaxRetry: 8,
-          fragLoadingMaxRetry: 6,
+          manifestLoadingRetryDelay: 2000,
+          manifestLoadingMaxRetryTimeout: 30000,
+          manifestLoadingMaxRetry: 20,
+          levelLoadingRetryDelay: 2000,
+          levelLoadingMaxRetryTimeout: 20000,
+          levelLoadingMaxRetry: 12,
+          fragLoadingMaxRetry: 8,
           fragLoadingRetryDelay: 1500,
           fragLoadingMaxRetryTimeout: 20000,
           maxBufferLength: 60,
@@ -68,21 +77,25 @@ export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPla
         hlsRef.current = hls;
         let startupSettled = false;
         let runtimeRecoveries = 0;
+        let lastSourceReloadAt = 0;
 
         const timeout = window.setTimeout(() => {
           if (startupSettled) return;
+          if (hlsRef.current !== hls) return;
           startupSettled = true;
           cleanupStartup();
           hls.off(Hls.Events.ERROR, onError);
           hls.destroy();
           if (hlsRef.current === hls) hlsRef.current = null;
           reject(new Error("Timeout cargando playlist HLS."));
-        }, 35000);
+        }, 90000);
 
         const cleanupStartup = () => {
           window.clearTimeout(timeout);
           hls.off(Hls.Events.MANIFEST_PARSED, onManifestParsed);
           hls.off(Hls.Events.MEDIA_ATTACHED, onMediaAttached);
+          hls.off(Hls.Events.FRAG_LOADING, onFragLoading);
+          hls.off(Hls.Events.FRAG_BUFFERED, onFragBuffered);
         };
 
         const onManifestParsed = () => {
@@ -93,9 +106,24 @@ export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPla
         };
 
         const onError = (_event: string, data: { fatal?: boolean; details?: string; type?: string }) => {
+          const responseCode = Number((data as { response?: { code?: number } })?.response?.code || 0);
+          const shouldReloadSource =
+            responseCode === 401 || responseCode === 403 || responseCode === 404 || responseCode === 503;
+
+          if (shouldReloadSource && nowCanReloadSource(responseCode)) {
+            runtimeRecoveries += 1;
+            hls.stopLoad();
+            hls.loadSource(url);
+            hls.startLoad(-1);
+            return;
+          }
+
           if (!data?.fatal) {
             if (data?.details === "bufferStalledError") {
               setIsBuffering(true);
+            }
+            if (data?.details === "bufferNudgeOnStall" || data?.details === "fragBufferedError") {
+              setIsBuffering(false);
             }
             return;
           }
@@ -104,18 +132,22 @@ export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPla
             startupSettled = true;
             cleanupStartup();
             hls.off(Hls.Events.ERROR, onError);
+            hls.off(Hls.Events.FRAG_LOADING, onFragLoading);
+            hls.off(Hls.Events.FRAG_BUFFERED, onFragBuffered);
             hls.destroy();
             if (hlsRef.current === hls) hlsRef.current = null;
             reject(new Error(reason));
             return;
           }
 
-          if (data.type === Hls.ErrorTypes.NETWORK_ERROR && runtimeRecoveries < 4) {
+          if (data.type === Hls.ErrorTypes.NETWORK_ERROR && runtimeRecoveries < 8) {
             runtimeRecoveries += 1;
-            hls.startLoad();
+            window.setTimeout(() => {
+              if (hlsRef.current === hls) hls.startLoad();
+            }, 1000 + runtimeRecoveries * 500);
             return;
           }
-          if (data.type === Hls.ErrorTypes.MEDIA_ERROR && runtimeRecoveries < 4) {
+          if (data.type === Hls.ErrorTypes.MEDIA_ERROR && runtimeRecoveries < 8) {
             runtimeRecoveries += 1;
             hls.recoverMediaError();
             return;
@@ -128,10 +160,23 @@ export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPla
               // ignore cleanup race
             });
           }
-          onRuntimeFailure(reason);
+          onRuntimeFailureRef.current(reason);
           hls.off(Hls.Events.ERROR, onError);
+          hls.off(Hls.Events.FRAG_LOADING, onFragLoading);
+          hls.off(Hls.Events.FRAG_BUFFERED, onFragBuffered);
           hls.destroy();
           if (hlsRef.current === hls) hlsRef.current = null;
+        };
+
+        const nowCanReloadSource = (responseCode: number) => {
+          // 503 = transcode en preparación, dar más margen
+          const maxRetries = responseCode === 503 ? 30 : 8;
+          if (runtimeRecoveries >= maxRetries) return false;
+          const now = Date.now();
+          const minDelay = responseCode === 503 ? 2000 : 1500;
+          if (now - lastSourceReloadAt < minDelay) return false;
+          lastSourceReloadAt = now;
+          return true;
         };
 
         const onMediaAttached = () => {
@@ -139,16 +184,22 @@ export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPla
           hls.startLoad(0);
         };
 
+        const onFragLoading = () => {
+          setIsBuffering(true);
+        };
+        const onFragBuffered = () => {
+          setIsBuffering(false);
+        };
+
         hls.on(Hls.Events.MANIFEST_PARSED, onManifestParsed);
         hls.on(Hls.Events.ERROR, onError);
         hls.on(Hls.Events.MEDIA_ATTACHED, onMediaAttached);
-        hls.on(Hls.Events.FRAG_BUFFERED, () => {
-          setIsBuffering(false);
-        });
+        hls.on(Hls.Events.FRAG_LOADING, onFragLoading);
+        hls.on(Hls.Events.FRAG_BUFFERED, onFragBuffered);
         hls.attachMedia(video);
       });
     },
-    [activeSessionIdRef, destroyHls, onRuntimeFailure]
+    [activeSessionIdRef, destroyHls]
   );
 
   useEffect(() => {

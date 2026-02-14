@@ -5,10 +5,18 @@ import { AppStoreProvider } from "./store/AppStore";
 import { appRouter } from "./routes";
 import "./styles.css";
 
+const appTree = (
+  <AppStoreProvider>
+    <RouterProvider router={appRouter} />
+  </AppStoreProvider>
+);
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+  import.meta.env.DEV ? (
+    appTree
+  ) : (
   <React.StrictMode>
-    <AppStoreProvider>
-      <RouterProvider router={appRouter} />
-    </AppStoreProvider>
+    {appTree}
   </React.StrictMode>
+  )
 );

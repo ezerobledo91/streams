@@ -172,6 +172,8 @@ export function startAutoPlayback(payload: {
   season?: number;
   episode?: number;
   quality?: "auto" | "4k" | "1080p" | "720p" | "sd";
+  audioPreference?: "es" | "original";
+  originalLanguage?: string;
   waitReadyMs?: number;
   probeTimeoutMs?: number;
   maxCandidates?: number;
@@ -191,6 +193,8 @@ export function fetchPlaybackPreflight(payload: {
   season?: number;
   episode?: number;
   quality?: "auto" | "4k" | "1080p" | "720p" | "sd";
+  audioPreference?: "es" | "original";
+  originalLanguage?: string;
   probeTimeoutMs?: number;
   maxCandidates?: number;
   validationBudgetMs?: number;
@@ -274,7 +278,7 @@ export function fetchLiveTvChannels(params: {
 }): Promise<LiveTvChannelsPayload> {
   const searchParams = new URLSearchParams({
     page: String(params.page ?? 1),
-    limit: String(params.limit ?? 160),
+    limit: String(params.limit ?? 400),
     webOnly: String(params.webOnly ?? true)
   });
   if (params.category?.trim()) {
@@ -286,6 +290,16 @@ export function fetchLiveTvChannels(params: {
 
   return apiFetch<LiveTvChannelsPayload>(`/api/live-tv/channels?${searchParams.toString()}`, {
     timeoutMs: 20000
+  });
+}
+
+export function checkAvailabilityBatch(
+  items: Array<{ type: string; itemId: string }>
+): Promise<{ results: Record<string, boolean> }> {
+  return apiFetch<{ results: Record<string, boolean> }>("/api/availability/batch", {
+    method: "POST",
+    body: JSON.stringify({ items }),
+    timeoutMs: 5000
   });
 }
 

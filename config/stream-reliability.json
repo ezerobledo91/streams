@@ -1,14 +1,14 @@
 {
   "loadedAt": "2026-02-12T15:27:36.8440834-03:00",
-  "updatedAt": "2026-02-13T23:37:02.244Z",
+  "updatedAt": "2026-02-14T18:18:15.644Z",
   "providers": {
     "torrentdb": {
-      "successes": 20,
-      "failures": 3,
+      "successes": 42,
+      "failures": 5,
       "consecutiveFailures": 0,
-      "lastSuccessAt": 1770957081427,
-      "lastFailureAt": 1770956836511,
-      "lastFailureReason": "Timeout generando playlist HLS.",
+      "lastSuccessAt": 1771091721726,
+      "lastFailureAt": 1771029085391,
+      "lastFailureReason": "Cannot add duplicate torrent 56c1349b2eb742ed0e2ddf3a9d4f40a450bd6e26",
       "breakerUntil": 0,
       "sources": {
         "c4939be1007141daa31ed8cfb9eefd61f16c4d3f": {
@@ -73,16 +73,86 @@
           "consecutiveFailures": 2,
           "lastSuccessAt": 0,
           "lastFailureAt": 1770956836511
+        },
+        "ecb167f8483340fd11e52412583e1511454cee08": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771027241633,
+          "lastFailureAt": 0
+        },
+        "3afbeec57ce0fb2d8351807637e1616bb8828ca3": {
+          "successes": 2,
+          "failures": 1,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771031529942,
+          "lastFailureAt": 1771027823399
+        },
+        "b3805fd65b1664b54d20e57348f3dd53d893a345": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771028255889,
+          "lastFailureAt": 0
+        },
+        "56c1349b2eb742ed0e2ddf3a9d4f40a450bd6e26": {
+          "successes": 6,
+          "failures": 1,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771091721726,
+          "lastFailureAt": 1771029085391
+        },
+        "0ca4ee7671c432be2e6ea74d48061b304930c065": {
+          "successes": 2,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771032877092,
+          "lastFailureAt": 0
+        },
+        "491c683e3533b62d9e29a9d3b4e5b48499e8af8e": {
+          "successes": 4,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771032413291,
+          "lastFailureAt": 0
+        },
+        "84b80094cdebfb2f0abda80adaddf423cf61b2b5": {
+          "successes": 3,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771036611018,
+          "lastFailureAt": 0
+        },
+        "21b5772b813fddac14cab42cb2cc1437d779ca7c": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771036778517,
+          "lastFailureAt": 0
+        },
+        "e5a814de30cda8386c0ae1163c644eac3159b504": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771037686599,
+          "lastFailureAt": 0
+        },
+        "d13b332de225bf251204e006fa79fe282036bf64": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771086930829,
+          "lastFailureAt": 0
         }
       }
     },
     "torrentio": {
-      "successes": 18,
-      "failures": 1,
+      "successes": 40,
+      "failures": 3,
       "consecutiveFailures": 0,
-      "lastSuccessAt": 1771025822244,
-      "lastFailureAt": 1770949752261,
-      "lastFailureReason": "Timeout generando playlist HLS.",
+      "lastSuccessAt": 1771093095644,
+      "lastFailureAt": 1771029373534,
+      "lastFailureReason": "Cannot add duplicate torrent 0b18ae304bdf93a134fb86f2cd9323ec3ac491ae",
       "breakerUntil": 0,
       "sources": {
         "274f9ead8b229a31a8ad551c914e879f09efe6fb": {
@@ -114,10 +184,10 @@
           "lastFailureAt": 0
         },
         "66672b822002b6f19af478fb7c886787afee5f9f": {
-          "successes": 1,
+          "successes": 2,
           "failures": 0,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1770955782243,
+          "lastSuccessAt": 1771031168501,
           "lastFailureAt": 0
         },
         "62e0fde02123657417679e0692b093b61716e8e2": {
@@ -175,6 +245,139 @@
           "consecutiveFailures": 0,
           "lastSuccessAt": 1771025822244,
           "lastFailureAt": 0
+        },
+        "24c2b5fa939553532d3ab33e7dc755954f3f13b8": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771026551415,
+          "lastFailureAt": 0
+        },
+        "6d2d8de43ce28881719f0ed7e4b5496cd58a4677": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771026701085,
+          "lastFailureAt": 0
+        },
+        "ca55e99a73f95c1dfe8f5ec433e1ca29aa6408f2": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771027051749,
+          "lastFailureAt": 0
+        },
+        "df133451a36891e8065b0b33a1133f6132da224c": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771027313921,
+          "lastFailureAt": 0
+        },
+        "b2bbdafbcc6b048510b8b7cd316ef67033fffbc2": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771027440290,
+          "lastFailureAt": 0
+        },
+        "dab67adb00bbcbee240c51d94242ad6b848ac711": {
+          "successes": 2,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771031711523,
+          "lastFailureAt": 0
+        },
+        "0b18ae304bdf93a134fb86f2cd9323ec3ac491ae": {
+          "successes": 2,
+          "failures": 2,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771091520519,
+          "lastFailureAt": 1771029373534
+        },
+        "1ade8b6f3a84282d5323d50f1cbde32d624dab40": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771029886728,
+          "lastFailureAt": 0
+        },
+        "0f32a3c35afefda55ebd8d5727247b23f6fde24b": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771030015640,
+          "lastFailureAt": 0
+        },
+        "0a452c5d40e282d216962b5423b600d1a103f8ba": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771030254000,
+          "lastFailureAt": 0
+        },
+        "e1118e1d99981630beb7a2d9bc55c2147d2f7847": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771033366353,
+          "lastFailureAt": 0
+        },
+        "777d0658527eb3e55dfc2be816b3d5f22f2eb93b": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771033441702,
+          "lastFailureAt": 0
+        },
+        "382b0aeb43a770840f6830993bb04e5d6f8bf912": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771033614410,
+          "lastFailureAt": 0
+        },
+        "698699c8952f63e63be5370e3048742fb7552776": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771037434863,
+          "lastFailureAt": 0
+        },
+        "b0173a8ce8a07a256266cc7be8f449cee257ce9a": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771037525830,
+          "lastFailureAt": 0
+        },
+        "7d94188c57989c8c2e71c23208b6662a1e2de988": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771081855899,
+          "lastFailureAt": 0
+        },
+        "930159cd429879b11b1527998497df0dfb67b184": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771092123716,
+          "lastFailureAt": 0
+        },
+        "01b3f1719919df516cf687dd356ba2cc84b8fe44": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771093007522,
+          "lastFailureAt": 0
+        },
+        "4fd5003c2999ef584506ac67a0e17bf9d9bc76d2": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771093095644,
+          "lastFailureAt": 0
         }
       }
     },
@@ -204,13 +407,13 @@
       }
     },
     "prowlarr": {
-      "successes": 7,
-      "failures": 9,
-      "consecutiveFailures": 7,
-      "lastSuccessAt": 1770959928134,
-      "lastFailureAt": 1771023294929,
-      "lastFailureReason": "Stream map '' matches no streams.\r\nTo ignore this, add a trailing '?' to the map.\r\nFailed to set value '0:v:0' for option 'map': Invalid argument\r\nError parsing options for output",
-      "breakerUntil": 1771026894929,
+      "successes": 9,
+      "failures": 15,
+      "consecutiveFailures": 1,
+      "lastSuccessAt": 1771036374289,
+      "lastFailureAt": 1771036670844,
+      "lastFailureReason": "ffmpeg finalizo antes de preparar HLS (code 0).",
+      "breakerUntil": 0,
       "sources": {
         "24c51796a480000ae52c4f578be4777e657f7a0d": {
           "successes": 0,
@@ -263,10 +466,10 @@
         },
         "36a7522598abf7cab88eedff4bd3209adf1cb8d6": {
           "successes": 0,
-          "failures": 1,
-          "consecutiveFailures": 1,
+          "failures": 3,
+          "consecutiveFailures": 3,
           "lastSuccessAt": 0,
-          "lastFailureAt": 1771016230171
+          "lastFailureAt": 1771036670844
         },
         "2074db647cb1eb99049519653f80c43a9de88f05": {
           "successes": 0,
@@ -295,6 +498,48 @@
           "consecutiveFailures": 1,
           "lastSuccessAt": 0,
           "lastFailureAt": 1771023294929
+        },
+        "2b46ab5f832edabfa4c052ec054c702ac430e7ad": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771027133781
+        },
+        "60f9e088c92a7218508a0c7b803b0eccfd16567a": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771030792590,
+          "lastFailureAt": 0
+        },
+        "e7623d01383a0f5d2b1b1cf3324666961a50d4ba": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771031509019
+        },
+        "16d292ff5e8656e85d4e193b37d0c9a95989cfd2": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771031511899
+        },
+        "5944ddcc4586498dbc6dd692a45189b4a5febae1": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771031515716
+        },
+        "c0f83708a87a2a727d654099cf7213ff4c2f3acc": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771036374289,
+          "lastFailureAt": 0
         }
       }
     }

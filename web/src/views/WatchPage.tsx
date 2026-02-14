@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -7,17 +7,18 @@ import {
   Gauge,
   Languages,
   LoaderCircle,
+  Maximize2,
   Play
 } from "lucide-react";
 import {
-  fetchPlaybackPreflight,
   reportPlaybackMetric,
   destroyPlaybackSession,
   startAutoPlayback
 } from "../api";
 import { useAppStore } from "../store/AppStore";
 import type { AutoPlaybackPayload, Category } from "../types";
-import { getAudioPriorityOrder, normalizeLanguageCode, type AudioPreference } from "../lib/audio-preferences";
+import { upsertWatchEntry, getWatchHistory } from "../lib/watch-history";
+import { normalizeLanguageCode, type AudioPreference } from "../lib/audio-preferences";
 import { startVideo, waitForVideoReady } from "../lib/video-helpers";
 import { useHlsPlayer } from "../hooks/useHlsPlayer";
 import { useMetaDetails } from "../hooks/useMetaDetails";
@@ -93,13 +94,15 @@ export function WatchPage() {
     resetPlaybackState,
     applyAutoPlaybackPayload
   } = usePlaybackSession();
-  const [isPreflighting, setIsPreflighting] = useState(false);
   const [audioPreference, setAudioPreference] = useState<AudioPreference>("original");
   const [actionError, setActionError] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const autoLoadKeyRef = useRef<string>("");
   const preferredSourceKeyRef = useRef<string>("");
+  const hasEverPlayedRef = useRef(false);
+  const lastSaveTimeRef = useRef(0);
+  const hasResumedRef = useRef(false);
   const runtimeFailureHandlerRef = useRef<(reason: string) => void>(() => {});
   const runtimeRecoveryInProgressRef = useRef(false);
   const handleRuntimeFailure = useCallback((reason: string) => {
@@ -145,10 +148,37 @@ export function WatchPage() {
   });
   const title = metaDetails?.info?.title || selectedFromStore?.name || decodedItemId;
   const originalLanguageCode = normalizeLanguageCode(metaDetails?.info?.originalLanguage || "");
-  const audioPriority = useMemo(
-    () => getAudioPriorityOrder(audioPreference, originalLanguageCode),
-    [audioPreference, originalLanguageCode]
-  );
+
+  function handleEnterFullscreen() {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const target = (video.parentElement || video) as HTMLElement & { webkitRequestFullscreen?: () => Promise<void> };
+    const webkitVideo = video as HTMLVideoElement & { webkitEnterFullscreen?: () => void };
+
+    try {
+      if (document.fullscreenElement && document.exitFullscreen) {
+        void document.exitFullscreen();
+        return;
+      }
+
+      if (target.requestFullscreen) {
+        void target.requestFullscreen();
+        return;
+      }
+
+      if (target.webkitRequestFullscreen) {
+        void target.webkitRequestFullscreen();
+        return;
+      }
+
+      if (webkitVideo.webkitEnterFullscreen) {
+        webkitVideo.webkitEnterFullscreen();
+      }
+    } catch {
+      // no-op
+    }
+  }
 
   const clearActivePlayback = useCallback(async (resetStarted = false) => {
     const sessionId = activeSessionIdRef.current;
@@ -191,6 +221,43 @@ export function WatchPage() {
     };
   }, []);
 
+  const saveProgress = useCallback((force = false) => {
+    const video = videoRef.current;
+    if (!video || !video.duration || !decodedItemId) return;
+    const now = Date.now();
+    if (!force && now - lastSaveTimeRef.current < 30000) return;
+    lastSaveTimeRef.current = now;
+    upsertWatchEntry({
+      type: type === "series" ? "series" : "movie",
+      itemId: decodedItemId,
+      name: title,
+      poster: metaDetails?.info?.poster || selectedFromStore?.poster || null,
+      background: metaDetails?.info?.background || selectedFromStore?.background || null,
+      season: isSeries ? season : undefined,
+      episode: isSeries ? episode : undefined,
+      episodeTitle: isSeries ? (metaDetails?.episodes?.find((e) => e.season === season && e.episode === episode)?.title) : undefined,
+      position: Math.floor(video.currentTime),
+      duration: Math.floor(video.duration)
+    });
+  }, [decodedItemId, type, title, metaDetails, selectedFromStore, isSeries, season, episode]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const onTimeUpdate = () => saveProgress(false);
+    const onPause = () => saveProgress(true);
+    video.addEventListener("timeupdate", onTimeUpdate);
+    video.addEventListener("pause", onPause);
+    const onBeforeUnload = () => saveProgress(true);
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => {
+      video.removeEventListener("timeupdate", onTimeUpdate);
+      video.removeEventListener("pause", onPause);
+      window.removeEventListener("beforeunload", onBeforeUnload);
+      saveProgress(true);
+    };
+  }, [saveProgress]);
+
   const playResolvedPayload = useCallback(
     async (payload: AutoPlaybackPayload, shouldAutoplay: boolean, playbackAttemptId: number) => {
       assertPlaybackAttemptActive(playbackAttemptId);
@@ -204,6 +271,28 @@ export function WatchPage() {
       await waitForVideoReady(videoRef.current);
       assertPlaybackAttemptActive(playbackAttemptId);
       setPlayerReady(true);
+      hasEverPlayedRef.current = true;
+
+      if (!hasResumedRef.current && videoRef.current) {
+        hasResumedRef.current = true;
+        const history = getWatchHistory();
+        const matchKey = isSeries
+          ? `series:${decodedItemId}:${season}:${episode}`
+          : `movie:${decodedItemId}`;
+        const found = history.find((e) => {
+          const k = e.type === "series" && e.season != null && e.episode != null
+            ? `${e.type}:${e.itemId}:${e.season}:${e.episode}`
+            : `${e.type}:${e.itemId}`;
+          return k === matchKey;
+        });
+        if (found && found.duration > 0) {
+          const pct = found.position / found.duration;
+          if (pct > 0.02 && pct < 0.95) {
+            videoRef.current.currentTime = Math.max(0, found.position - 5);
+          }
+        }
+      }
+
       applyValidatedQualities(payload.availableQualities);
       syncSelectedQuality(payload.selectedQuality || "auto");
       void refreshAddonSubtitles(true);
@@ -260,10 +349,12 @@ export function WatchPage() {
           season: isSeries ? season : undefined,
           episode: isSeries ? episode : undefined,
           quality,
-          waitReadyMs: 22000,
+          audioPreference,
+          originalLanguage: originalLanguageCode || undefined,
+          waitReadyMs: 20000,
           validationBudgetMs: 18000,
-          probeTimeoutMs: 6000,
-          maxCandidates: 18,
+          probeTimeoutMs: 3500,
+          maxCandidates: 14,
           preferredSourceKey: preferredSourceKeyRef.current || undefined
         });
         assertPlaybackAttemptActive(playbackAttemptId);
@@ -287,10 +378,12 @@ export function WatchPage() {
     },
     [
       assertPlaybackAttemptActive,
+      audioPreference,
       clearActivePlayback,
       decodedItemId,
       episode,
       isSeries,
+      originalLanguageCode,
       playResolvedPayload,
       resetValidatedQualities,
       season,
@@ -352,70 +445,28 @@ export function WatchPage() {
     const key = `${type}|${decodedItemId}|${season}|${episode}`;
     if (!decodedItemId) return;
     if (autoLoadKeyRef.current === key) return;
+    const isEpisodeChange = hasEverPlayedRef.current;
     autoLoadKeyRef.current = key;
 
-    const playbackAttemptId = beginPlaybackAttempt();
+    const attemptId = beginPlaybackAttempt();
     preferredSourceKeyRef.current = "";
     resetValidatedQualities();
     void clearActivePlayback(true);
     setActionError(null);
-    setIsPreflighting(true);
 
-    void (async () => {
-      try {
-        const preflight = await fetchPlaybackPreflight({
-          type: streamsType,
-          itemId: decodedItemId,
-          season: isSeries ? season : undefined,
-          episode: isSeries ? episode : undefined,
-          quality: "auto",
-          probeTimeoutMs: 4500,
-          maxCandidates: 18,
-          validationBudgetMs: 12000,
-          warmupWaitMs: 12000,
-          warmup: true
-        });
-        assertPlaybackAttemptActive(playbackAttemptId);
-        applyValidatedQualities(preflight.availableQualities);
-        if (preflight.selectedQuality) {
-          syncSelectedQuality(preflight.selectedQuality);
-        }
-        preferredSourceKeyRef.current = preflight.preferredSourceKey || "";
-        void reportPlaybackMetric({
-          metric: "ttfq",
-          status: "ok",
-          valueMs: Number(preflight.metrics?.ttfqMs || 0),
-          type: streamsType,
-          itemId: decodedItemId
-        }).catch(() => {
-          // no-op
-        });
-      } catch {
-        void reportPlaybackMetric({
-          metric: "ttfq",
-          status: "error",
-          type: streamsType,
-          itemId: decodedItemId
-        }).catch(() => {
-          // no-op
-        });
-        setActionError("No se pudieron precargar calidades. Puedes iniciar manualmente.");
-      } finally {
-        setIsPreflighting(false);
-      }
-    })().catch(() => {});
+    if (isEpisodeChange) {
+      void playWithBackendAuto("auto", true, attemptId).catch((err) => {
+        setActionError(err instanceof Error ? err.message : "No hay video disponible.");
+      });
+    }
   }, [
-    applyValidatedQualities,
-    assertPlaybackAttemptActive,
     beginPlaybackAttempt,
     clearActivePlayback,
     decodedItemId,
     episode,
-    isSeries,
+    playWithBackendAuto,
     resetValidatedQualities,
     season,
-    streamsType,
-    syncSelectedQuality,
     type
   ]);
 
@@ -424,19 +475,34 @@ export function WatchPage() {
     if (!video) return;
 
     const onWaiting = () => setIsBuffering(true);
-    const onPlaying = () => setIsBuffering(false);
-    const onCanPlay = () => setIsBuffering(false);
+    const onPlaying = () => {
+      setIsBuffering(false);
+      setPlayerReady(true);
+      setActionError(null);
+    };
+    const onCanPlay = () => {
+      setIsBuffering(false);
+      setPlayerReady(true);
+      setActionError(null);
+    };
+    const onLoadedData = () => {
+      setPlayerReady(true);
+    };
 
     video.addEventListener("waiting", onWaiting);
     video.addEventListener("playing", onPlaying);
     video.addEventListener("canplay", onCanPlay);
+    video.addEventListener("loadeddata", onLoadedData);
+    video.addEventListener("loadedmetadata", onLoadedData);
 
     return () => {
       video.removeEventListener("waiting", onWaiting);
       video.removeEventListener("playing", onPlaying);
       video.removeEventListener("canplay", onCanPlay);
+      video.removeEventListener("loadeddata", onLoadedData);
+      video.removeEventListener("loadedmetadata", onLoadedData);
     };
-  }, [hasPlaybackStarted]);
+  }, [hasPlaybackStarted, setPlayerReady]);
 
   const episodeList = metaDetails?.episodes || [];
   const seasonList = metaDetails?.seasons || [];
@@ -444,15 +510,12 @@ export function WatchPage() {
   const displayRuntime = Number(metaDetails?.info?.runtime || 0) > 0 ? `${metaDetails?.info?.runtime} min` : null;
   const displayGenres = metaDetails?.info?.genres?.length ? metaDetails.info.genres.slice(0, 4) : [];
   const displayPoster = metaDetails?.info?.poster || selectedFromStore?.poster || selectedFromStore?.background;
-  const displayBackdrop = metaDetails?.info?.background || selectedFromStore?.background || displayPoster || null;
   const displayDescription = metaDetails?.info?.overview || selectedFromStore?.description || "Sin descripcion";
   const displayRating = metaDetails?.info?.rating ?? selectedFromStore?.rating;
 
   const showLoaderOverlay =
-    isPreflighting || isPreparingPlayback || (hasPlaybackStarted && !playerReady) || (playerReady && isBuffering);
-  const loadingStateText = isPreflighting
-      ? "Obteniendo informacion del stream y calidades..."
-      : isPreparingPlayback
+    isPreparingPlayback || (hasPlaybackStarted && !playerReady) || (playerReady && isBuffering);
+  const loadingStateText = isPreparingPlayback
       ? "Cargando video..."
       : hasPlaybackStarted && !playerReady
         ? "Preparando reproductor..."
@@ -474,6 +537,15 @@ export function WatchPage() {
             {displayRuntime ? <span className="watch-pill">{displayRuntime}</span> : null}
           </div>
         </div>
+        <button
+          type="button"
+          className="watch-top-action-btn mobile-only"
+          onClick={handleEnterFullscreen}
+          aria-label="Pantalla completa"
+          title="Pantalla completa"
+        >
+          <Maximize2 size={17} />
+        </button>
       </header>
 
       <section className="watch-layout">
@@ -521,48 +593,7 @@ export function WatchPage() {
         </section>
 
         <aside className="watch-info-panel">
-          <div className="watch-mini-media">
-            {displayPoster ? <img src={displayPoster} alt={title} /> : <div className="media-card-placeholder">Sin imagen</div>}
-          </div>
-
-          <p className="watch-description">{displayDescription}</p>
-          {displayGenres.length ? (
-            <div className="watch-genre-row">
-              {displayGenres.map((genre) => (
-                <span key={genre} className="watch-genre-chip">
-                  {genre}
-                </span>
-              ))}
-            </div>
-          ) : null}
-          <p className="muted">
-            Generos: {metaDetails?.info?.genres?.length ? metaDetails.info.genres.join(" | ") : "N/D"}
-          </p>
-          <p className="muted">
-            Actores: {metaDetails?.info?.cast?.length ? metaDetails.info.cast.slice(0, 6).join(", ") : "N/D"}
-          </p>
-
-          <div className="watch-block">
-            <div className="watch-block-title">
-              <Languages size={14} />
-              <span>Audio</span>
-            </div>
-            <label className="season-select">
-              <span>Audio preferido</span>
-              <select
-                value={audioPreference}
-                onChange={(event) => setAudioPreference(event.target.value as AudioPreference)}
-              >
-                <option value="original">Original + subtitulos</option>
-                <option value="es">Espanol latino</option>
-              </select>
-            </label>
-            <p className="muted">
-              Original detectado: {originalLanguageCode || "N/D"} | Prioridad activa: {audioPriority.join(" > ")}
-            </p>
-          </div>
-
-          <div className="watch-block">
+          <div className="watch-block watch-block-quality">
             <div className="watch-block-title">
               <Gauge size={14} />
               <span>Calidad</span>
@@ -593,10 +624,9 @@ export function WatchPage() {
                 ? `Calidad actual: ${qualityLabel(selectedQuality)} | Opciones: ${availableQualities.map((item) => qualityLabel(item)).join(" | ")}`
                 : `Calidad actual: ${qualityLabel(selectedQuality)}.`}
             </p>
-            {isPreflighting ? <p className="quality-status">Analizando calidad disponible...</p> : null}
           </div>
 
-          <div className="watch-block">
+          <div className="watch-block watch-block-subtitles">
             <div className="watch-block-title">
               <Captions size={14} />
               <span>Subtitulos (solo espanol)</span>
@@ -610,7 +640,7 @@ export function WatchPage() {
                 <option value={-1}>Sin subtitulos</option>
                 {subtitleTracks.map((item, index) => (
                   <option key={item.id} value={index}>
-                    {item.label}
+                    {`Opcion ${index + 1}`}
                   </option>
                 ))}
               </select>
@@ -619,8 +649,25 @@ export function WatchPage() {
             {loadingSubtitles ? <p className="muted">Actualizando subtitulos...</p> : null}
           </div>
 
+          <div className="watch-block watch-block-audio">
+            <div className="watch-block-title">
+              <Languages size={14} />
+              <span>Audio</span>
+            </div>
+            <label className="season-select">
+              <span>Audio preferido</span>
+              <select
+                value={audioPreference}
+                onChange={(event) => setAudioPreference(event.target.value as AudioPreference)}
+              >
+                <option value="original">Original + subtitulos</option>
+                <option value="es">Espanol latino</option>
+              </select>
+            </label>
+          </div>
+
           {isSeries ? (
-            <div className="watch-block">
+            <div className="watch-block watch-block-episodes">
               <div className="watch-block-title">
                 <Clapperboard size={14} />
                 <span>Temporadas y capitulos</span>
@@ -686,6 +733,29 @@ export function WatchPage() {
               )}
             </div>
           ) : null}
+
+          <section className="watch-details-panel">
+            <div className="watch-mini-media">
+              {displayPoster ? <img src={displayPoster} alt={title} /> : <div className="media-card-placeholder">Sin imagen</div>}
+            </div>
+
+            <p className="watch-description">{displayDescription}</p>
+            {displayGenres.length ? (
+              <div className="watch-genre-row">
+                {displayGenres.map((genre) => (
+                  <span key={genre} className="watch-genre-chip">
+                    {genre}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+            <p className="muted">
+              Generos: {metaDetails?.info?.genres?.length ? metaDetails.info.genres.join(" | ") : "N/D"}
+            </p>
+            <p className="muted">
+              Actores: {metaDetails?.info?.cast?.length ? metaDetails.info.cast.slice(0, 6).join(", ") : "N/D"}
+            </p>
+          </section>
 
           {actionError ? <p className="muted watch-error">{actionError}</p> : null}
         </aside>

@@ -1,5 +1,7 @@
+import { useEffect, useRef, useState } from "react";
 import { Star } from "lucide-react";
 import type { CatalogItem } from "../types";
+import { checkAvailability } from "../lib/availability-cache";
 
 function formatRating(rating: number | null): string {
   if (!Number.isFinite(rating || 0) || (rating || 0) <= 0) return "Sin rating";
@@ -20,9 +22,38 @@ export function MediaCard({
 }) {
   const poster = item.poster || item.background;
   const stars = ratingToStars(item.rating);
+  const articleRef = useRef<HTMLElement | null>(null);
+  const checkedRef = useRef(false);
+  const [availability, setAvailability] = useState<"unknown" | "available" | "unavailable">("unknown");
+
+  useEffect(() => {
+    const el = articleRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && !checkedRef.current) {
+            checkedRef.current = true;
+            observer.disconnect();
+            checkAvailability(item.type, item.id).then((ok) => {
+              setAvailability(ok ? "available" : "unavailable");
+            });
+          }
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [item.type, item.id]);
 
   return (
-    <article className="media-tile" onClick={() => onSelect(item)}>
+    <article ref={articleRef} className="media-tile" onClick={() => onSelect(item)}>
+      {availability !== "unknown" ? (
+        <span className={`availability-dot ${availability === "available" ? "is-available" : "is-unavailable"}`} />
+      ) : null}
       {poster ? (
         <img loading="lazy" src={poster} alt={item.name} />
       ) : (

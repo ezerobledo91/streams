@@ -2110,3 +2110,465 @@ FeedUrl: https://eztvx.to/search/tt27543632
 2026-02-13 19:54:34.8|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [tt27543632], Offset: 0, Limit: 0, Categories: []
 2026-02-13 19:54:34.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [La asistenta tt27543632], Offset: 0, Limit: 0, Categories: []
 2026-02-13 19:54:34.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [La asistenta], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:55:27.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [tt35231547], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:55:27.3|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [Cómo te Atreves tt35231547], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:55:27.3|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [Cómo te Atreves 1x1], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:55:27.3|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [Cómo te Atreves], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:55:27.4|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [Cómo te Atreves S01E01], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:55:44.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [Cómo te Atreves tt35231547], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:55:44.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [Cómo te Atreves S01E01], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:55:44.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [Cómo te Atreves 1x1], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:55:44.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [Cómo te Atreves], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:55:44.3|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [tt35231547], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:56:57.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [El diablo viste de Prada], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:56:57.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [El diablo viste de Prada tt0458352], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:56:57.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [tt0458352], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:57:17.8|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [El diablo viste de Prada], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:57:17.8|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [tt0458352], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:57:17.8|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [El diablo viste de Prada tt0458352], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:58:33.8|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [tt0458352], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:58:33.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [El diablo viste de Prada tt0458352], Offset: 0, Limit: 0, Categories: []
+2026-02-13 20:58:33.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test] for Term: [El diablo viste de Prada], Offset: 0, Limit: 0, Categories: []
+2026-02-13 21:40:00.8|Warn|StaticResourceController|Couldn't find handler for /swagger/v1/swagger.json
+2026-02-13 21:40:50.4|Warn|Cardigann|Redirected to https://torrentgalaxy.info/get-posts/ from indexer request
+2026-02-13 21:40:50.5|Warn|Cardigann|Unable to connect to indexer
+
+[v2.3.0.5236] NzbDrone.Core.Indexers.Exceptions.IndexerException: Redirected to https://torrentgalaxy.info/get-posts/ from indexer request
+   at NzbDrone.Core.Indexers.Definitions.Cardigann.CardigannParser.ParseResponse(IndexerResponse indexerResponse) in ./NzbDrone.Core/Indexers/Definitions/Cardigann/CardigannParser.cs:line 53
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 591
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.TestConnection() in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 764
+RequestUri: https://torrentgalaxy.one/get-posts/;StatusCode: Found;ContentType: text/html;ContentLength: 930;ContentSample: <html>
+<head><title>302 Found</title></head>
+<body><a href="https://torrentgalaxy.one/cdn-cgi/content?id=(removed)" aria-hidden="true" rel="nofollow noopener" style="display: none !important; visibility: hidden !important"></a>
+<center><h1>302 Found</h1></center>
+<hr><center>nginx/1.26.3</center>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"(removed)","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+2026-02-13 21:40:50.7|Warn|ProwlarrErrorPipeline|Invalid request Validation failed: 
+ -- : Unable to connect to indexer. Redirected to https://torrentgalaxy.info/get-posts/ from indexer request
+2026-02-13 21:41:06.6|Warn|Cardigann|Redirected to https://torrentgalaxy.info/get-posts/ from indexer request
+2026-02-13 21:41:06.7|Warn|Cardigann|Unable to connect to indexer
+
+[v2.3.0.5236] NzbDrone.Core.Indexers.Exceptions.IndexerException: Redirected to https://torrentgalaxy.info/get-posts/ from indexer request
+   at NzbDrone.Core.Indexers.Definitions.Cardigann.CardigannParser.ParseResponse(IndexerResponse indexerResponse) in ./NzbDrone.Core/Indexers/Definitions/Cardigann/CardigannParser.cs:line 53
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 591
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.TestConnection() in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 764
+RequestUri: https://torrentgalaxy.one/get-posts/;StatusCode: Found;ContentType: text/html;ContentLength: 930;ContentSample: <html>
+<head><title>302 Found</title></head>
+<body><a href="https://torrentgalaxy.one/cdn-cgi/content?id=(removed)" aria-hidden="true" rel="nofollow noopener" style="display: none !important; visibility: hidden !important"></a>
+<center><h1>302 Found</h1></center>
+<hr><center>nginx/1.26.3</center>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"(removed)","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+2026-02-13 21:41:06.9|Warn|ProwlarrErrorPipeline|Invalid request Validation failed: 
+ -- : Unable to connect to indexer. Redirected to https://torrentgalaxy.info/get-posts/ from indexer request
+2026-02-13 21:41:29.0|Warn|Cardigann|Redirected to https://torrentgalaxy.info/get-posts/ from indexer request
+2026-02-13 21:41:29.0|Warn|Cardigann|Unable to connect to indexer
+
+[v2.3.0.5236] NzbDrone.Core.Indexers.Exceptions.IndexerException: Redirected to https://torrentgalaxy.info/get-posts/ from indexer request
+   at NzbDrone.Core.Indexers.Definitions.Cardigann.CardigannParser.ParseResponse(IndexerResponse indexerResponse) in ./NzbDrone.Core/Indexers/Definitions/Cardigann/CardigannParser.cs:line 53
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 591
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.TestConnection() in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 764
+RequestUri: https://torrentgalaxy.one/get-posts/;StatusCode: Found;ContentType: text/html;ContentLength: 930;ContentSample: <html>
+<head><title>302 Found</title></head>
+<body><a href="https://torrentgalaxy.one/cdn-cgi/content?id=(removed)" aria-hidden="true" rel="nofollow noopener" style="display: none !important; visibility: hidden !important"></a>
+<center><h1>302 Found</h1></center>
+<hr><center>nginx/1.26.3</center>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"(removed)","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+2026-02-13 21:41:29.4|Warn|ProwlarrErrorPipeline|Invalid request Validation failed: 
+ -- : Unable to connect to indexer. Redirected to https://torrentgalaxy.info/get-posts/ from indexer request
+2026-02-13 21:41:42.9|Error|Prowlarr.Api.V1.Indexers.IndexerController.CreateProvider (Prowlarr.Api.V1)|{
+  "$.description": {
+    "errors": [
+      {
+        "errorMessage": "The JSON value could not be converted to System.String. Path: $.description | LineNumber: 11 | BytePositionInLine: 76."
+      }
+    ],
+    "validationState": "invalid",
+    "isContainerNode": false
+  }
+}
+2026-02-13 21:41:43.8|Warn|ProwlarrErrorPipeline|Invalid request Validation failed: 
+ -- : Query successful, but no results were returned from your indexer. This may be an issue with the indexer, your indexer category settings, or other indexer settings such as search freeleech only etc. See the FAQ for details.
+2026-02-13 21:42:12.4|Warn|ProwlarrErrorPipeline|Invalid request Validation failed: 
+ -- : Query successful, but no results were returned from your indexer. This may be an issue with the indexer, your indexer category settings, or other indexer settings such as search freeleech only etc. See the FAQ for details.
+2026-02-13 21:42:16.1|Warn|ProwlarrErrorPipeline|Invalid request Validation failed: 
+ -- : Query successful, but no results were returned from your indexer. This may be an issue with the indexer, your indexer category settings, or other indexer settings such as search freeleech only etc. See the FAQ for details.
+2026-02-13 21:42:20.5|Warn|ProwlarrErrorPipeline|Invalid request Validation failed: 
+ -- : Unable to access kickass.ws, blocked by CloudFlare Protection.
+2026-02-13 21:42:44.6|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Silo S02E01], Offset: 0, Limit: 100, Categories: []
+2026-02-13 21:59:06.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Scream 7 tt27047903], Offset: 0, Limit: 0, Categories: []
+2026-02-13 21:59:06.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Scream 7], Offset: 0, Limit: 0, Categories: []
+2026-02-13 21:59:06.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt27047903], Offset: 0, Limit: 0, Categories: []
+2026-02-13 21:59:31.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Scream 7], Offset: 0, Limit: 0, Categories: []
+2026-02-13 21:59:31.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Scream 7 tt27047903], Offset: 0, Limit: 0, Categories: []
+2026-02-13 21:59:31.3|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt27047903], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:00:46.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Anaconda], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:00:46.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt33244668], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:00:46.3|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Anaconda tt33244668], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:01:12.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt33244668], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:01:12.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Anaconda], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:01:12.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Anaconda tt33244668], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:03:49.5|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Spider-Man tt0145487], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:03:49.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Spider-Man], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:03:50.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt0145487], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:04:55.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Interstellar tt0816692], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:04:56.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Interstellar], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:04:56.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt0816692], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:05:21.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Interstellar tt0816692], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:05:21.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt0816692], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:05:21.3|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Interstellar], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:10:14.7|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Primate], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:10:14.8|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt33028778], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:10:14.8|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Primate tt33028778], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:10:29.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Primate], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:10:29.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Primate tt33028778], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:10:29.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt33028778], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:14.8|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt14475988], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:14.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [The Line], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:14.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [The Line S01E01], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:14.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [The Line 1x1], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:15.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [The Line tt14475988], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:26.6|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:26.7|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln 1x1], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:26.7|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln tt13833978], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:26.8|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln S01E01], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:26.8|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt13833978], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:34.5|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln 4x1], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:34.6|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt13833978], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:34.6|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln S04E01], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:34.6|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:34.7|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln tt13833978], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:36.8|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:36.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln tt13833978], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:36.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln S04E02], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:36.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln 4x2], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:37.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt13833978], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:51.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln 4x2], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:51.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:51.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt13833978], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:51.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln S04E02], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:11:51.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln tt13833978], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:14:30.8|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt13833978], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:14:30.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:14:30.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln 1x1], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:14:30.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln tt13833978], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:14:31.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln S01E01], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:14:37.5|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln S01E01], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:14:37.5|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:14:37.5|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln tt13833978], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:14:37.6|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt13833978], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:14:37.6|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [El abogado del Lincoln 1x1], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:21:38.6|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Return to Silent Hill], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:21:38.7|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Return to Silent Hill tt22868010], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:21:38.7|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt22868010], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:22:07.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt22868010], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:22:07.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Return to Silent Hill tt22868010], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:22:08.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Return to Silent Hill], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:24:13.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt22868010], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:24:13.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Return to Silent Hill], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:24:13.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Return to Silent Hill tt22868010], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:25:21.6|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Return to Silent Hill], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:25:21.7|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt22868010], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:25:21.7|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Return to Silent Hill tt22868010], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:26:42.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Return to Silent Hill], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:26:42.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Return to Silent Hill tt22868010], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:26:42.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt22868010], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:34:22.8|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Primate], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:34:22.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Primate tt33028778], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:34:22.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt33028778], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:42:22.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Mujeres desesperadas tt0410975], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:42:22.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Mujeres desesperadas S08E03], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:42:22.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt0410975], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:42:22.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Mujeres desesperadas], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:42:22.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Mujeres desesperadas 8x3], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:43:41.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Mujeres desesperadas], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:43:41.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Mujeres desesperadas S08E03], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:43:41.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Mujeres desesperadas tt0410975], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:43:41.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt0410975], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:43:41.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Mujeres desesperadas 8x3], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:46:16.3|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Black Mirror 1x1], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:46:16.3|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Black Mirror], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:46:16.4|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Black Mirror S01E01], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:46:16.4|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Black Mirror tt2085059], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:46:16.5|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt2085059], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:46:23.4|Warn|Cardigann|[torrentdownload] Invalid category for value: 'TVPersonofInterest'
+2026-02-13 22:46:23.4|Warn|Cardigann|[torrentdownload] Invalid category for value: 'Video'
+2026-02-13 22:46:23.5|Warn|Cardigann|[torrentdownload] Invalid category for value: 'Video'
+2026-02-13 22:49:12.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [tt26443597], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:49:12.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Zootrópolis 2 tt26443597], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:49:12.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben] for Term: [Zootrópolis 2], Offset: 0, Limit: 0, Categories: []
+2026-02-13 22:49:18.1|Warn|Cardigann|[torrentdownload] Invalid category for value: 'MoviesDrama'
+2026-02-13 22:49:18.1|Warn|Cardigann|[torrentdownload] Invalid category for value: 'MoviesAnimation'
+2026-02-13 22:52:43.5|Warn|ProwlarrErrorPipeline|Invalid request Validation failed: 
+ -- : Unable to access magnetcatcat.com, blocked by CloudFlare Protection.
+2026-02-13 22:52:43.8|Warn|ProwlarrErrorPipeline|Invalid request Validation failed: 
+ -- : Unable to access damag.net, blocked by CloudFlare Protection.
+2026-02-13 22:53:13.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease] for Term: [Silo S02E01], Offset: 0, Limit: 160, Categories: []
+2026-02-13 22:58:45.5|Warn|Cardigann|HTTP Error - Res: HTTP/2.0 [GET] https://kickass.torrentbay.st/17/All/: 403.Forbidden (548 bytes)
+2026-02-13 22:58:45.6|Warn|Cardigann|Unable to connect to indexer
+
+[v2.3.0.5236] NzbDrone.Core.Indexers.Exceptions.IndexerException: Unexpected response status Forbidden code from indexer request
+   at NzbDrone.Core.Indexers.Definitions.Cardigann.CardigannParser.ParseResponse(IndexerResponse indexerResponse) in ./NzbDrone.Core/Indexers/Definitions/Cardigann/CardigannParser.cs:line 58
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 591
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.TestConnection() in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 764
+RequestUri: https://kickass.torrentbay.st/17/All/;StatusCode: Forbidden;ContentType: text/html;ContentLength: 548;ContentSample: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+
+
+2026-02-13 22:58:45.6|Warn|ProwlarrErrorPipeline|Invalid request Validation failed: 
+ -- : Unable to connect to indexer. Unexpected response status Forbidden code from indexer request
+2026-02-13 22:58:46.2|Warn|Cardigann|Redirected to https://torrentgalaxy.info/get-posts/ from indexer request
+2026-02-13 22:58:46.3|Warn|Cardigann|Unable to connect to indexer
+
+[v2.3.0.5236] NzbDrone.Core.Indexers.Exceptions.IndexerException: Redirected to https://torrentgalaxy.info/get-posts/ from indexer request
+   at NzbDrone.Core.Indexers.Definitions.Cardigann.CardigannParser.ParseResponse(IndexerResponse indexerResponse) in ./NzbDrone.Core/Indexers/Definitions/Cardigann/CardigannParser.cs:line 53
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 591
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.TestConnection() in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 764
+RequestUri: https://torrentgalaxy.one/get-posts/;StatusCode: Found;ContentType: text/html;ContentLength: 930;ContentSample: <html>
+<head><title>302 Found</title></head>
+<body><a href="https://torrentgalaxy.one/cdn-cgi/content?id=(removed)" aria-hidden="true" rel="nofollow noopener" style="display: none !important; visibility: hidden !important"></a>
+<center><h1>302 Found</h1></center>
+<hr><center>nginx/1.26.3</center>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"(removed)","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+2026-02-13 22:58:46.3|Warn|ProwlarrErrorPipeline|Invalid request Validation failed: 
+ -- : Unable to connect to indexer. Redirected to https://torrentgalaxy.info/get-posts/ from indexer request
+2026-02-13 23:29:03.8|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [tt33244668], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:29:03.8|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [Anaconda], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:29:03.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [Anaconda tt33244668], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:29:37.4|Warn|Cardigann|HTTP Error - Res: HTTP/2.0 [GET] https://1337x.to/sort-search/Anaconda%20tt33244668/time/desc/1/: 429.TooManyRequests (16 bytes)
+error code: 1015
+2026-02-13 23:29:37.5|Warn|Cardigann|Request Limit reached for 1337x. Disabled for 00:00:08
+
+[v2.3.0.5236] NzbDrone.Common.Http.TooManyRequestsException: HTTP request failed: [429:TooManyRequests] [GET] at [https://1337x.to/sort-search/Anaconda%20tt33244668/time/desc/1/]
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchIndexerResponse(IndexerRequest request) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 696
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 587
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchReleases(Func`2 pageableRequestChainSelector, SearchCriteriaBase searchCriteria, Boolean isRecent) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 428
+error code: 1015
+
+
+2026-02-13 23:32:08.3|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [Anaconda], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:32:08.4|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [Anaconda tt33244668], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:32:08.5|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [tt33244668], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:32:20.5|Warn|Cardigann|HTTP Error - Res: HTTP/2.0 [GET] https://1337x.to/sort-search/Anaconda/time/desc/3/: 429.TooManyRequests (16 bytes)
+error code: 1015
+2026-02-13 23:32:20.5|Warn|Cardigann|Request Limit reached for 1337x. Disabled for 00:00:10
+
+[v2.3.0.5236] NzbDrone.Common.Http.TooManyRequestsException: HTTP request failed: [429:TooManyRequests] [GET] at [https://1337x.to/sort-search/Anaconda/time/desc/3/]
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchIndexerResponse(IndexerRequest request) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 696
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 587
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchReleases(Func`2 pageableRequestChainSelector, SearchCriteriaBase searchCriteria, Boolean isRecent) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 428
+error code: 1015
+
+
+2026-02-13 23:35:54.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [Anaconda tt33244668], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:35:55.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [tt33244668], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:35:55.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [Anaconda], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:36:32.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [Anaconda], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:36:32.3|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [Anaconda tt33244668], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:36:32.4|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [tt33244668], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:37:34.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [Zootrópolis 2 tt26443597], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:37:34.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [tt26443597], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:37:34.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [Zootrópolis 2], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:37:40.1|Warn|Cardigann|[torrentdownload] Invalid category for value: 'MoviesDrama'
+2026-02-13 23:37:40.1|Warn|Cardigann|[torrentdownload] Invalid category for value: 'MoviesAnimation'
+2026-02-13 23:37:41.9|Warn|Cardigann|Redirected to https://damag.net/nsfw from indexer request
+2026-02-13 23:37:42.0|Warn|Cardigann|https://damag.net/?q=Zootr%C3%B3polis+2&wanted=100
+
+[v2.3.0.5236] NzbDrone.Core.Indexers.Exceptions.IndexerException: Redirected to https://damag.net/nsfw from indexer request
+   at NzbDrone.Core.Indexers.Definitions.Cardigann.CardigannParser.ParseResponse(IndexerResponse indexerResponse) in ./NzbDrone.Core/Indexers/Definitions/Cardigann/CardigannParser.cs:line 53
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 591
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchReleases(Func`2 pageableRequestChainSelector, SearchCriteriaBase searchCriteria, Boolean isRecent) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 428
+RequestUri: https://damag.net/?q=Zootr%C3%B3polis+2&wanted=100;StatusCode: Found;ContentType: text/html;ContentLength: 138;ContentSample: <html>
+<head><title>302 Found</title></head>
+<body>
+<center><h1>302 Found</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+
+2026-02-13 23:39:10.9|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [El señor de los anillos: La comunidad del anillo], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:39:11.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [tt0120737], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:39:11.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat, DaMagNet] for Term: [El señor de los anillos: La comunidad del anillo tt0120737], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:39:15.4|Warn|Cardigann|Redirected to https://damag.net/nsfw from indexer request
+2026-02-13 23:39:15.5|Warn|Cardigann|https://damag.net/?q=El+se%C3%B1or+de+los+anillos%3A+La+comunidad+del+anillo&wanted=100
+
+[v2.3.0.5236] NzbDrone.Core.Indexers.Exceptions.IndexerException: Redirected to https://damag.net/nsfw from indexer request
+   at NzbDrone.Core.Indexers.Definitions.Cardigann.CardigannParser.ParseResponse(IndexerResponse indexerResponse) in ./NzbDrone.Core/Indexers/Definitions/Cardigann/CardigannParser.cs:line 53
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 591
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchReleases(Func`2 pageableRequestChainSelector, SearchCriteriaBase searchCriteria, Boolean isRecent) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 428
+RequestUri: https://damag.net/?q=El+se%C3%B1or+de+los+anillos%3A+La+comunidad+del+anillo&wanted=100;StatusCode: Found;ContentType: text/html;ContentLength: 138;ContentSample: <html>
+<head><title>302 Found</title></head>
+<body>
+<center><h1>302 Found</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+
+2026-02-13 23:39:17.4|Warn|Cardigann|Redirected to https://damag.net/nsfw from indexer request
+2026-02-13 23:39:17.4|Warn|Cardigann|https://damag.net/?q=tt0120737&wanted=100
+
+[v2.3.0.5236] NzbDrone.Core.Indexers.Exceptions.IndexerException: Redirected to https://damag.net/nsfw from indexer request
+   at NzbDrone.Core.Indexers.Definitions.Cardigann.CardigannParser.ParseResponse(IndexerResponse indexerResponse) in ./NzbDrone.Core/Indexers/Definitions/Cardigann/CardigannParser.cs:line 53
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 591
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchReleases(Func`2 pageableRequestChainSelector, SearchCriteriaBase searchCriteria, Boolean isRecent) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 428
+RequestUri: https://damag.net/?q=tt0120737&wanted=100;StatusCode: Found;ContentType: text/html;ContentLength: 138;ContentSample: <html>
+<head><title>302 Found</title></head>
+<body>
+<center><h1>302 Found</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+
+2026-02-13 23:39:19.3|Warn|Cardigann|Redirected to https://damag.net/nsfw from indexer request
+2026-02-13 23:39:19.4|Warn|Cardigann|https://damag.net/?q=El+se%C3%B1or+de+los+anillos%3A+La+comunidad+del+anillo+tt0120737&wanted=100
+
+[v2.3.0.5236] NzbDrone.Core.Indexers.Exceptions.IndexerException: Redirected to https://damag.net/nsfw from indexer request
+   at NzbDrone.Core.Indexers.Definitions.Cardigann.CardigannParser.ParseResponse(IndexerResponse indexerResponse) in ./NzbDrone.Core/Indexers/Definitions/Cardigann/CardigannParser.cs:line 53
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 591
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchReleases(Func`2 pageableRequestChainSelector, SearchCriteriaBase searchCriteria, Boolean isRecent) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 428
+RequestUri: https://damag.net/?q=El+se%C3%B1or+de+los+anillos%3A+La+comunidad+del+anillo+tt0120737&wanted=100;StatusCode: Found;ContentType: text/html;ContentLength: 138;ContentSample: <html>
+<head><title>302 Found</title></head>
+<body>
+<center><h1>302 Found</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+
+2026-02-13 23:39:19.4|Warn|Cardigann|Request for Magnet Cat failed with status InternalServerError. Retrying in 1.8431915s.
+2026-02-13 23:39:22.0|Warn|Cardigann|Request for Magnet Cat failed with status InternalServerError. Retrying in 1.6611012s.
+2026-02-13 23:39:24.4|Warn|Cardigann|HTTP Error - Res: HTTP/2.0 [GET] https://magnetcatcat.com/search-El%20se%C3%B1or%20de%20los%20anillos%3A%20La%20comunidad%20del%20anillo%20tt0120737-0-2-1.html: 500.InternalServerError (141 bytes)
+2026-02-13 23:39:24.6|Warn|Cardigann|Unable to connect to Magnet Cat at [https://magnetcatcat.com/search-El%20se%C3%B1or%20de%20los%20anillos%3A%20La%20comunidad%20del%20anillo%20tt0120737-0-2-1.html]. Indexer's server is unavailable. Try again later. HTTP request failed: [500:InternalServerError] [GET] at [https://magnetcatcat.com/search-El%20se%C3%B1or%20de%20los%20anillos%3A%20La%20comunidad%20del%20anillo%20tt0120737-0-2-1.html]
+
+[v2.3.0.5236] NzbDrone.Common.Http.HttpException: HTTP request failed: [500:InternalServerError] [GET] at [https://magnetcatcat.com/search-El%20se%C3%B1or%20de%20los%20anillos%3A%20La%20comunidad%20del%20anillo%20tt0120737-0-2-1.html]
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchIndexerResponse(IndexerRequest request) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 701
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 587
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchReleases(Func`2 pageableRequestChainSelector, SearchCriteriaBase searchCriteria, Boolean isRecent) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 428
+<html>
+  <head>
+    <title>Internal Server Error</title>
+  </head>
+  <body>
+    <h1><p>Internal Server Error</p></h1>
+    
+  </body>
+</html>
+
+
+
+2026-02-13 23:50:20.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat] for Term: [Las guerreras k-pop tt14205554], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:50:20.3|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat] for Term: [Las guerreras k-pop], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:50:20.3|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat] for Term: [tt14205554], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:51:21.5|Warn|Cardigann|Request for The Pirate Bay failed with status GatewayTimeout. Retrying in 2.4387522s.
+2026-02-13 23:51:23.4|Warn|Cardigann|Request for The Pirate Bay failed with status GatewayTimeout. Retrying in 2.4462452s.
+2026-02-13 23:51:25.4|Warn|Cardigann|Request for The Pirate Bay failed with status GatewayTimeout. Retrying in 0.9527104s.
+2026-02-13 23:51:53.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat] for Term: [tt14205554], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:51:53.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat] for Term: [Las guerreras k-pop], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:51:53.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat] for Term: [Las guerreras k-pop tt14205554], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:52:24.3|Warn|Cardigann|Request for The Pirate Bay failed with status GatewayTimeout. Retrying in 1.0321912s.
+2026-02-13 23:52:26.3|Warn|Cardigann|Request for The Pirate Bay failed with status GatewayTimeout. Retrying in 3.1727618s.
+2026-02-13 23:52:28.3|Warn|Cardigann|Request for The Pirate Bay failed with status GatewayTimeout. Retrying in 2.2153277s.
+2026-02-13 23:52:54.1|Warn|Cardigann|Request for The Pirate Bay failed with status GatewayTimeout. Retrying in 2.6653924s.
+2026-02-13 23:52:56.1|Warn|Cardigann|Request for The Pirate Bay failed with status GatewayTimeout. Retrying in 1.403989s.
+2026-02-13 23:52:58.1|Warn|Cardigann|Request for The Pirate Bay failed with status GatewayTimeout. Retrying in 0.9131007s.
+2026-02-13 23:53:25.7|Warn|Cardigann|HTTP Error - Res: HTTP/2.0 [GET] https://apibay.org/q.php?q=las.guerreras.k.pop.tt14205554&cat=: 504.GatewayTimeout (15 bytes)
+error code: 504
+2026-02-13 23:53:25.8|Warn|Cardigann|Unable to connect to The Pirate Bay at [https://apibay.org/q.php?q=las.guerreras.k.pop.tt14205554&cat=]. Indexer's server is unavailable. Try again later. HTTP request failed: [504:GatewayTimeout] [GET] at [https://apibay.org/q.php?q=las.guerreras.k.pop.tt14205554&cat=]
+
+[v2.3.0.5236] NzbDrone.Common.Http.HttpException: HTTP request failed: [504:GatewayTimeout] [GET] at [https://apibay.org/q.php?q=las.guerreras.k.pop.tt14205554&cat=]
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchIndexerResponse(IndexerRequest request) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 701
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 587
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchReleases(Func`2 pageableRequestChainSelector, SearchCriteriaBase searchCriteria, Boolean isRecent) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 428
+error code: 504
+
+
+2026-02-13 23:53:29.9|Warn|Cardigann|HTTP Error - Res: HTTP/2.0 [GET] https://apibay.org/q.php?q=las.guerreras.k.pop&cat=: 504.GatewayTimeout (15 bytes)
+error code: 504
+2026-02-13 23:53:29.9|Warn|Cardigann|Unable to connect to The Pirate Bay at [https://apibay.org/q.php?q=las.guerreras.k.pop&cat=]. Indexer's server is unavailable. Try again later. HTTP request failed: [504:GatewayTimeout] [GET] at [https://apibay.org/q.php?q=las.guerreras.k.pop&cat=]
+
+[v2.3.0.5236] NzbDrone.Common.Http.HttpException: HTTP request failed: [504:GatewayTimeout] [GET] at [https://apibay.org/q.php?q=las.guerreras.k.pop&cat=]
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchIndexerResponse(IndexerRequest request) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 701
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 587
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchReleases(Func`2 pageableRequestChainSelector, SearchCriteriaBase searchCriteria, Boolean isRecent) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 428
+error code: 504
+
+
+2026-02-13 23:53:31.9|Warn|Cardigann|HTTP Error - Res: HTTP/2.0 [GET] https://apibay.org/q.php?q=tt14205554&cat=: 504.GatewayTimeout (15 bytes)
+error code: 504
+2026-02-13 23:53:31.9|Warn|Cardigann|Unable to connect to The Pirate Bay at [https://apibay.org/q.php?q=tt14205554&cat=]. Indexer's server is unavailable. Try again later. HTTP request failed: [504:GatewayTimeout] [GET] at [https://apibay.org/q.php?q=tt14205554&cat=]
+
+[v2.3.0.5236] NzbDrone.Common.Http.HttpException: HTTP request failed: [504:GatewayTimeout] [GET] at [https://apibay.org/q.php?q=tt14205554&cat=]
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchIndexerResponse(IndexerRequest request) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 701
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 587
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchReleases(Func`2 pageableRequestChainSelector, SearchCriteriaBase searchCriteria, Boolean isRecent) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 428
+error code: 504
+
+
+2026-02-13 23:53:57.1|Warn|Cardigann|Request for The Pirate Bay failed with status GatewayTimeout. Retrying in 2.2675715s.
+2026-02-13 23:53:59.1|Warn|Cardigann|Request for The Pirate Bay failed with status GatewayTimeout. Retrying in 3.2016156s.
+2026-02-13 23:54:01.1|Warn|Cardigann|Request for The Pirate Bay failed with status GatewayTimeout. Retrying in 2.3048886s.
+2026-02-13 23:54:32.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat] for Term: [Oscar Shaw tt27674706], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:54:32.4|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat] for Term: [Oscar Shaw], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:54:32.4|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, BitSearch, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, 1337x, Magnet Cat] for Term: [tt27674706], Offset: 0, Limit: 0, Categories: []
+2026-02-13 23:54:59.8|Warn|Cardigann|HTTP Error - Res: HTTP/2.0 [GET] https://apibay.org/q.php?q=tt14205554&cat=: 504.GatewayTimeout (15 bytes)
+error code: 504
+2026-02-13 23:54:59.8|Warn|Cardigann|Unable to connect to The Pirate Bay at [https://apibay.org/q.php?q=tt14205554&cat=]. Indexer's server is unavailable. Try again later. HTTP request failed: [504:GatewayTimeout] [GET] at [https://apibay.org/q.php?q=tt14205554&cat=]
+
+[v2.3.0.5236] NzbDrone.Common.Http.HttpException: HTTP request failed: [504:GatewayTimeout] [GET] at [https://apibay.org/q.php?q=tt14205554&cat=]
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchIndexerResponse(IndexerRequest request) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 701
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 587
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchReleases(Func`2 pageableRequestChainSelector, SearchCriteriaBase searchCriteria, Boolean isRecent) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 428
+error code: 504
+
+
+2026-02-13 23:55:02.7|Warn|Cardigann|HTTP Error - Res: HTTP/2.0 [GET] https://apibay.org/q.php?q=las.guerreras.k.pop.tt14205554&cat=: 504.GatewayTimeout (15 bytes)
+error code: 504
+2026-02-13 23:55:02.8|Warn|Cardigann|Unable to connect to The Pirate Bay at [https://apibay.org/q.php?q=las.guerreras.k.pop.tt14205554&cat=]. Indexer's server is unavailable. Try again later. HTTP request failed: [504:GatewayTimeout] [GET] at [https://apibay.org/q.php?q=las.guerreras.k.pop.tt14205554&cat=]
+
+[v2.3.0.5236] NzbDrone.Common.Http.HttpException: HTTP request failed: [504:GatewayTimeout] [GET] at [https://apibay.org/q.php?q=las.guerreras.k.pop.tt14205554&cat=]
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchIndexerResponse(IndexerRequest request) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 701
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 587
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchReleases(Func`2 pageableRequestChainSelector, SearchCriteriaBase searchCriteria, Boolean isRecent) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 428
+error code: 504
+
+
+2026-02-13 23:55:04.7|Warn|Cardigann|HTTP Error - Res: HTTP/2.0 [GET] https://apibay.org/q.php?q=las.guerreras.k.pop&cat=: 504.GatewayTimeout (15 bytes)
+error code: 504
+2026-02-13 23:55:04.8|Warn|Cardigann|Unable to connect to The Pirate Bay at [https://apibay.org/q.php?q=las.guerreras.k.pop&cat=]. Indexer's server is unavailable. Try again later. HTTP request failed: [504:GatewayTimeout] [GET] at [https://apibay.org/q.php?q=las.guerreras.k.pop&cat=]
+
+[v2.3.0.5236] NzbDrone.Common.Http.HttpException: HTTP request failed: [504:GatewayTimeout] [GET] at [https://apibay.org/q.php?q=las.guerreras.k.pop&cat=]
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchIndexerResponse(IndexerRequest request) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 701
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchPage(IndexerRequest request, IParseIndexerResponse parser) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 587
+   at NzbDrone.Core.Indexers.HttpIndexerBase`1.FetchReleases(Func`2 pageableRequestChainSelector, SearchCriteriaBase searchCriteria, Boolean isRecent) in ./NzbDrone.Core/Indexers/HttpIndexerBase.cs:line 428
+error code: 504
+
+

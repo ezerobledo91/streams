@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useState, type MutableRefObject } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import { fetchSubtitles } from "../api";
-import { isSpanishLanguage, normalizeLanguageCode } from "../lib/audio-preferences";
+import { isSpanishLanguage } from "../lib/audio-preferences";
 import { buildActiveStreamKey } from "../lib/candidate-scoring";
 import {
   readSubtitleMemoryStore,
@@ -24,6 +24,18 @@ interface UseSubtitleSelectionOptions {
   subtitleFailoverAttemptsRef: MutableRefObject<number>;
 }
 
+function isLikelySpanishSubtitleTrack(track: { language?: string; label?: string }): boolean {
+  if (isSpanishLanguage(String(track.language || ""))) return true;
+  const normalizedLabel = String(track.label || "").toLowerCase();
+  return (
+    normalizedLabel.includes("latino") ||
+    normalizedLabel.includes("latam") ||
+    normalizedLabel.includes("castellano") ||
+    normalizedLabel.includes("espanol") ||
+    normalizedLabel.includes("spanish")
+  );
+}
+
 export function useSubtitleSelection({
   decodedItemId,
   streamsType,
@@ -40,6 +52,7 @@ export function useSubtitleSelection({
   const [loadingSubtitles, setLoadingSubtitles] = useState(false);
   const [subtitleMemory, setSubtitleMemory] = useState<SubtitleMemoryStore>(() => readSubtitleMemoryStore());
   const [selectedSubtitleIndex, setSelectedSubtitleIndex] = useState(-1);
+  const lastSelectedSubtitleUrlRef = useRef("");
 
   const activeStreamKey = useMemo(() => buildActiveStreamKey(activeCandidate), [activeCandidate]);
   const episodeMemoryKey = isSeries ? `${season}x${episode}` : "movie";
@@ -102,9 +115,16 @@ export function useSubtitleSelection({
           url: item.url,
           source: "addon" as const
         }));
-        setAddonSubtitles(mapped);
+        setAddonSubtitles((prev) => {
+          if (silent && !mapped.length && prev.length) {
+            return prev;
+          }
+          return mapped;
+        });
       } catch {
-        setAddonSubtitles([]);
+        if (!silent) {
+          setAddonSubtitles([]);
+        }
       } finally {
         if (!silent) setLoadingSubtitles(false);
       }
@@ -118,9 +138,13 @@ export function useSubtitleSelection({
 
   const subtitleTracks = useMemo(() => {
     const expectedEpisodeKey = isSeries ? `${season}x${episode}` : "";
-    const ranked = dedupeSubtitleTracks([...sessionSubtitles, ...addonSubtitles])
-      .filter((item) => isSpanishLanguage(item.language))
+    const dedupedTracks = dedupeSubtitleTracks([...sessionSubtitles, ...addonSubtitles]);
+    const spanishTracks = dedupedTracks.filter((track) => isLikelySpanishSubtitleTrack(track));
+    const candidateTracks = spanishTracks.length ? spanishTracks : dedupedTracks;
+
+    const ranked = candidateTracks
       .sort((a, b) => {
+        // First priority: Match with current stream/memory
         const matchA = scoreSubtitleTrackMatch(
           a,
           activeCandidate,
@@ -137,13 +161,9 @@ export function useSubtitleSelection({
         );
         if (matchA !== matchB) return matchB - matchA;
 
-        const langA = normalizeLanguageCode(a.language);
-        const langB = normalizeLanguageCode(b.language);
-        if (langA !== langB) {
-          if (langA === "es-419") return -1;
-          if (langB === "es-419") return 1;
-        }
+        // Third priority: Source
         if (a.source !== b.source) return a.source === "torrent" ? -1 : 1;
+        
         return a.label.localeCompare(b.label);
       });
 
@@ -166,10 +186,26 @@ export function useSubtitleSelection({
   }, [activeCandidate, activeReleaseText, addonSubtitles, episode, isSeries, preferredSubtitleUrl, season, sessionSubtitles]);
 
   useEffect(() => {
+    if (selectedSubtitleIndex < 0) return;
+    const active = subtitleTracks[selectedSubtitleIndex];
+    if (!active?.url) return;
+    lastSelectedSubtitleUrlRef.current = active.url;
+  }, [selectedSubtitleIndex, subtitleTracks]);
+
+  useEffect(() => {
     subtitleFailoverAttemptsRef.current = 0;
     if (!subtitleTracks.length) {
       setSelectedSubtitleIndex(-1);
       return;
+    }
+
+    const lastSelectedSubtitleUrl = lastSelectedSubtitleUrlRef.current;
+    if (lastSelectedSubtitleUrl) {
+      const lastSelectedIdx = subtitleTracks.findIndex((item) => item.url === lastSelectedSubtitleUrl);
+      if (lastSelectedIdx >= 0) {
+        setSelectedSubtitleIndex(lastSelectedIdx);
+        return;
+      }
     }
 
     if (preferredSubtitleUrl) {
@@ -185,18 +221,21 @@ export function useSubtitleSelection({
 
   const handleSubtitleTrackError = useCallback(() => {
     if (selectedSubtitleIndex < 0) return;
-    setSelectedSubtitleIndex((prev) => {
-      if (prev < 0) return -1;
-      const next = prev + 1;
-      if (next < subtitleTracks.length) {
-        subtitleFailoverAttemptsRef.current += 1;
-        return next;
-      }
-      return -1;
-    });
-    if (subtitleFailoverAttemptsRef.current <= 1) {
-      void refreshAddonSubtitles(true);
+
+    const hasNext = selectedSubtitleIndex + 1 < subtitleTracks.length;
+    if (hasNext) {
+      subtitleFailoverAttemptsRef.current += 1;
+      setSelectedSubtitleIndex(selectedSubtitleIndex + 1);
+      return;
     }
+
+    if (subtitleFailoverAttemptsRef.current <= 1) {
+      subtitleFailoverAttemptsRef.current += 1;
+      void refreshAddonSubtitles(true);
+      return;
+    }
+
+    setSelectedSubtitleIndex(-1);
   }, [refreshAddonSubtitles, selectedSubtitleIndex, subtitleTracks.length, subtitleFailoverAttemptsRef]);
 
   const handleSubtitleTrackLoad = useCallback(
