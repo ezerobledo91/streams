@@ -16,7 +16,8 @@
       "Bash(npm run build:*)",
       "Bash(while read:*)",
       "Bash(do rm \"$f\")",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(git check-ignore:*)"
     ]
   }
 }
