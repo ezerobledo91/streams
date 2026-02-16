@@ -13,3 +13,16 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=America/Argentina/Buenos_Aires
+    depends_on:
+      - flaresolverr
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    restart: unless-stopped
+    ports:
+      - "8191:8191"
+    environment:
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+      - TZ=America/Argentina/Buenos_Aires
