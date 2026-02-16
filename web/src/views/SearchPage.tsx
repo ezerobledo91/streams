@@ -105,6 +105,122 @@ export function SearchPage() {
     [resultsByCategory]
   );
 
+  // TV Navigation logic
+  const tvZoneRef = useRef<"header" | "results">("header");
+  const activeResultIdxRef = useRef(0);
+  const headerFocusIdxRef = useRef(1); // Default to input
+
+  useEffect(() => {
+    function clearFocus() {
+      document.querySelectorAll(".tv-focused").forEach(el => el.classList.remove("tv-focused"));
+    }
+
+    function getFocusables() {
+      if (tvZoneRef.current === "header") {
+        return Array.from(document.querySelectorAll<HTMLElement>(".search-page-header .back-link-icon, .search-page-header input, .search-page-header .search-submit-btn"));
+      } else {
+        return Array.from(document.querySelectorAll<HTMLElement>(".search-results-grid .media-tile"));
+      }
+    }
+
+    function applyFocus(index: number) {
+      clearFocus();
+      const items = getFocusables();
+      if (!items.length) return;
+      const safeIdx = Math.max(0, Math.min(items.length - 1, index));
+      
+      if (tvZoneRef.current === "header") {
+        headerFocusIdxRef.current = safeIdx;
+        if (items[safeIdx].tagName === "INPUT") {
+          (items[safeIdx] as HTMLInputElement).focus();
+        } else {
+          (document.activeElement as HTMLElement)?.blur();
+          items[safeIdx].classList.add("tv-focused");
+        }
+      } else {
+        activeResultIdxRef.current = safeIdx;
+        items[safeIdx].classList.add("tv-focused");
+        items[safeIdx].scrollIntoView({ block: "center", behavior: "smooth" });
+      }
+    }
+
+    function handleKeyDown(e: KeyboardEvent) {
+      const zone = tvZoneRef.current;
+      const items = getFocusables();
+
+      if (zone === "header") {
+        const idx = headerFocusIdxRef.current;
+        switch (e.key) {
+          case "ArrowRight":
+            if (idx < items.length - 1) applyFocus(idx + 1);
+            break;
+          case "ArrowLeft":
+            if (idx > 0) applyFocus(idx - 1);
+            break;
+          case "ArrowDown":
+            e.preventDefault();
+            if (total > 0) {
+              tvZoneRef.current = "results";
+              activeResultIdxRef.current = 0;
+              applyFocus(0);
+            }
+            break;
+          case "Enter":
+            if (items[idx] && items[idx].tagName !== "INPUT") {
+              e.preventDefault();
+              items[idx].click();
+            }
+            break;
+          case "Backspace":
+          case "Escape":
+            if (items[idx].tagName === "INPUT" && (items[idx] as HTMLInputElement).value !== "") {
+              // Let standard backspace work for typing
+              return;
+            }
+            navigate("/");
+            break;
+        }
+      } else {
+        // Results grid navigation
+        const idx = activeResultIdxRef.current;
+        const cols = window.innerWidth > 1200 ? 6 : window.innerWidth > 800 ? 4 : 3;
+        
+        switch (e.key) {
+          case "ArrowRight":
+            if (idx < items.length - 1) applyFocus(idx + 1);
+            break;
+          case "ArrowLeft":
+            if (idx > 0) applyFocus(idx - 1);
+            break;
+          case "ArrowDown":
+            if (idx + cols < items.length) applyFocus(idx + cols);
+            break;
+          case "ArrowUp":
+            if (idx - cols >= 0) {
+              applyFocus(idx - cols);
+            } else {
+              tvZoneRef.current = "header";
+              applyFocus(1); // Focus input
+            }
+            break;
+          case "Enter":
+            e.preventDefault();
+            if (items[idx]) items[idx].click();
+            break;
+          case "Backspace":
+          case "Escape":
+            e.preventDefault();
+            tvZoneRef.current = "header";
+            applyFocus(1);
+            break;
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [total, navigate]);
+
   return (
     <main className="search-page-shell">
       <header className="search-page-header">

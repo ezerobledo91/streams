@@ -1,12 +1,12 @@
 {
   "loadedAt": "2026-02-12T15:27:36.8440834-03:00",
-  "updatedAt": "2026-02-16T01:24:37.572Z",
+  "updatedAt": "2026-02-16T04:26:18.545Z",
   "providers": {
     "torrentdb": {
-      "successes": 45,
+      "successes": 47,
       "failures": 5,
       "consecutiveFailures": 0,
-      "lastSuccessAt": 1771205071230,
+      "lastSuccessAt": 1771211250507,
       "lastFailureAt": 1771029085391,
       "lastFailureReason": "Cannot add duplicate torrent 56c1349b2eb742ed0e2ddf3a9d4f40a450bd6e26",
       "breakerUntil": 0,
@@ -145,10 +145,10 @@
           "lastFailureAt": 0
         },
         "62c1d4e8f6a58209597b4198447544fb3cdcc96d": {
-          "successes": 2,
+          "successes": 4,
           "failures": 0,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1771205003489,
+          "lastSuccessAt": 1771211250507,
           "lastFailureAt": 0
         },
         "325767ea224459f5916b0c9538e19890d67258e6": {
@@ -161,10 +161,10 @@
       }
     },
     "torrentio": {
-      "successes": 70,
+      "successes": 82,
       "failures": 3,
       "consecutiveFailures": 0,
-      "lastSuccessAt": 1771205077572,
+      "lastSuccessAt": 1771215978545,
       "lastFailureAt": 1771029373534,
       "lastFailureReason": "Cannot add duplicate torrent 0b18ae304bdf93a134fb86f2cd9323ec3ac491ae",
       "breakerUntil": 0,
@@ -212,10 +212,10 @@
           "lastFailureAt": 0
         },
         "5357179583d6d0f2c3adae8d683ce26c4e620d73": {
-          "successes": 1,
+          "successes": 2,
           "failures": 0,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1770957517263,
+          "lastSuccessAt": 1771215978545,
           "lastFailureAt": 0
         },
         "33d235fe2a2e1867d99c0e306a21574688ef0f7f": {
@@ -268,10 +268,10 @@
           "lastFailureAt": 0
         },
         "6d2d8de43ce28881719f0ed7e4b5496cd58a4677": {
-          "successes": 1,
+          "successes": 4,
           "failures": 0,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1771026701085,
+          "lastSuccessAt": 1771213607930,
           "lastFailureAt": 0
         },
         "ca55e99a73f95c1dfe8f5ec433e1ca29aa6408f2": {
@@ -510,6 +510,27 @@
           "failures": 0,
           "consecutiveFailures": 0,
           "lastSuccessAt": 1771199884351,
+          "lastFailureAt": 0
+        },
+        "b2dc08cda835fc1d8f885e4fa6c66655be0cca92": {
+          "successes": 6,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771214921447,
+          "lastFailureAt": 0
+        },
+        "23eee12a2f6c7aa2877c30d2dfd1ca405d16f057": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771212207298,
+          "lastFailureAt": 0
+        },
+        "d3c1d3bc5d71e5ef277af80974fbaeb820664d6a": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771215405099,
           "lastFailureAt": 0
         }
       }

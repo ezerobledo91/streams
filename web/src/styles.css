@@ -36,7 +36,7 @@ body {
   transition: background-color var(--transition);
 }
 .home-header.is-scrolled { background-color: var(--header-scrolled); box-shadow: 0 4px 4px rgba(0,0,0,0.3); }
-.home-header-inner { display: flex; align-items: center; justify-content: space-between; height: 100%; padding: 0 4%; overflow: hidden; }
+.home-header-inner { display: flex; align-items: center; justify-content: space-between; height: 100%; padding: 0 4%; overflow: visible; }
 .home-header-left { display: flex; align-items: center; gap: 25px; }
 .brand-logo { color: var(--brand); font-family: "Archivo Black", sans-serif; font-size: 28px; text-transform: uppercase; cursor: pointer; text-decoration: none; }
 .home-nav { display: flex; align-items: center; gap: 18px; }
@@ -627,6 +627,21 @@ body {
 .live-tv-search { margin: 0; width: 100%; opacity: 1; border: 1px solid #222; background: #111; border-radius: 10px; flex-shrink: 0; }
 .live-tv-search input { width: 100%; opacity: 1; padding: 12px 14px; font-size: 14px; }
 .live-tv-drawer-top-actions { display: flex; align-items: center; justify-content: flex-start; flex-shrink: 0; }
+.live-tv-reload-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  background: #151515;
+  color: #888;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.live-tv-reload-btn:hover { background: #1e1e1e; color: #fff; border-color: #444; }
+.live-tv-reload-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .live-tv-categories {
   display: flex;
   flex-wrap: wrap;
@@ -656,6 +671,14 @@ body {
 .live-tv-category small { color: #555; font-size: 11px; }
 .live-tv-category.is-active { background: var(--brand); color: #fff; border-color: var(--brand); }
 .live-tv-category.is-active small { color: rgba(255,255,255,0.7); }
+.live-tv-category-hidden {
+  background: #0e0e0e;
+  border-color: #1e1e1e;
+  color: #555;
+  order: 999;
+}
+.live-tv-category-hidden:hover { background: #161616; color: #888; border-color: #333; }
+.live-tv-category-hidden.is-active { background: #2a1215; border-color: var(--brand); color: #e5717a; }
 .live-tv-channel-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
 .live-tv-channel {
   display: flex;
@@ -768,7 +791,8 @@ body {
   .category-rail h2 { font-size: 18px; }
   .primary-btn { font-size: 16px; }
   .media-tile { flex: 0 0 calc(100% / 4 - 8px); min-width: 92px; }
-  .watch-layout { grid-template-columns: 1fr; overflow-y: auto; }
+  .watch-shell { overflow: auto; height: auto; min-height: 100dvh; }
+  .watch-layout { grid-template-columns: 1fr; overflow-y: visible; }
   .watch-info-panel { border: none; width: 100%; }
   .watch-player-panel { padding: 8px; align-items: flex-start; }
   .player-stage { aspect-ratio: 16/9; width: 100%; height: auto; }
@@ -854,6 +878,7 @@ body {
   }
   .live-tv-drawer.is-open { transform: translateY(0); }
   .live-tv-categories { max-height: 90px; overflow-x: auto; overflow-y: hidden; flex-wrap: nowrap; }
+  .live-tv-channel-actions { opacity: 1; }
 }
 
 @media (max-width: 520px) and (orientation: portrait) {
@@ -1060,6 +1085,120 @@ select, input { background: #1a1a1a; border: 1px solid #333; color: #fff; paddin
   font-size: 12px;
 }
 
+/* --- CHANNEL GROUPS --- */
+.live-tv-channel-group {
+  display: flex;
+  flex-direction: column;
+}
+.live-tv-channel-group-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.live-tv-channel-group-row > .live-tv-channel {
+  flex: 1;
+  min-width: 0;
+}
+.live-tv-group-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  background: #1a1a1a;
+  color: #aaa;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.live-tv-group-badge:hover {
+  background: #252525;
+  color: #fff;
+  border-color: #444;
+}
+.live-tv-subchannel {
+  padding-left: 52px !important;
+  min-height: 50px;
+  border-left: 2px solid #222;
+  margin-left: 24px;
+}
+
+/* Channel row with actions */
+.live-tv-channel-row,
+.live-tv-subchannel-row,
+.live-tv-channel-group-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.live-tv-channel-row > .live-tv-channel,
+.live-tv-subchannel-row > .live-tv-channel {
+  flex: 1;
+  min-width: 0;
+}
+.live-tv-channel-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  opacity: 1;
+  padding-right: 8px;
+}
+.live-tv-action-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #555;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
+}
+.live-tv-action-btn:hover {
+  background: #222;
+  color: #fff;
+}
+.live-tv-action-btn.is-fav {
+  color: #ff6b81;
+}
+.live-tv-action-btn.is-fav:hover {
+  color: #ff4757;
+  background: rgba(255, 75, 87, 0.15);
+}
+.live-tv-action-hide:hover {
+  color: #ffa502;
+  background: rgba(255, 165, 2, 0.12);
+}
+
+/* Favorites virtual category */
+.live-tv-category-fav {
+  background: #1a1210;
+  border-color: #3a2a1a;
+  color: #ffaa55;
+}
+.live-tv-category-fav:hover {
+  background: #221a12;
+  border-color: #5a3a1a;
+  color: #ffcc88;
+}
+.live-tv-category-fav.is-active {
+  background: #ff8c42;
+  color: #fff;
+  border-color: #ff8c42;
+}
+.live-tv-category-fav.is-active small {
+  color: rgba(255,255,255,0.7);
+}
+
 /* --- TV / D-PAD FOCUS --- */
 [data-tv-focusable]:focus-visible,
 .tv-focused {
@@ -1081,6 +1220,67 @@ select, input { background: #1a1a1a; border: 1px solid #333; color: #fff; paddin
 .continue-card.tv-focused {
   transform: scale(1.06);
   z-index: 5;
+}
+.nav-link.tv-focused,
+.header-action-btn.tv-focused,
+.user-avatar-btn.tv-focused {
+  outline: 3px solid var(--brand) !important;
+  outline-offset: 4px;
+  box-shadow: 0 0 0 6px rgba(229, 9, 20, 0.3);
+  border-radius: 6px;
+}
+.hero-actions .primary-btn.tv-focused {
+  outline: 3px solid #fff !important;
+  outline-offset: 4px;
+  box-shadow: 0 0 0 6px rgba(229, 9, 20, 0.4);
+  transform: scale(1.06);
+}
+/* WatchPage sidebar TV focus */
+.watch-info-panel .tv-focused {
+  outline: 2px solid var(--brand) !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.25);
+}
+/* LiveTvPage drawer TV focus */
+.live-tv-channel.tv-focused {
+  outline: 2px solid var(--brand) !important;
+  outline-offset: -2px;
+  background: #1e1e1e;
+}
+.live-tv-category.tv-focused {
+  outline: 2px solid var(--brand) !important;
+  outline-offset: -2px;
+}
+.live-tv-search input.tv-focused {
+  outline: 2px solid var(--brand) !important;
+  outline-offset: -2px;
+}
+/* Genre offcanvas chip TV focus */
+.genre-chip.tv-focused {
+  outline: 2px solid var(--brand) !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.25);
+  transform: translateY(-1px);
+  border-color: #888;
+}
+/* WatchPage sidebar select TV focus */
+.watch-info-panel select.tv-focused {
+  outline: 2px solid var(--brand) !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.25);
+}
+/* WatchPage header TV focus */
+.watch-hero-strip .tv-focused {
+  outline: 2px solid var(--brand) !important;
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+/* Search icon button TV focus */
+.search-icon-btn.tv-focused {
+  outline: 2px solid var(--brand) !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.25);
+  border-radius: 50%;
 }
 
 /* Hide scrollbars on TV / no-hover devices */
@@ -1113,3 +1313,109 @@ select, input { background: #1a1a1a; border: 1px solid #333; color: #fff; paddin
   inset: 0;
   z-index: 29;
 }
+
+/* Nuevos estilos de foco TV */
+.alt-source-item.tv-focused {
+  outline: 2px solid var(--brand) !important;
+  outline-offset: 2px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.live-tv-overlay-btn.tv-focused {
+  background: var(--brand) !important;
+  color: white !important;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px var(--brand);
+}
+
+.player-start-cta.tv-focused {
+  outline: 4px solid var(--brand) !important;
+  outline-offset: 4px;
+  background: var(--brand) !important;
+  transform: scale(1.1) !important;
+}
+
+.rail-browse-link.tv-focused {
+  background: var(--brand);
+  color: white;
+  outline: 2px solid white;
+  outline-offset: 2px;
+  transform: scale(1.05);
+  border-radius: 4px;
+}
+
+.live-tv-action-btn.tv-focused {
+  background: var(--brand) !important;
+  color: white !important;
+  transform: scale(1.1);
+  box-shadow: 0 0 10px var(--brand);
+}
+
+.live-tv-reload-btn.tv-focused, .live-tv-close-btn.tv-focused {
+  outline: 2px solid var(--brand) !important;
+  outline-offset: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.live-tv-group-badge.tv-focused {
+  background: var(--brand) !important;
+  color: white !important;
+  transform: scale(1.05);
+}
+
+.search-results-grid .media-card-link.tv-focused {
+  outline: 3px solid var(--brand) !important;
+  outline-offset: 4px;
+  border-radius: 8px;
+  z-index: 10;
+  transform: scale(1.02);
+}
+
+/* Seek indicator and Fullscreen fixes */
+.seek-indicator-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.7);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 24px;
+  font-weight: bold;
+  z-index: 100;
+  pointer-events: none;
+  animation: fadeInOut 1.2s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+  20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+}
+
+.player-stage:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  border: none;
+}
+
+.player-stage:fullscreen .video-player {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100vh !important;
+}
+
+/* For some browsers that might need specific prefixes */
+.player-stage:-webkit-full-screen {
+  width: 100vw;
+  height: 100vh;
+}
+.player-stage:-webkit-full-screen .video-player {
+  width: 100% !important;
+  height: 100% !important;
+}
+

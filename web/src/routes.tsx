@@ -6,6 +6,7 @@ import { LoginPage } from "./views/LoginPage";
 import { SearchPage } from "./views/SearchPage";
 import { WatchPage } from "./views/WatchPage";
 import { CategoryPage } from "./views/CategoryPage";
+import { FavoritesPage } from "./views/FavoritesPage";
 
 function RequireAuth() {
   const { state, initializing } = useAppStore();
@@ -48,6 +49,10 @@ export const appRouter = createBrowserRouter([
       {
         path: "/live-tv",
         element: <LiveTvPage />
+      },
+      {
+        path: "/favorites",
+        element: <FavoritesPage />
       }
     ]
   }

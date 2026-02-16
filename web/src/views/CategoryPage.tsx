@@ -6,8 +6,6 @@ import { MediaCard } from "../components/MediaCard";
 import { categoryTitle } from "../components/CategoryTabs";
 import { HOME_CATEGORY_ROWS, buildYearOptions } from "../lib/home-categories";
 import { useAppStore } from "../store/AppStore";
-import { useTvFocusManager } from "../hooks/useTvFocusManager";
-import { useGamepad } from "../hooks/useGamepad";
 import type { CatalogItem, Category } from "../types";
 
 function itemKey(item: CatalogItem): string {
@@ -48,26 +46,139 @@ export function CategoryPage() {
   const [error, setError] = useState("");
   const gridContainerRef = useRef<HTMLDivElement | null>(null);
 
-  useGamepad();
+  // TV Navigation
+  const tvZoneRef = useRef<"header" | "filters" | "results">("results");
+  const activeResultIdxRef = useRef(0);
+  const headerFocusIdxRef = useRef(0);
+  const filterFocusIdxRef = useRef(0);
 
-  const handleGridSelect = useCallback(
-    (el: HTMLElement) => {
-      el.click();
-    },
-    []
-  );
+  useEffect(() => {
+    function clearFocus() {
+      document.querySelectorAll(".tv-focused").forEach(el => el.classList.remove("tv-focused"));
+    }
 
-  const handleGridBack = useCallback(() => {
-    navigate("/");
-  }, [navigate]);
+    function getFocusables() {
+      if (tvZoneRef.current === "header") {
+        return Array.from(document.querySelectorAll<HTMLElement>(".category-page-header .back-link-icon"));
+      } else if (tvZoneRef.current === "filters") {
+        return Array.from(document.querySelectorAll<HTMLElement>(".category-page-filters button, .category-page-filters select"));
+      } else {
+        return Array.from(document.querySelectorAll<HTMLElement>(".category-results-grid .media-tile"));
+      }
+    }
 
-  useTvFocusManager({
-    containerRef: gridContainerRef,
-    groupType: "grid",
-    onSelect: handleGridSelect,
-    onBack: handleGridBack,
-    enabled: items.length > 0
-  });
+    function applyFocus(index: number) {
+      clearFocus();
+      const items = getFocusables();
+      if (!items.length) return;
+      const safeIdx = Math.max(0, Math.min(items.length - 1, index));
+      
+      if (tvZoneRef.current === "header") {
+        headerFocusIdxRef.current = safeIdx;
+      } else if (tvZoneRef.current === "filters") {
+        filterFocusIdxRef.current = safeIdx;
+      } else {
+        activeResultIdxRef.current = safeIdx;
+      }
+
+      items[safeIdx].classList.add("tv-focused");
+      items[safeIdx].scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+
+    function handleKeyDown(e: KeyboardEvent) {
+      const zone = tvZoneRef.current;
+      const items = getFocusables();
+
+      if (zone === "header") {
+        switch (e.key) {
+          case "ArrowDown":
+            e.preventDefault();
+            tvZoneRef.current = "filters";
+            applyFocus(0);
+            break;
+          case "Enter":
+            e.preventDefault();
+            items[0]?.click();
+            break;
+          case "Backspace":
+          case "Escape":
+            e.preventDefault();
+            navigate("/");
+            break;
+        }
+      } else if (zone === "filters") {
+        const idx = filterFocusIdxRef.current;
+        switch (e.key) {
+          case "ArrowRight":
+            if (idx < items.length - 1) applyFocus(idx + 1);
+            break;
+          case "ArrowLeft":
+            if (idx > 0) applyFocus(idx - 1);
+            break;
+          case "ArrowUp":
+            e.preventDefault();
+            tvZoneRef.current = "header";
+            applyFocus(0);
+            break;
+          case "ArrowDown":
+            e.preventDefault();
+            if (gridContainerRef.current) {
+              tvZoneRef.current = "results";
+              applyFocus(0);
+            }
+            break;
+          case "Enter":
+            if (items[idx]?.tagName === "SELECT") {
+              (items[idx] as any).showPicker?.();
+            } else {
+              items[idx]?.click();
+            }
+            break;
+          case "Backspace":
+          case "Escape":
+            e.preventDefault();
+            navigate("/");
+            break;
+        }
+      } else {
+        const idx = activeResultIdxRef.current;
+        const cols = window.innerWidth > 1200 ? 6 : window.innerWidth > 800 ? 4 : 3;
+
+        switch (e.key) {
+          case "ArrowRight":
+            if (idx < items.length - 1) applyFocus(idx + 1);
+            break;
+          case "ArrowLeft":
+            if (idx > 0) applyFocus(idx - 1);
+            break;
+          case "ArrowDown":
+            if (idx + cols < items.length) applyFocus(idx + cols);
+            break;
+          case "ArrowUp":
+            if (idx - cols >= 0) {
+              applyFocus(idx - cols);
+            } else {
+              tvZoneRef.current = "filters";
+              applyFocus(0);
+            }
+            break;
+          case "Enter":
+            e.preventDefault();
+            items[idx]?.click();
+            break;
+          case "Backspace":
+          case "Escape":
+            e.preventDefault();
+            tvZoneRef.current = "filters";
+            applyFocus(0);
+            break;
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [items.length, navigate]);
 
   useEffect(() => {
     if (categoryParam !== "movie" && categoryParam !== "series") {
@@ -271,9 +382,7 @@ export function CategoryPage() {
         {items.length ? (
           <div className="search-results-grid category-results-grid" ref={gridContainerRef}>
             {items.map((item) => (
-              <div key={itemKey(item)} data-tv-focusable tabIndex={0}>
-                <MediaCard item={item} onSelect={handleSelectItem} />
-              </div>
+              <MediaCard key={itemKey(item)} item={item} onSelect={handleSelectItem} />
             ))}
           </div>
         ) : null}

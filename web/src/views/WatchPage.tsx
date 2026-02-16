@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Captions,
@@ -66,6 +66,7 @@ function typeLabel(value: Category): string {
 }
 export function WatchPage() {
   const params = useParams<{ type: string; itemId: string }>();
+  const navigate = useNavigate();
   const { state } = useAppStore();
 
   const type = normalizeType(params.type || "movie");
@@ -106,6 +107,9 @@ export function WatchPage() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [alternatives, setAlternatives] = useState<AutoPlaybackAlternative[]>([]);
   const [activeAlternativeIndex, setActiveAlternativeIndex] = useState<number>(-1);
+  const [seekTooltip, setSeekTooltip] = useState<string | null>(null);
+  const seekTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const handleAudioPreferenceChange = useCallback((value: AudioPreference) => {
     setAudioPreference(value);
     if (typeof window !== "undefined") {
@@ -114,6 +118,7 @@ export function WatchPage() {
   }, []);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const playerStageRef = useRef<HTMLDivElement | null>(null);
   const autoLoadKeyRef = useRef<string>("");
   const preferredSourceKeyRef = useRef<string>("");
   const hasEverPlayedRef = useRef(false);
@@ -166,58 +171,36 @@ export function WatchPage() {
   const originalLanguageCode = normalizeLanguageCode(metaDetails?.info?.originalLanguage || "");
 
   function handleEnterFullscreen() {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const webkitVideo = video as HTMLVideoElement & {
-      webkitEnterFullscreen?: () => void;
-      webkitExitFullscreen?: () => void;
-      webkitDisplayingFullscreen?: boolean;
-      webkitRequestFullscreen?: () => Promise<void>;
-    };
-    const stage = video.parentElement as HTMLElement & { webkitRequestFullscreen?: () => Promise<void> } | null;
+    const stage = playerStageRef.current;
+    if (!stage) return;
 
     try {
-      // Si ya está en fullscreen, salir
       if (document.fullscreenElement) {
         void document.exitFullscreen();
         return;
       }
-      if (webkitVideo.webkitDisplayingFullscreen && webkitVideo.webkitExitFullscreen) {
-        webkitVideo.webkitExitFullscreen();
-        return;
-      }
-
-      // 1. webkitEnterFullscreen en el video (Android WebView, iOS Safari)
-      if (webkitVideo.webkitEnterFullscreen) {
-        webkitVideo.webkitEnterFullscreen();
-        return;
-      }
-
-      // 2. Fullscreen API estándar sobre el video directamente
-      if (video.requestFullscreen) {
-        void video.requestFullscreen();
-        return;
-      }
-
-      // 3. webkit prefixed sobre el video
-      if (webkitVideo.webkitRequestFullscreen) {
-        void webkitVideo.webkitRequestFullscreen();
-        return;
-      }
-
-      // 4. Fullscreen sobre el contenedor (desktop)
-      if (stage?.requestFullscreen) {
+      
+      if (stage.requestFullscreen) {
         void stage.requestFullscreen();
-        return;
-      }
-      if (stage?.webkitRequestFullscreen) {
-        void stage.webkitRequestFullscreen();
+      } else if ((stage as any).webkitRequestFullscreen) {
+        void (stage as any).webkitRequestFullscreen();
+      } else if ((stage as any).mozRequestFullScreen) {
+        void (stage as any).mozRequestFullScreen();
+      } else if ((stage as any).msRequestFullscreen) {
+        void (stage as any).msRequestFullscreen();
       }
     } catch {
-      // no-op
+      // fallback to video element if stage fails
+      const video = videoRef.current;
+      if (video?.requestFullscreen) void video.requestFullscreen();
     }
   }
+
+  const showSeekTooltip = useCallback((text: string) => {
+    setSeekTooltip(text);
+    if (seekTimerRef.current) clearTimeout(seekTimerRef.current);
+    seekTimerRef.current = setTimeout(() => setSeekTooltip(null), 1200);
+  }, []);
 
   const clearActivePlayback = useCallback(async (resetStarted = false) => {
     const sessionId = activeSessionIdRef.current;
@@ -251,8 +234,9 @@ export function WatchPage() {
   useEffect(() => {
     const prevBodyOverflow = document.body.style.overflow;
     const prevHtmlOverflow = document.documentElement.style.overflow;
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
+    // Permitimos scroll para poder ver la info de la pelicula en TV
+    document.body.style.overflow = "auto";
+    document.documentElement.style.overflow = "auto";
 
     return () => {
       document.body.style.overflow = prevBodyOverflow;
@@ -633,34 +617,249 @@ export function WatchPage() {
     return () => video.removeEventListener("timeupdate", onTimeUpdate);
   }, [isSeries, season, episode, episodeList, decodedItemId, audioPreference, originalLanguageCode]);
 
-  // D-pad keyboard controls for video: seek, play/pause, back
+  // D-pad keyboard controls with zone navigation: header / player / sidebar
+  const tvZoneRef = useRef<"header" | "player" | "sidebar">("player");
+  const sidebarFocusIndexRef = useRef(0);
+  const headerFocusIndexRef = useRef(0);
+
+  const getHeaderFocusables = useCallback((): HTMLElement[] => {
+    return Array.from(
+      document.querySelectorAll<HTMLElement>(
+        ".watch-hero-strip .back-link-icon, .watch-hero-strip .watch-top-action-btn"
+      )
+    );
+  }, []);
+
+  const getSidebarFocusables = useCallback((): HTMLElement[] => {
+    return Array.from(
+      document.querySelectorAll<HTMLElement>(
+        ".watch-info-panel button, .watch-info-panel select, .watch-info-panel .episode-item, .watch-details-panel .secondary-btn"
+      )
+    );
+  }, []);
+
+  const getPlayerFocusables = useCallback((): HTMLElement[] => {
+    return Array.from(
+      document.querySelectorAll<HTMLElement>(
+        ".player-stage .player-start-cta"
+      )
+    );
+  }, []);
+
+  const clearAllFocus = useCallback(() => {
+    document.querySelectorAll(".tv-focused").forEach((el) => el.classList.remove("tv-focused"));
+  }, []);
+
+  const applyFocus = useCallback((el: HTMLElement) => {
+    clearAllFocus();
+    el.classList.add("tv-focused");
+    el.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [clearAllFocus]);
+
+  const applySidebarFocus = useCallback((index: number) => {
+    const items = getSidebarFocusables();
+    if (!items.length) return;
+    const clamped = Math.max(0, Math.min(items.length - 1, index));
+    sidebarFocusIndexRef.current = clamped;
+    applyFocus(items[clamped]);
+  }, [getSidebarFocusables, applyFocus]);
+
+  const applyHeaderFocus = useCallback((index: number) => {
+    const items = getHeaderFocusables();
+    if (!items.length) return;
+    const clamped = Math.max(0, Math.min(items.length - 1, index));
+    headerFocusIndexRef.current = clamped;
+    applyFocus(items[clamped]);
+  }, [getHeaderFocusables, applyFocus]);
+
+  const goToZone = useCallback((zone: "header" | "player" | "sidebar") => {
+    tvZoneRef.current = zone;
+    if (zone === "header") {
+      applyHeaderFocus(headerFocusIndexRef.current);
+    } else if (zone === "sidebar") {
+      applySidebarFocus(sidebarFocusIndexRef.current);
+    } else {
+      const playerItems = getPlayerFocusables();
+      if (playerItems.length) {
+        applyFocus(playerItems[0]);
+      } else {
+        clearAllFocus();
+      }
+    }
+  }, [applyHeaderFocus, applySidebarFocus, getPlayerFocusables, applyFocus, clearAllFocus]);
+
+
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
+      // Allow typing in inputs normally
       const tag = (e.target as HTMLElement)?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      // If a native <select> dropdown is open, let the browser handle all keys
+      if (tag === "SELECT") return;
+
       const video = videoRef.current;
       if (!video) return;
+      const zone = tvZoneRef.current;
+
+      // --- HEADER zone ---
+      if (zone === "header") {
+        const items = getHeaderFocusables();
+        const idx = headerFocusIndexRef.current;
+        switch (e.key) {
+          case "ArrowLeft":
+            e.preventDefault();
+            if (idx > 0) { headerFocusIndexRef.current = idx - 1; applyHeaderFocus(idx - 1); }
+            break;
+          case "ArrowRight":
+            e.preventDefault();
+            if (idx < items.length - 1) { headerFocusIndexRef.current = idx + 1; applyHeaderFocus(idx + 1); }
+            break;
+          case "ArrowDown":
+            e.preventDefault();
+            goToZone("player");
+            break;
+          case "Enter":
+          case " ":
+            e.preventDefault();
+            if (items[idx]) items[idx].click();
+            break;
+          case "Escape":
+          case "Backspace":
+            e.preventDefault();
+            navigate("/");
+            break;
+        }
+        return;
+      }
+
+      // --- PLAYER zone ---
+      if (zone === "player") {
+        const playerItems = getPlayerFocusables();
+        const hasStartButton = playerItems.length > 0;
+
+        switch (e.key) {
+          case "ArrowLeft":
+            e.preventDefault();
+            if (!hasStartButton) {
+              video.currentTime = Math.max(0, video.currentTime - 10);
+              showSeekTooltip("-10s");
+            }
+            break;
+          case "ArrowRight":
+            e.preventDefault();
+            if (!hasStartButton) {
+              video.currentTime = Math.min(video.duration || 0, video.currentTime + 10);
+              showSeekTooltip("+10s");
+            }
+            break;
+          case "ArrowUp":
+            e.preventDefault();
+            goToZone("header");
+            break;
+          case "ArrowDown": {
+            e.preventDefault();
+            const items = getSidebarFocusables();
+            if (items.length) {
+              sidebarFocusIndexRef.current = 0;
+              goToZone("sidebar");
+            }
+            break;
+          }
+          case "Enter":
+          case " ":
+            e.preventDefault();
+            if (hasStartButton) {
+              playerItems[0].click();
+            } else {
+              if (video.paused) video.play().catch(() => {});
+              else video.pause();
+            }
+            break;
+          case "Escape":
+          case "Backspace":
+            e.preventDefault();
+            navigate("/");
+            break;
+        }
+        return;
+      }
+
+
+      // --- SIDEBAR zone ---
+      const items = getSidebarFocusables();
+      const idx = sidebarFocusIndexRef.current;
+      const current = items[idx] || null;
+      const isSelect = current?.tagName === "SELECT";
 
       switch (e.key) {
-        case "ArrowLeft":
+        case "ArrowDown":
           e.preventDefault();
-          video.currentTime = Math.max(0, video.currentTime - 10);
+          if (idx < items.length - 1) {
+            sidebarFocusIndexRef.current = idx + 1;
+            applySidebarFocus(idx + 1);
+          }
           break;
-        case "ArrowRight":
+        case "ArrowUp":
           e.preventDefault();
-          video.currentTime = Math.min(video.duration || 0, video.currentTime + 10);
+          if (idx > 0) {
+            sidebarFocusIndexRef.current = idx - 1;
+            applySidebarFocus(idx - 1);
+          } else {
+            goToZone("player");
+          }
           break;
+        case "ArrowRight": {
+          e.preventDefault();
+          if (current) {
+            const row = current.parentElement;
+            if (row && (row.classList.contains("chip-row") || row.classList.contains("episode-list") || row.classList.contains("alt-source-list"))) {
+              const siblings = Array.from(row.children) as HTMLElement[];
+              const posInRow = siblings.indexOf(current);
+              if (posInRow < siblings.length - 1) {
+                const nextSibling = siblings[posInRow + 1];
+                const globalIdx = items.indexOf(nextSibling);
+                if (globalIdx !== -1) { sidebarFocusIndexRef.current = globalIdx; applySidebarFocus(globalIdx); }
+              }
+            }
+          }
+          break;
+        }
+        case "ArrowLeft": {
+          e.preventDefault();
+          if (current) {
+            const row = current.parentElement;
+            if (row && (row.classList.contains("chip-row") || row.classList.contains("episode-list") || row.classList.contains("alt-source-list"))) {
+              const siblings = Array.from(row.children) as HTMLElement[];
+              const posInRow = siblings.indexOf(current);
+              if (posInRow > 0) {
+                const prevSibling = siblings[posInRow - 1];
+                const globalIdx = items.indexOf(prevSibling);
+                if (globalIdx !== -1) { sidebarFocusIndexRef.current = globalIdx; applySidebarFocus(globalIdx); }
+              }
+            }
+          }
+          break;
+        }
         case "Enter":
         case " ":
           e.preventDefault();
-          if (video.paused) video.play().catch(() => {});
-          else video.pause();
+          if (isSelect) {
+            // Open native dropdown — browser handles selection internally
+            (current as HTMLSelectElement).showPicker?.();
+          } else if (current) {
+            current.click();
+          }
+          break;
+        case "Escape":
+        case "Backspace":
+          e.preventDefault();
+          goToZone("player");
           break;
       }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [navigate, getSidebarFocusables, getHeaderFocusables, applySidebarFocus, applyHeaderFocus, goToZone, clearAllFocus]);
 
   const displayYear = metaDetails?.info?.year || selectedFromStore?.year || "s/a";
   const displayRuntime = Number(metaDetails?.info?.runtime || 0) > 0 ? `${metaDetails?.info?.runtime} min` : null;
@@ -695,7 +894,7 @@ export function WatchPage() {
         </div>
         <button
           type="button"
-          className="watch-top-action-btn mobile-only"
+          className="watch-top-action-btn"
           onClick={handleEnterFullscreen}
           aria-label="Pantalla completa"
           title="Pantalla completa"
@@ -706,7 +905,7 @@ export function WatchPage() {
 
       <section className="watch-layout">
         <section className="watch-player-panel">
-          <div className={`player-stage ${showLoaderOverlay ? "is-loading" : "is-ready"}`}>
+          <div className={`player-stage ${showLoaderOverlay ? "is-loading" : "is-ready"}`} ref={playerStageRef}>
             <video ref={videoRef} controls playsInline className="video-player">
               {activeSubtitleTrack ? (
                 <track
@@ -721,6 +920,12 @@ export function WatchPage() {
                 />
               ) : null}
             </video>
+
+            {seekTooltip ? (
+              <div className="seek-indicator-overlay">
+                {seekTooltip}
+              </div>
+            ) : null}
 
             {showLoaderOverlay ? (
               <div className="player-overlay" aria-live="polite">
@@ -938,6 +1143,17 @@ export function WatchPage() {
             <p className="muted">
               Actores: {metaDetails?.info?.cast?.length ? metaDetails.info.cast.slice(0, 6).join(", ") : "N/D"}
             </p>
+            <button
+              type="button"
+              className="secondary-btn"
+              style={{ marginTop: 20, width: "100%" }}
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                goToZone("header");
+              }}
+            >
+              Volver arriba
+            </button>
           </section>
 
           {actionError ? <p className="muted watch-error">{actionError}</p> : null}

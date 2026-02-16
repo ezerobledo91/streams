@@ -62,9 +62,49 @@
           "itemId": "tmdb:tv:1399",
           "reason": "n/a",
           "notedAt": 1771199671496
+        },
+        {
+          "key": "series:tmdb:tv:94997",
+          "type": "series",
+          "itemId": "tmdb:tv:94997",
+          "reason": "n/a",
+          "notedAt": 1771212054552
+        },
+        {
+          "key": "movie:tmdb:movie:1234731",
+          "type": "movie",
+          "itemId": "tmdb:movie:1234731",
+          "reason": "n/a",
+          "notedAt": 1771213727950
         }
       ],
       "continueWatching": [
+        {
+          "type": "movie",
+          "itemId": "tmdb:movie:1315303",
+          "name": "Primate",
+          "poster": "https://image.tmdb.org/t/p/w500/cyqEghDphEUunLfongtpmROjpID.jpg",
+          "background": "https://image.tmdb.org/t/p/w500/9uakM2woks0JV8HKIc4oatIVS88.jpg",
+          "season": null,
+          "episode": null,
+          "episodeTitle": null,
+          "position": 0,
+          "duration": 5528,
+          "lastWatched": 1771215998624
+        },
+        {
+          "type": "movie",
+          "itemId": "tmdb:movie:1234731",
+          "name": "Anaconda",
+          "poster": "https://image.tmdb.org/t/p/w500/zX1KJPiGTrzpFcjfOWlmqdRgpQd.jpg",
+          "background": "https://image.tmdb.org/t/p/w500/swxhEJsAWms6X1fDZ4HdbvYBSf9.jpg",
+          "season": null,
+          "episode": null,
+          "episodeTitle": null,
+          "position": 134,
+          "duration": 5675,
+          "lastWatched": 1771214938219
+        },
         {
           "type": "movie",
           "itemId": "tmdb:movie:1084242",
@@ -74,9 +114,9 @@
           "season": null,
           "episode": null,
           "episodeTitle": null,
-          "position": 336,
-          "duration": 6458,
-          "lastWatched": 1771205416794
+          "position": 42,
+          "duration": 6459,
+          "lastWatched": 1771211297718
         },
         {
           "type": "series",
@@ -207,19 +247,6 @@
           "position": 0,
           "duration": 7553,
           "lastWatched": 1771105627967
-        },
-        {
-          "type": "movie",
-          "itemId": "tmdb:movie:1315303",
-          "name": "Primate",
-          "poster": "https://image.tmdb.org/t/p/w500/cyqEghDphEUunLfongtpmROjpID.jpg",
-          "background": "https://image.tmdb.org/t/p/w500/9uakM2woks0JV8HKIc4oatIVS88.jpg",
-          "season": null,
-          "episode": null,
-          "episodeTitle": null,
-          "position": 0,
-          "duration": 5527,
-          "lastWatched": 1771105132679
         }
       ]
     }

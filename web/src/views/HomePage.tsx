@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Clapperboard, Film, Radio, RefreshCw, Search, SlidersHorizontal, Tv2, X } from "lucide-react";
+import { Clapperboard, Film, Heart, Radio, RefreshCw, Search, SlidersHorizontal, Tv2, X } from "lucide-react";
 import { fetchCatalogByCategory, fetchContinueWatching, fetchSources, reloadSources } from "../api";
 import { CategoryRail } from "../components/CategoryRail";
 import { ContinueWatchingRail } from "../components/ContinueWatchingRail";
@@ -420,10 +420,32 @@ export function HomePage() {
     setActiveSuggestionIndex(-1);
   }, [normalizedSearchTerm, activeHomeCategory]);
 
+  // D-pad zone refs (declared early so handleSearchKeyDown can reference them)
+  type TvZone = "nav" | "hero" | "rails";
+  const tvZoneRef = useRef<TvZone>("hero");
+  const activeRailRef = useRef(0);
+  const activeCardRef = useRef(0);
+  const activeNavRef = useRef(0);
+  const focusedGenreIndexRef = useRef(0);
+
   function handleSearchKeyDown(event: ReactKeyboardEvent<HTMLInputElement>) {
     if (event.key === "Escape") {
       setIsSearchFocused(false);
       setActiveSuggestionIndex(-1);
+      // Restore nav focus on the search icon button
+      requestAnimationFrame(() => {
+        const navItems = document.querySelectorAll<HTMLElement>(".home-nav .nav-link, .home-header-right .search-icon-btn, .home-header-right .header-action-btn, .home-header-right .user-avatar-btn");
+        // Find the search-icon-btn index
+        for (let i = 0; i < navItems.length; i++) {
+          if (navItems[i].classList.contains("search-icon-btn")) {
+            tvZoneRef.current = "nav";
+            activeNavRef.current = i;
+            for (const el of document.querySelectorAll(".tv-focused")) el.classList.remove("tv-focused");
+            navItems[i].classList.add("tv-focused");
+            break;
+          }
+        }
+      });
       return;
     }
 
@@ -470,25 +492,46 @@ export function HomePage() {
   const heroPosterFallback = Boolean(heroItem?.poster && !heroItem?.background);
   const activeRows = GENRE_ROWS[activeHomeCategory] || [];
 
-  // D-pad navigation for rails
+  // D-pad navigation — zones: header-nav | hero | rails
   useGamepad(!isSearchFocused);
 
-  const activeRailRef = useRef(0);
-  const activeCardRef = useRef(0);
 
   useEffect(() => {
     if (isSearchFocused) return;
 
-    function scrollRailCard(railIndex: number, cardIndex: number) {
+    function clearAllFocus() {
+      for (const el of document.querySelectorAll(".tv-focused")) el.classList.remove("tv-focused");
+    }
+
+    function focusNavItem(index: number) {
+      clearAllFocus();
+      const navItems = document.querySelectorAll<HTMLElement>(".home-nav .nav-link, .home-header-right .search-icon-btn, .home-header-right .header-action-btn, .home-header-right .user-avatar-btn");
+      if (!navItems.length) return;
+      const safe = Math.max(0, Math.min(navItems.length - 1, index));
+      activeNavRef.current = safe;
+      navItems[safe]?.classList.add("tv-focused");
+      navItems[safe]?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+    }
+
+    function focusHero() {
+      clearAllFocus();
+      const heroBtn = document.querySelector<HTMLElement>(".hero-actions .primary-btn");
+      if (heroBtn) {
+        heroBtn.classList.add("tv-focused");
+        heroBtn.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+    }
+
+    function focusRailCard(railIndex: number, cardIndex: number) {
+      clearAllFocus();
       const rows = document.querySelectorAll<HTMLElement>(".home-rows [data-row-id], .home-rows .continue-watching-rail");
       if (!rows[railIndex]) return;
-      const cards = rows[railIndex].querySelectorAll<HTMLElement>(".media-tile, .continue-card");
+      // Incluimos el link de "Ver todo" en la lista de elementos enfocables del rail
+      const cards = rows[railIndex].querySelectorAll<HTMLElement>(".media-tile, .continue-card, .rail-browse-link");
       if (!cards.length) return;
       const safeCard = Math.max(0, Math.min(cards.length - 1, cardIndex));
       activeCardRef.current = safeCard;
-
-      // Remove previous focus
-      for (const el of document.querySelectorAll(".tv-focused")) el.classList.remove("tv-focused");
+      activeRailRef.current = railIndex;
       cards[safeCard]?.classList.add("tv-focused");
       cards[safeCard]?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
     }
@@ -497,41 +540,149 @@ export function HomePage() {
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
 
+      // --- OFFCANVAS de géneros abierto ---
+      if (isFilterOpen) {
+        const chips = Array.from(document.querySelectorAll<HTMLElement>(".genre-offcanvas .genre-chip, .genre-offcanvas .icon-only-btn"));
+        if (!chips.length) return;
+        const cols = window.innerWidth <= 520 ? 1 : 2; // grid responsive
+        let idx = focusedGenreIndexRef.current;
+
+        switch (e.key) {
+          case "ArrowDown":
+            e.preventDefault();
+            // Si estamos en el botón X (idx 0), bajar al primer chip
+            if (idx === 0) idx = 1;
+            else idx = Math.min(chips.length - 1, idx + cols);
+            break;
+          case "ArrowUp":
+            e.preventDefault();
+            // Si estamos en la primera fila de chips, subir al botón X
+            if (idx <= cols && idx > 0) idx = 0;
+            else if (idx > 0) idx = Math.max(1, idx - cols);
+            break;
+          case "ArrowRight":
+            e.preventDefault();
+            if (idx === 0) break; // El botón X no tiene nada a la derecha
+            idx = Math.min(chips.length - 1, idx + 1);
+            break;
+          case "ArrowLeft":
+            e.preventDefault();
+            if (idx === 0) break;
+            idx = Math.max(0, idx - 1);
+            break;
+          case "Enter":
+          case " ":
+            e.preventDefault();
+            if (chips[idx]) chips[idx].click();
+            return;
+          case "Escape":
+          case "Backspace":
+            e.preventDefault();
+            setIsFilterOpen(false);
+            clearAllFocus();
+            return;
+          default:
+            return;
+        }
+        focusedGenreIndexRef.current = idx;
+        clearAllFocus();
+        if (chips[idx]) {
+          chips[idx].classList.add("tv-focused");
+          chips[idx].scrollIntoView({ block: "nearest", behavior: "smooth" });
+        }
+        return;
+      }
+
+      const zone = tvZoneRef.current;
       const allRails = document.querySelectorAll<HTMLElement>(".home-rows [data-row-id], .home-rows .continue-watching-rail");
-      if (!allRails.length) return;
       const maxRail = allRails.length - 1;
 
       switch (e.key) {
         case "ArrowUp":
           e.preventDefault();
-          activeRailRef.current = Math.max(0, activeRailRef.current - 1);
-          scrollRailCard(activeRailRef.current, activeCardRef.current);
+          if (zone === "rails") {
+            if (activeRailRef.current > 0) {
+              activeRailRef.current -= 1;
+              focusRailCard(activeRailRef.current, activeCardRef.current);
+            } else {
+              tvZoneRef.current = "hero";
+              focusHero();
+            }
+          } else if (zone === "hero") {
+            tvZoneRef.current = "nav";
+            focusNavItem(activeNavRef.current);
+          } else if (zone === "nav") {
+            // Ya arriba del todo — no hacer nada
+          }
           break;
+
         case "ArrowDown":
           e.preventDefault();
-          activeRailRef.current = Math.min(maxRail, activeRailRef.current + 1);
-          scrollRailCard(activeRailRef.current, activeCardRef.current);
+          if (zone === "nav") {
+            tvZoneRef.current = "hero";
+            focusHero();
+          } else if (zone === "hero") {
+            if (allRails.length) {
+              tvZoneRef.current = "rails";
+              activeRailRef.current = 0;
+              focusRailCard(0, activeCardRef.current);
+            }
+          } else if (zone === "rails") {
+            if (activeRailRef.current < maxRail) {
+              activeRailRef.current += 1;
+              focusRailCard(activeRailRef.current, activeCardRef.current);
+            }
+          }
           break;
+
         case "ArrowLeft":
           e.preventDefault();
-          scrollRailCard(activeRailRef.current, activeCardRef.current - 1);
+          if (zone === "nav") {
+            focusNavItem(activeNavRef.current - 1);
+          } else if (zone === "hero") {
+            // Cambiar hero selector
+            setHeroIndex((c) => Math.max(0, c - 1));
+          } else if (zone === "rails") {
+            focusRailCard(activeRailRef.current, activeCardRef.current - 1);
+          }
           break;
+
         case "ArrowRight":
           e.preventDefault();
-          scrollRailCard(activeRailRef.current, activeCardRef.current + 1);
+          if (zone === "nav") {
+            focusNavItem(activeNavRef.current + 1);
+          } else if (zone === "hero") {
+            setHeroIndex((c) => c + 1);
+          } else if (zone === "rails") {
+            focusRailCard(activeRailRef.current, activeCardRef.current + 1);
+          }
           break;
+
         case "Enter": {
           e.preventDefault();
           const focused = document.querySelector<HTMLElement>(".tv-focused");
           if (focused) focused.click();
           break;
         }
+
+        case "Backspace":
+          e.preventDefault();
+          if (zone === "rails") {
+            tvZoneRef.current = "hero";
+            focusHero();
+          } else if (zone === "hero") {
+            tvZoneRef.current = "nav";
+            focusNavItem(activeNavRef.current);
+          } else if (zone === "nav") {
+            // Optional: could trigger a "confirm exit" or similar
+          }
+          break;
       }
     }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isSearchFocused]);
+  }, [isSearchFocused, isFilterOpen]);
 
   return (
     <main className="home-shell">
@@ -567,6 +718,9 @@ export function HomePage() {
               </button>
               <Link to="/live-tv" className="nav-link">
                 TV en vivo
+              </Link>
+              <Link to="/favorites" className="nav-link">
+                Favoritos
               </Link>
             </nav>
           </div>
@@ -700,7 +854,9 @@ export function HomePage() {
         {loading ? <p className="muted" style={{ padding: "0 4%" }}>Cargando...</p> : null}
 
         {continueWatching.length > 0 ? (
-          <ContinueWatchingRail items={continueWatching} onSelect={handleSelectContinueWatching} />
+          <div className="continue-watching-rail">
+            <ContinueWatchingRail items={continueWatching} onSelect={handleSelectContinueWatching} />
+          </div>
         ) : null}
 
         {activeRows.map((row) => (
@@ -743,6 +899,10 @@ export function HomePage() {
         <Link to="/live-tv" className="mobile-dock-item">
           <Radio size={17} />
           <span>En vivo</span>
+        </Link>
+        <Link to="/favorites" className="mobile-dock-item">
+          <Heart size={17} />
+          <span>Favoritos</span>
         </Link>
       </nav>
       {isFilterOpen ? <div className="offcanvas-backdrop" onClick={() => setIsFilterOpen(false)} /> : null}

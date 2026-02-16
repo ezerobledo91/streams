@@ -244,6 +244,12 @@ export interface LiveTvChannelItem {
   sourceFile: string;
 }
 
+export interface ChannelGroup {
+  baseName: string;
+  primary: LiveTvChannelItem;
+  subChannels: LiveTvChannelItem[];
+}
+
 export interface LiveTvCategoriesPayload {
   loadedAt: string | null;
   categories: LiveTvCategoryItem[];
