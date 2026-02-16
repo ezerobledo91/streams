@@ -306,10 +306,11 @@ export function WatchPage() {
       const ttffStartedAt = performance.now();
       applyAutoPlaybackPayload(payload, setSessionSubtitles);
       const isHlsSession = payload.streamUrl.includes("/hls/") && payload.sessionId;
-      console.log(`[PLAY-DEBUG] attachVideoSource: url=${payload.streamUrl} mode=${isHlsSession ? "live" : "vod"}`);
+      const hlsMode = isHlsSession ? "event" : "vod";
+      console.log(`[PLAY-DEBUG] attachVideoSource: url=${payload.streamUrl} mode=${hlsMode}`);
       try {
         await attachVideoSource(videoRef.current, payload.streamUrl, {
-          mode: isHlsSession ? "live" : "vod"
+          mode: hlsMode
         });
         console.log("[PLAY-DEBUG] attachVideoSource OK, waiting for video ready...");
       } catch (err) {

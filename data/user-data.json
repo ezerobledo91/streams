@@ -24,6 +24,32 @@
       "continueWatching": [
         {
           "type": "series",
+          "itemId": "tmdb:tv:11235",
+          "name": "Medabots",
+          "poster": "https://image.tmdb.org/t/p/w500/x4bQto8Jsphbd0VxLKcvqDQS0Mj.jpg",
+          "background": "https://image.tmdb.org/t/p/w500/wbrbdpdEBuNCtgiqL9xObpma1zu.jpg",
+          "season": 1,
+          "episode": 1,
+          "episodeTitle": "Episodio 1",
+          "position": 0,
+          "duration": 23,
+          "lastWatched": 1771267234719
+        },
+        {
+          "type": "movie",
+          "itemId": "tmdb:movie:1315303",
+          "name": "Primate",
+          "poster": "https://image.tmdb.org/t/p/w500/cyqEghDphEUunLfongtpmROjpID.jpg",
+          "background": "https://image.tmdb.org/t/p/w500/9uakM2woks0JV8HKIc4oatIVS88.jpg",
+          "season": null,
+          "episode": null,
+          "episodeTitle": null,
+          "position": 4866,
+          "duration": 5528,
+          "lastWatched": 1771264770437
+        },
+        {
+          "type": "series",
           "itemId": "tmdb:tv:2673",
           "name": "The O.C.",
           "poster": "https://image.tmdb.org/t/p/w500/xDc6BMGDaeyalpSZ9KKk7RCBCz5.jpg",
@@ -31,9 +57,9 @@
           "season": 1,
           "episode": 1,
           "episodeTitle": "Piloto",
-          "position": 239,
-          "duration": 874,
-          "lastWatched": 1771257857685
+          "position": 540,
+          "duration": 1743,
+          "lastWatched": 1771258158007
         },
         {
           "type": "series",
@@ -73,19 +99,6 @@
           "position": 5,
           "duration": 5,
           "lastWatched": 1771226061972
-        },
-        {
-          "type": "movie",
-          "itemId": "tmdb:movie:1315303",
-          "name": "Primate",
-          "poster": "https://image.tmdb.org/t/p/w500/cyqEghDphEUunLfongtpmROjpID.jpg",
-          "background": "https://image.tmdb.org/t/p/w500/9uakM2woks0JV8HKIc4oatIVS88.jpg",
-          "season": null,
-          "episode": null,
-          "episodeTitle": null,
-          "position": 0,
-          "duration": 5528,
-          "lastWatched": 1771215998624
         },
         {
           "type": "movie",
@@ -225,6 +238,19 @@
       "favorites": [],
       "unavailable": [],
       "continueWatching": [
+        {
+          "type": "series",
+          "itemId": "tmdb:tv:2673",
+          "name": "The O.C.",
+          "poster": "https://image.tmdb.org/t/p/w500/xDc6BMGDaeyalpSZ9KKk7RCBCz5.jpg",
+          "background": "https://image.tmdb.org/t/p/w500/5WVAGHTNMWhNwk5l3FoeAScmw7M.jpg",
+          "season": 1,
+          "episode": 1,
+          "episodeTitle": "Piloto",
+          "position": 2672,
+          "duration": 2706,
+          "lastWatched": 1771264605684
+        },
         {
           "type": "series",
           "itemId": "tmdb:tv:66732",

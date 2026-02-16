@@ -877,7 +877,7 @@ export function HomePage() {
           className={`mobile-dock-item ${state.category === "movie" ? "is-active" : ""}`}
           onClick={() => actions.setCategory("movie")}
         >
-          <Film size={17} />
+          <Film size={15} />
           <span>Pelis</span>
         </button>
         <button
@@ -885,7 +885,7 @@ export function HomePage() {
           className={`mobile-dock-item ${state.category === "series" ? "is-active" : ""}`}
           onClick={() => actions.setCategory("series")}
         >
-          <Clapperboard size={17} />
+          <Clapperboard size={15} />
           <span>Series</span>
         </button>
         <button
@@ -893,16 +893,16 @@ export function HomePage() {
           className="mobile-dock-item"
           onClick={handleOpenSearchPage}
         >
-          <Search size={17} />
+          <Search size={15} />
           <span>Buscar</span>
         </button>
         <Link to="/live-tv" className="mobile-dock-item">
-          <Radio size={17} />
+          <Radio size={15} />
           <span>En vivo</span>
         </Link>
         <Link to="/favorites" className="mobile-dock-item">
-          <Heart size={17} />
-          <span>Favoritos</span>
+          <Heart size={15} />
+          <span>Favs</span>
         </Link>
       </nav>
       {isFilterOpen ? <div className="offcanvas-backdrop" onClick={() => setIsFilterOpen(false)} /> : null}

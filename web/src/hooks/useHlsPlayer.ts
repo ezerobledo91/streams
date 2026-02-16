@@ -9,11 +9,37 @@ interface UseHlsPlayerOptions {
 
 interface AttachVideoSourceOptions {
   forceHls?: boolean;
-  mode?: "vod" | "live";
+  mode?: "vod" | "live" | "event";
 }
 
-function buildHlsConfig(mode: "vod" | "live" = "vod"): Partial<ConstructorParameters<typeof Hls>[0]> {
+function buildHlsConfig(mode: "vod" | "live" | "event" = "vod"): Partial<ConstructorParameters<typeof Hls>[0]> {
+  // "live" = TV en vivo real: sincronizar con el live edge
   if (mode === "live") {
+    return {
+      enableWorker: true,
+      lowLatencyMode: false,
+      backBufferLength: 15,
+      startPosition: -1,
+      maxBufferLength: 15,
+      maxMaxBufferLength: 30,
+      maxBufferHole: 6,
+      liveSyncDurationCount: 3,
+      liveMaxLatencyDurationCount: 8,
+      initialLiveManifestSize: 1,
+      manifestLoadingRetryDelay: 500,
+      manifestLoadingMaxRetryTimeout: 15000,
+      manifestLoadingMaxRetry: 40,
+      levelLoadingRetryDelay: 500,
+      levelLoadingMaxRetryTimeout: 10000,
+      levelLoadingMaxRetry: 20,
+      fragLoadingMaxRetry: 20,
+      fragLoadingRetryDelay: 500,
+      fragLoadingMaxRetryTimeout: 10000,
+      nudgeMaxRetry: 15
+    };
+  }
+  // "event" = HLS de transcode/torrent: empieza desde 0, no saltar al live edge
+  if (mode === "event") {
     return {
       enableWorker: true,
       lowLatencyMode: false,
@@ -22,7 +48,6 @@ function buildHlsConfig(mode: "vod" | "live" = "vod"): Partial<ConstructorParame
       maxBufferLength: 30,
       maxMaxBufferLength: 60,
       maxBufferHole: 2,
-      // Evitar que hls.js salte al "live edge": valores muy altos
       liveSyncDuration: 999999,
       liveMaxLatencyDuration: 9999999,
       initialLiveManifestSize: 1,
@@ -38,6 +63,7 @@ function buildHlsConfig(mode: "vod" | "live" = "vod"): Partial<ConstructorParame
       nudgeMaxRetry: 15
     };
   }
+  // "vod" = streams directos/VOD
   return {
     enableWorker: true,
     lowLatencyMode: false,
@@ -46,7 +72,6 @@ function buildHlsConfig(mode: "vod" | "live" = "vod"): Partial<ConstructorParame
     maxBufferLength: 30,
     maxMaxBufferLength: 60,
     maxBufferHole: 0.5,
-    // Desactivar live sync: usar valores muy altos para que nunca salte al "live edge"
     liveSyncDuration: 999999,
     liveMaxLatencyDuration: 9999999,
     manifestLoadingRetryDelay: 500,

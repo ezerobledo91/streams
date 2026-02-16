@@ -1,0 +1,35 @@
+#EXTM3U
+#EXTINF:-1 tvg-id="a24" tvg-name="A24" tvg-logo="https://i.imgur.com/uU6j6wS.png" group-title="Noticias",A24
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/157613
+#EXTINF:-1 tvg-id="c5n" tvg-name="C5N" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/b/b4/C5N_logo.png" group-title="Noticias",C5N
+https://metalgear.bemtv.cn/STREAM/7699/playlist.m3u8
+#EXTINF:-1 tvg-id="c5n" tvg-name="C5N" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/b/b4/C5N_logo.png" group-title="Noticias",C5N (Alt 2)
+https://router.cdn.rcs.net.ar/mnp/c5n_hls/playlist.m3u8
+#EXTINF:-1 tvg-id="c5n" tvg-name="C5N" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/b/b4/C5N_logo.png" group-title="Noticias",C5N (Alt 3)
+http://190.7.19.197:232/play/a040/index.m3u8
+#EXTINF:-1 tvg-id="canal26" tvg-name="Canal 26" tvg-logo="https://i.imgur.com/uU6j6wS.png" group-title="Noticias",Canal 26
+https://stream-gtlc.telecentro.net.ar/hls/canal26hls/main.m3u8
+#EXTINF:-1 tvg-id="canal26" tvg-name="Canal 26" tvg-logo="https://i.imgur.com/uU6j6wS.png" group-title="Noticias",Canal 26 (Alt 2)
+https://router.cdn.rcs.net.ar/mnp/canal26_hls/playlist.m3u8
+#EXTINF:-1 tvg-id="canal26" tvg-name="Canal 26" tvg-logo="https://i.imgur.com/uU6j6wS.png" group-title="Noticias",Canal 26 (Alt 3)
+http://190.7.19.197:232/play/a042/index.m3u8
+#EXTINF:-1 tvg-id="canal26" tvg-name="Canal 26" tvg-logo="https://i.imgur.com/uU6j6wS.png" group-title="Noticias",Canal 26 (Alt 4)
+http://stream-gtlc.telecentro.net.ar/hls/canal26hls/main.m3u8
+#EXTINF:-1 tvg-id="canal26" tvg-name="Canal 26" tvg-logo="https://i.imgur.com/uU6j6wS.png" group-title="Noticias",Canal 26 (Alt 5)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/157594
+#EXTINF:-1 tvg-id="cronica" tvg-name="Crónica TV" tvg-logo="https://i.imgur.com/mRzR2mK.png" group-title="Noticias",Crónica TV
+https://kafra25.webcindario.com/tutube.php?id=@cronicatv&f=.m3u8
+#EXTINF:-1 tvg-id="cronica" tvg-name="Crónica TV" tvg-logo="https://i.imgur.com/mRzR2mK.png" group-title="Noticias",Crónica TV (Alt 2)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/157572
+#EXTINF:-1 tvg-id="ip_noticias" tvg-name="IP Noticias" tvg-logo="https://i.imgur.com/uU6j6wS.png" group-title="Noticias",IP Noticias
+http://181.78.27.128:12543/play/a055/index.m3u8
+#EXTINF:-1 tvg-id="ln_mas" tvg-name="LN+" tvg-logo="https://i.imgur.com/8QGjJ9m.png" group-title="Noticias",LN+
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/157593
+#EXTINF:-1 tvg-id="ln_mas" tvg-name="LN+" tvg-logo="https://i.imgur.com/8QGjJ9m.png" group-title="Noticias",LN+ (Alt 2)
+http://dnsplay.xyz:80/jqrrcnjz/21fs5J9hLs/333108
+#EXTINF:-1 tvg-id="ln_mas" tvg-name="LN+" tvg-logo="https://i.imgur.com/8QGjJ9m.png" group-title="Noticias",LN+ (Alt 3)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/157574
+#EXTINF:-1 tvg-id="tn" tvg-name="TN" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/b/b6/Todo_Noticias_2016.png" group-title="Noticias",TN
+https://dai.google.com/linear/hls/event/HZ3JdLVcQ463l3b1BLXmmQ/master.m3u8
+#EXTINF:-1 tvg-id="tn" tvg-name="TN" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/b/b6/Todo_Noticias_2016.png" group-title="Noticias",TN (Alt 2)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/157577

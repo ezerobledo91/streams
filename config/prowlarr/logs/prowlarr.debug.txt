@@ -6811,3 +6811,652 @@ FeedUrl: https://magnetz.eu/search?query=The+O.C.
 2026-02-16 13:00:05.3|Debug|Api|[GET] /api/v1/search?query=The+O.C.+S01E01: 200.OK (10990 ms)
 2026-02-16 13:00:07.4|Debug|ReleaseSearchService|Total of 438 reports were found for Term: [The O.C.], Offset: 0, Limit: 0, Categories: [] from 14 indexer(s)
 2026-02-16 13:00:07.4|Debug|Api|[GET] /api/v1/search?query=The+O.C.: 200.OK (13121 ms)
+2026-02-16 14:10:43.9|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 14:10:43.9|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 14:10:43.9|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 14:10:43.9|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 14:10:43.9|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 14:10:44.0|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 14:10:44.0|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 14:10:44.0|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 14:10:44.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, EZTV Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, Magnet Cat] for Term: [tt0362359], Offset: 0, Limit: 0, Categories: []
+2026-02-16 14:10:44.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, EZTV Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, Magnet Cat] for Term: [The O.C. S01E01], Offset: 0, Limit: 0, Categories: []
+2026-02-16 14:10:44.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, EZTV Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, Magnet Cat] for Term: [The O.C. 1x1], Offset: 0, Limit: 0, Categories: []
+2026-02-16 14:10:44.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, EZTV Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, Magnet Cat] for Term: [The O.C.], Offset: 0, Limit: 0, Categories: []
+2026-02-16 14:10:44.2|Debug|Cardigann|Adding request for YTS Test: https://yts.bz/api/v2/list_movies.json?query_term=tt0362359&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:10:44.2|Debug|Cardigann|Adding request for YTS Test: https://yts.bz/api/v2/list_movies.json?query_term=The+O+C+S01E01&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:10:44.3|Debug|Cardigann|Adding request for YTS Test: https://yts.bz/api/v2/list_movies.json?query_term=The+O+C+1x1&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:10:44.3|Debug|Cardigann|Adding request for YTS Test: https://yts.bz/api/v2/list_movies.json?query_term=The+O+C+&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:10:44.4|Debug|Cardigann|Downloading Feed https://yts.bz/api/v2/list_movies.json?query_term=tt0362359&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:10:44.4|Debug|Cardigann|Downloading Feed https://yts.bz/api/v2/list_movies.json?query_term=The+O+C+S01E01&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:10:44.4|Debug|Cardigann|Downloading Feed https://yts.bz/api/v2/list_movies.json?query_term=The+O+C+1x1&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:10:44.5|Debug|Cardigann|Downloading Feed https://yts.bz/api/v2/list_movies.json?query_term=The+O+C+&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:10:44.5|Debug|Cardigann|Adding request for EZTV Test: https://eztvx.to/search/tt0362359
+2026-02-16 14:10:44.5|Debug|Cardigann|Adding request for EZTV Test: https://eztvx.to/search/The-O.C.-S01E01
+2026-02-16 14:10:44.6|Debug|Cardigann|Adding request for EZTV Test: https://eztvx.to/search/The-O.C.-1x1
+2026-02-16 14:10:44.6|Debug|Cardigann|Adding request for EZTV Test: https://eztvx.to/search/The-O.C.
+2026-02-16 14:10:44.6|Debug|Cardigann|Downloading Feed https://eztvx.to/search/tt0362359
+2026-02-16 14:10:44.7|Debug|Cardigann|Downloading Feed https://eztvx.to/search/The-O.C.-S01E01
+2026-02-16 14:10:44.7|Debug|Cardigann|Downloading Feed https://eztvx.to/search/The-O.C.-1x1
+2026-02-16 14:10:44.7|Debug|Cardigann|Downloading Feed https://eztvx.to/search/The-O.C.
+2026-02-16 14:10:44.8|Debug|Cardigann|Adding request for BitSearch: https://bitsearch.to/search?q=tt0362359&sortBy=created&order=desc&page=1
+2026-02-16 14:10:44.8|Debug|Cardigann|Adding request for BitSearch: https://bitsearch.to/search?q=The%20O%20C%20%20S01E01&sortBy=created&order=desc&page=1
+2026-02-16 14:10:44.8|Debug|Cardigann|Adding request for BitSearch: https://bitsearch.to/search?q=The%20O%20C%20%201x1&sortBy=created&order=desc&page=1
+2026-02-16 14:10:44.9|Debug|Cardigann|Adding request for BitSearch: https://bitsearch.to/search?q=The%20O%20C%20&sortBy=created&order=desc&page=1
+2026-02-16 14:10:44.9|Debug|Cardigann|Downloading Feed https://bitsearch.to/search?q=tt0362359&sortBy=created&order=desc&page=1
+2026-02-16 14:10:44.9|Debug|Cardigann|Downloading Feed https://bitsearch.to/search?q=The%20O%20C%20%20S01E01&sortBy=created&order=desc&page=1
+2026-02-16 14:10:45.0|Debug|Cardigann|Downloading Feed https://bitsearch.to/search?q=The%20O%20C%20%201x1&sortBy=created&order=desc&page=1
+2026-02-16 14:10:45.0|Debug|Cardigann|Downloading Feed https://bitsearch.to/search?q=The%20O%20C%20&sortBy=created&order=desc&page=1
+2026-02-16 14:10:45.1|Debug|Cardigann|Adding request for The Pirate Bay: https://apibay.org/q.php?q=tt0362359&cat=
+2026-02-16 14:10:45.1|Debug|Cardigann|Adding request for The Pirate Bay: https://apibay.org/q.php?q=the.o.c.s01e01&cat=
+2026-02-16 14:10:45.1|Debug|Cardigann|Adding request for The Pirate Bay: https://apibay.org/q.php?q=the.o.c.1x1&cat=
+2026-02-16 14:10:45.2|Debug|Cardigann|Adding request for The Pirate Bay: https://apibay.org/q.php?q=the.o.c.&cat=
+2026-02-16 14:10:45.2|Debug|Cardigann|Downloading Feed https://apibay.org/q.php?q=tt0362359&cat=
+2026-02-16 14:10:45.2|Debug|Cardigann|Downloading Feed https://apibay.org/q.php?q=the.o.c.s01e01&cat=
+2026-02-16 14:10:45.3|Debug|Cardigann|Downloading Feed https://apibay.org/q.php?q=the.o.c.1x1&cat=
+2026-02-16 14:10:45.3|Debug|Cardigann|Downloading Feed https://apibay.org/q.php?q=the.o.c.&cat=
+2026-02-16 14:10:45.4|Debug|Cardigann|Adding request for LimeTorrents: https://www.limetorrents.fun/search/all/tt0362359/date/1/
+2026-02-16 14:10:45.4|Debug|Cardigann|Adding request for LimeTorrents: https://www.limetorrents.fun/search/all/The%20O.C.%20S01E01/date/1/
+2026-02-16 14:10:45.4|Debug|Cardigann|Adding request for LimeTorrents: https://www.limetorrents.fun/search/all/The%20O.C.%201x1/date/1/
+2026-02-16 14:10:45.5|Debug|Cardigann|Adding request for LimeTorrents: https://www.limetorrents.fun/search/all/The%20O.C./date/1/
+2026-02-16 14:10:45.5|Debug|Cardigann|Downloading Feed https://www.limetorrents.fun/search/all/tt0362359/date/1/
+2026-02-16 14:10:45.5|Debug|Cardigann|Downloading Feed https://www.limetorrents.fun/search/all/The%20O.C.%20S01E01/date/1/
+2026-02-16 14:10:45.6|Debug|Cardigann|Downloading Feed https://www.limetorrents.fun/search/all/The%20O.C.%201x1/date/1/
+2026-02-16 14:10:45.6|Debug|Cardigann|Downloading Feed https://www.limetorrents.fun/search/all/The%20O.C./date/1/
+2026-02-16 14:10:45.7|Debug|Cardigann|Adding request for MagnetDownload: https://www.magnetdownload.com/search/tt0362359/
+2026-02-16 14:10:45.7|Debug|Cardigann|Adding request for MagnetDownload: https://www.magnetdownload.com/search/The%20O.C.%20S01E01/
+2026-02-16 14:10:45.7|Debug|Cardigann|Adding request for MagnetDownload: https://www.magnetdownload.com/search/The%20O.C.%201x1/
+2026-02-16 14:10:45.8|Debug|Cardigann|Adding request for MagnetDownload: https://www.magnetdownload.com/search/The%20O.C./
+2026-02-16 14:10:45.8|Debug|Cardigann|Downloading Feed https://www.magnetdownload.com/search/tt0362359/
+2026-02-16 14:10:45.8|Debug|Cardigann|Downloading Feed https://www.magnetdownload.com/search/The%20O.C.%20S01E01/
+2026-02-16 14:10:45.9|Debug|Cardigann|Downloading Feed https://www.magnetdownload.com/search/The%20O.C.%201x1/
+2026-02-16 14:10:45.9|Debug|Cardigann|Downloading Feed https://www.magnetdownload.com/search/The%20O.C./
+2026-02-16 14:10:46.0|Debug|Cardigann|Adding request for TorrentDownload: https://www.torrentdownload.info/searchd?q=tt0362359
+2026-02-16 14:10:46.0|Debug|Cardigann|Adding request for TorrentDownload: https://www.torrentdownload.info/searchd?q=The%20O.C.%20S01E01
+2026-02-16 14:10:46.1|Debug|Cardigann|Adding request for TorrentDownload: https://www.torrentdownload.info/searchd?q=The%20O.C.%201x1
+2026-02-16 14:10:46.1|Debug|Cardigann|Adding request for TorrentDownload: https://www.torrentdownload.info/searchd?q=The%20O.C.
+2026-02-16 14:10:46.1|Debug|IndexerHttpClient|Invalid cookie in https://www.limetorrents.fun/search/all/tt0362359/date/1/
+
+[v2.3.0.5236] System.Net.CookieException: An error occurred when parsing the Cookie header for Uri 'https://www.limetorrents.fun/search/all/tt0362359/date/1/'.
+ ---> System.ArgumentOutOfRangeException: Count must be positive and count must refer to a location within the string/array/collection. (Parameter 'count')
+   at System.Net.Cookie.VerifySetDefaults(CookieVariant variant, Uri uri, Boolean isLocalDomain, String localDomain, Boolean setDefault, Boolean shouldThrow)
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   --- End of inner exception stack trace ---
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   at NzbDrone.Common.Http.HttpClient.AddCookiesToContainer(HttpUri url, String[] cookieHeaders, CookieContainer container) in ./NzbDrone.Common/Http/HttpClient.cs:line 316
+
+
+2026-02-16 14:10:46.1|Debug|Cardigann|Downloading Feed https://www.torrentdownload.info/searchd?q=tt0362359
+2026-02-16 14:10:46.2|Debug|Cardigann|Downloading Feed https://www.torrentdownload.info/searchd?q=The%20O.C.%20S01E01
+2026-02-16 14:10:46.2|Debug|Cardigann|Downloading Feed https://www.torrentdownload.info/searchd?q=The%20O.C.%201x1
+2026-02-16 14:10:46.3|Debug|Cardigann|Downloading Feed https://www.torrentdownload.info/searchd?q=The%20O.C.
+2026-02-16 14:10:46.3|Debug|Knaben|Downloading Feed https://api.knaben.org/v1: {"order_by":"date","order_direction":"desc","from":0,"size":100,"hide_unsafe":true,"search_type":"100%","search_field":"title","query":"tt0362359"}
+2026-02-16 14:10:46.4|Debug|Knaben|Downloading Feed https://api.knaben.org/v1: {"order_by":"date","order_direction":"desc","from":0,"size":100,"hide_unsafe":true,"search_type":"100%","search_field":"title","query":"The O.C. S01E01"}
+2026-02-16 14:10:46.4|Debug|Knaben|Downloading Feed https://api.knaben.org/v1: {"order_by":"date","order_direction":"desc","from":0,"size":100,"hide_unsafe":true,"search_type":"100%","search_field":"title","query":"The O.C. 1x1"}
+2026-02-16 14:10:46.5|Debug|Knaben|Downloading Feed https://api.knaben.org/v1: {"order_by":"date","order_direction":"desc","from":0,"size":100,"hide_unsafe":true,"search_type":"100%","search_field":"title","query":"The O.C."}
+2026-02-16 14:10:46.5|Debug|TorrentsCSV|Downloading Feed https://torrents-csv.com/service/search?size=100&q=tt0362359
+2026-02-16 14:10:46.6|Debug|TorrentsCSV|Downloading Feed https://torrents-csv.com/service/search?size=100&q=The+O.C.+S01E01
+2026-02-16 14:10:46.6|Debug|TorrentsCSV|Downloading Feed https://torrents-csv.com/service/search?size=100&q=The+O.C.+1x1
+2026-02-16 14:10:46.6|Debug|TorrentsCSV|Downloading Feed https://torrents-csv.com/service/search?size=100&q=The+O.C.
+2026-02-16 14:10:46.7|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=tt0362359&orderby=latest
+2026-02-16 14:10:46.7|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=The+O.C.+S01E01&orderby=latest
+2026-02-16 14:10:46.8|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=The+O.C.+1x1&orderby=latest
+2026-02-16 14:10:46.8|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=The+O.C.&orderby=latest
+2026-02-16 14:10:46.8|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=tt0362359&orderby=latest
+2026-02-16 14:10:46.9|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=The+O.C.+S01E01&orderby=latest
+2026-02-16 14:10:46.9|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=The+O.C.+1x1&orderby=latest
+2026-02-16 14:10:47.0|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=The+O.C.&orderby=latest
+2026-02-16 14:10:47.0|Debug|Cardigann|Adding request for Magnetz: https://magnetz.eu/search?query=tt0362359
+2026-02-16 14:10:47.0|Debug|Cardigann|Adding request for Magnetz: https://magnetz.eu/search?query=The+O.C.+S01E01
+2026-02-16 14:10:47.1|Debug|Cardigann|Adding request for Magnetz: https://magnetz.eu/search?query=The+O.C.+1x1
+2026-02-16 14:10:47.1|Debug|Cardigann|Adding request for Magnetz: https://magnetz.eu/search?query=The+O.C.
+2026-02-16 14:10:47.2|Debug|Cardigann|Downloading Feed https://magnetz.eu/search?query=tt0362359
+2026-02-16 14:10:47.2|Debug|Cardigann|Downloading Feed https://magnetz.eu/search?query=The+O.C.+S01E01
+2026-02-16 14:10:47.2|Debug|Cardigann|Downloading Feed https://magnetz.eu/search?query=The+O.C.+1x1
+2026-02-16 14:10:47.3|Debug|Cardigann|Downloading Feed https://magnetz.eu/search?query=The+O.C.
+2026-02-16 14:10:47.3|Debug|Cardigann|Adding request for Nyaa.si: https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=tt0362359
+2026-02-16 14:10:47.4|Debug|Cardigann|Adding request for Nyaa.si: https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=The+O.C.+S01E01
+2026-02-16 14:10:47.5|Debug|Cardigann|Adding request for Nyaa.si: https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=The+O.C.
+2026-02-16 14:10:47.5|Debug|Cardigann|Adding request for Nyaa.si: https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=The+O.C.+1x1
+2026-02-16 14:10:47.5|Debug|Cardigann|Downloading Feed https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=tt0362359
+2026-02-16 14:10:47.5|Debug|Cardigann|Downloading Feed https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=The+O.C.+S01E01
+2026-02-16 14:10:47.5|Debug|Cardigann|Downloading Feed https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=The+O.C.
+2026-02-16 14:10:47.6|Debug|Cardigann|Downloading Feed https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=The+O.C.+1x1
+2026-02-16 14:10:47.6|Debug|SubsPlease|Downloading Feed https://subsplease.org/api/?tz=UTC&f=search&s=tt0362359
+2026-02-16 14:10:47.7|Debug|SubsPlease|Downloading Feed https://subsplease.org/api/?tz=UTC&f=search&s=The+O.C.+S01E01
+2026-02-16 14:10:47.7|Debug|SubsPlease|Downloading Feed https://subsplease.org/api/?tz=UTC&f=search&s=The+O.C.
+2026-02-16 14:10:47.8|Debug|SubsPlease|Downloading Feed https://subsplease.org/api/?tz=UTC&f=search&s=The+O.C.+1x1
+2026-02-16 14:10:47.8|Debug|Cardigann|Adding request for Magnet Cat: https://magnetcatcat.com/search-tt0362359-0-2-1.html
+2026-02-16 14:10:47.8|Debug|Cardigann|Adding request for Magnet Cat: https://magnetcatcat.com/search-The%20O.C.%20S01E01-0-2-1.html
+2026-02-16 14:10:47.8|Debug|Cardigann|Adding request for Magnet Cat: https://magnetcatcat.com/search-The%20O.C.-0-2-1.html
+2026-02-16 14:10:47.9|Debug|Cardigann|Adding request for Magnet Cat: https://magnetcatcat.com/search-The%20O.C.%201x1-0-2-1.html
+2026-02-16 14:10:47.9|Debug|Cardigann|Downloading Feed https://magnetcatcat.com/search-tt0362359-0-2-1.html
+2026-02-16 14:10:47.9|Debug|Cardigann|Downloading Feed https://magnetcatcat.com/search-The%20O.C.%20S01E01-0-2-1.html
+2026-02-16 14:10:48.0|Debug|Cardigann|Downloading Feed https://magnetcatcat.com/search-The%20O.C.-0-2-1.html
+2026-02-16 14:10:48.0|Debug|Cardigann|Downloading Feed https://magnetcatcat.com/search-The%20O.C.%201x1-0-2-1.html
+2026-02-16 14:10:48.1|Debug|IndexerHttpClient|Invalid cookie in https://www.limetorrents.fun/search/all/The%20O.C.%20S01E01/date/1/
+
+[v2.3.0.5236] System.Net.CookieException: An error occurred when parsing the Cookie header for Uri 'https://www.limetorrents.fun/search/all/The%20O.C.%20S01E01/date/1/'.
+ ---> System.ArgumentOutOfRangeException: Count must be positive and count must refer to a location within the string/array/collection. (Parameter 'count')
+   at System.Net.Cookie.VerifySetDefaults(CookieVariant variant, Uri uri, Boolean isLocalDomain, String localDomain, Boolean setDefault, Boolean shouldThrow)
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   --- End of inner exception stack trace ---
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   at NzbDrone.Common.Http.HttpClient.AddCookiesToContainer(HttpUri url, String[] cookieHeaders, CookieContainer container) in ./NzbDrone.Common/Http/HttpClient.cs:line 316
+
+
+2026-02-16 14:10:49.2|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=The+O.C.+S01E01&orderby=latest&p=1
+2026-02-16 14:10:49.2|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=The+O.C.+S01E01&orderby=latest&p=1
+2026-02-16 14:10:49.5|Debug|FlareSolverr|CF Protection not detected, returning original response
+2026-02-16 14:10:50.1|Debug|IndexerHttpClient|Invalid cookie in https://www.limetorrents.fun/search/all/The%20O.C.%201x1/date/1/
+
+[v2.3.0.5236] System.Net.CookieException: An error occurred when parsing the Cookie header for Uri 'https://www.limetorrents.fun/search/all/The%20O.C.%201x1/date/1/'.
+ ---> System.ArgumentOutOfRangeException: Count must be positive and count must refer to a location within the string/array/collection. (Parameter 'count')
+   at System.Net.Cookie.VerifySetDefaults(CookieVariant variant, Uri uri, Boolean isLocalDomain, String localDomain, Boolean setDefault, Boolean shouldThrow)
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   --- End of inner exception stack trace ---
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   at NzbDrone.Common.Http.HttpClient.AddCookiesToContainer(HttpUri url, String[] cookieHeaders, CookieContainer container) in ./NzbDrone.Common/Http/HttpClient.cs:line 316
+
+
+2026-02-16 14:10:50.8|Warn|Cardigann|[torrentdownload] Invalid category for value: 'Series'
+2026-02-16 14:10:51.0|Debug|FlareSolverr|CF Protection not detected, returning original response
+2026-02-16 14:10:52.3|Debug|IndexerHttpClient|Invalid cookie in https://www.limetorrents.fun/search/all/The%20O.C./date/1/
+
+[v2.3.0.5236] System.Net.CookieException: An error occurred when parsing the Cookie header for Uri 'https://www.limetorrents.fun/search/all/The%20O.C./date/1/'.
+ ---> System.ArgumentOutOfRangeException: Count must be positive and count must refer to a location within the string/array/collection. (Parameter 'count')
+   at System.Net.Cookie.VerifySetDefaults(CookieVariant variant, Uri uri, Boolean isLocalDomain, String localDomain, Boolean setDefault, Boolean shouldThrow)
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   --- End of inner exception stack trace ---
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   at NzbDrone.Common.Http.HttpClient.AddCookiesToContainer(HttpUri url, String[] cookieHeaders, CookieContainer container) in ./NzbDrone.Common/Http/HttpClient.cs:line 316
+
+
+2026-02-16 14:10:53.1|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=The+O.C.&orderby=latest&p=1
+2026-02-16 14:10:53.1|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=The+O.C.&orderby=latest&p=1
+2026-02-16 14:10:53.5|Debug|FlareSolverr|CF Protection not detected, returning original response
+2026-02-16 14:10:55.0|Debug|FlareSolverr|CF Protection not detected, returning original response
+2026-02-16 14:11:35.9|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 14:11:36.0|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 14:11:36.0|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 14:11:36.0|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 14:11:36.0|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 14:11:36.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, EZTV Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, Magnet Cat] for Term: [The O.C. S01E02], Offset: 0, Limit: 0, Categories: []
+2026-02-16 14:11:36.2|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 14:11:36.2|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 14:11:36.3|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 14:11:36.4|Debug|Cardigann|Adding request for YTS Test: https://yts.bz/api/v2/list_movies.json?query_term=The+O+C+S01E02&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:11:36.4|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, EZTV Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, Magnet Cat] for Term: [tt0362359], Offset: 0, Limit: 0, Categories: []
+2026-02-16 14:11:36.5|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, EZTV Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, Magnet Cat] for Term: [The O.C. 1x2], Offset: 0, Limit: 0, Categories: []
+2026-02-16 14:11:36.6|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, EZTV Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, Magnet Cat] for Term: [The O.C.], Offset: 0, Limit: 0, Categories: []
+2026-02-16 14:11:36.7|Debug|Cardigann|Downloading Feed https://yts.bz/api/v2/list_movies.json?query_term=The+O+C+S01E02&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:11:36.7|Debug|Cardigann|Adding request for YTS Test: https://yts.bz/api/v2/list_movies.json?query_term=tt0362359&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:11:36.8|Debug|Cardigann|Adding request for YTS Test: https://yts.bz/api/v2/list_movies.json?query_term=The+O+C+1x2&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:11:36.8|Debug|Cardigann|Adding request for YTS Test: https://yts.bz/api/v2/list_movies.json?query_term=The+O+C+&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:11:36.9|Debug|Cardigann|Adding request for EZTV Test: https://eztvx.to/search/The-O.C.-S01E02
+2026-02-16 14:11:36.9|Debug|Cardigann|Downloading Feed https://yts.bz/api/v2/list_movies.json?query_term=tt0362359&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:11:36.9|Debug|Cardigann|Downloading Feed https://yts.bz/api/v2/list_movies.json?query_term=The+O+C+1x2&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:11:36.9|Debug|Cardigann|Downloading Feed https://yts.bz/api/v2/list_movies.json?query_term=The+O+C+&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:11:37.0|Debug|Cardigann|Downloading Feed https://eztvx.to/search/The-O.C.-S01E02
+2026-02-16 14:11:37.0|Debug|Cardigann|Adding request for EZTV Test: https://eztvx.to/search/tt0362359
+2026-02-16 14:11:37.0|Debug|Cardigann|Adding request for EZTV Test: https://eztvx.to/search/The-O.C.-1x2
+2026-02-16 14:11:37.1|Debug|Cardigann|Adding request for EZTV Test: https://eztvx.to/search/The-O.C.
+2026-02-16 14:11:37.1|Debug|Cardigann|Adding request for BitSearch: https://bitsearch.to/search?q=The%20O%20C%20%20S01E02&sortBy=created&order=desc&page=1
+2026-02-16 14:11:37.1|Debug|Cardigann|Downloading Feed https://eztvx.to/search/tt0362359
+2026-02-16 14:11:37.1|Debug|Cardigann|Downloading Feed https://eztvx.to/search/The-O.C.-1x2
+2026-02-16 14:11:37.1|Debug|Cardigann|Downloading Feed https://eztvx.to/search/The-O.C.
+2026-02-16 14:11:37.2|Debug|Cardigann|Downloading Feed https://bitsearch.to/search?q=The%20O%20C%20%20S01E02&sortBy=created&order=desc&page=1
+2026-02-16 14:11:37.2|Debug|Cardigann|Adding request for BitSearch: https://bitsearch.to/search?q=tt0362359&sortBy=created&order=desc&page=1
+2026-02-16 14:11:37.3|Debug|Cardigann|Adding request for BitSearch: https://bitsearch.to/search?q=The%20O%20C%20%201x2&sortBy=created&order=desc&page=1
+2026-02-16 14:11:37.3|Debug|Cardigann|Adding request for BitSearch: https://bitsearch.to/search?q=The%20O%20C%20&sortBy=created&order=desc&page=1
+2026-02-16 14:11:37.3|Debug|Cardigann|Adding request for The Pirate Bay: https://apibay.org/q.php?q=the.o.c.s01e02&cat=
+2026-02-16 14:11:37.4|Debug|Cardigann|Downloading Feed https://bitsearch.to/search?q=tt0362359&sortBy=created&order=desc&page=1
+2026-02-16 14:11:37.4|Debug|Cardigann|Downloading Feed https://bitsearch.to/search?q=The%20O%20C%20%201x2&sortBy=created&order=desc&page=1
+2026-02-16 14:11:37.4|Debug|Cardigann|Downloading Feed https://bitsearch.to/search?q=The%20O%20C%20&sortBy=created&order=desc&page=1
+2026-02-16 14:11:37.4|Debug|Cardigann|Downloading Feed https://apibay.org/q.php?q=the.o.c.s01e02&cat=
+2026-02-16 14:11:37.5|Debug|Cardigann|Adding request for The Pirate Bay: https://apibay.org/q.php?q=tt0362359&cat=
+2026-02-16 14:11:37.6|Debug|Cardigann|Adding request for The Pirate Bay: https://apibay.org/q.php?q=the.o.c.1x2&cat=
+2026-02-16 14:11:37.6|Debug|Cardigann|Adding request for The Pirate Bay: https://apibay.org/q.php?q=the.o.c.&cat=
+2026-02-16 14:11:37.7|Debug|Cardigann|Adding request for LimeTorrents: https://www.limetorrents.fun/search/all/The%20O.C.%20S01E02/date/1/
+2026-02-16 14:11:37.8|Debug|Cardigann|Downloading Feed https://apibay.org/q.php?q=tt0362359&cat=
+2026-02-16 14:11:37.9|Debug|Cardigann|Downloading Feed https://apibay.org/q.php?q=the.o.c.1x2&cat=
+2026-02-16 14:11:38.0|Debug|Cardigann|Downloading Feed https://apibay.org/q.php?q=the.o.c.&cat=
+2026-02-16 14:11:38.0|Debug|Cardigann|Downloading Feed https://www.limetorrents.fun/search/all/The%20O.C.%20S01E02/date/1/
+2026-02-16 14:11:38.1|Debug|Cardigann|Adding request for LimeTorrents: https://www.limetorrents.fun/search/all/tt0362359/date/1/
+2026-02-16 14:11:38.2|Debug|Cardigann|Adding request for LimeTorrents: https://www.limetorrents.fun/search/all/The%20O.C.%201x2/date/1/
+2026-02-16 14:11:38.3|Debug|Cardigann|Adding request for LimeTorrents: https://www.limetorrents.fun/search/all/The%20O.C./date/1/
+2026-02-16 14:11:38.3|Debug|Cardigann|Adding request for MagnetDownload: https://www.magnetdownload.com/search/The%20O.C.%20S01E02/
+2026-02-16 14:11:38.4|Debug|Cardigann|Downloading Feed https://www.limetorrents.fun/search/all/tt0362359/date/1/
+2026-02-16 14:11:38.5|Debug|Cardigann|Downloading Feed https://www.limetorrents.fun/search/all/The%20O.C.%201x2/date/1/
+2026-02-16 14:11:38.5|Debug|Cardigann|Downloading Feed https://www.limetorrents.fun/search/all/The%20O.C./date/1/
+2026-02-16 14:11:38.5|Debug|Cardigann|Downloading Feed https://www.magnetdownload.com/search/The%20O.C.%20S01E02/
+2026-02-16 14:11:38.6|Debug|Cardigann|Adding request for MagnetDownload: https://www.magnetdownload.com/search/tt0362359/
+2026-02-16 14:11:38.6|Debug|Cardigann|Adding request for MagnetDownload: https://www.magnetdownload.com/search/The%20O.C.%201x2/
+2026-02-16 14:11:38.7|Debug|Cardigann|Adding request for MagnetDownload: https://www.magnetdownload.com/search/The%20O.C./
+2026-02-16 14:11:38.7|Debug|Cardigann|Adding request for TorrentDownload: https://www.torrentdownload.info/searchd?q=The%20O.C.%20S01E02
+2026-02-16 14:11:38.7|Debug|IndexerHttpClient|Invalid cookie in https://www.limetorrents.fun/search/all/The%20O.C.%20S01E02/date/1/
+
+[v2.3.0.5236] System.Net.CookieException: An error occurred when parsing the Cookie header for Uri 'https://www.limetorrents.fun/search/all/The%20O.C.%20S01E02/date/1/'.
+ ---> System.ArgumentOutOfRangeException: Count must be positive and count must refer to a location within the string/array/collection. (Parameter 'count')
+   at System.Net.Cookie.VerifySetDefaults(CookieVariant variant, Uri uri, Boolean isLocalDomain, String localDomain, Boolean setDefault, Boolean shouldThrow)
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   --- End of inner exception stack trace ---
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   at NzbDrone.Common.Http.HttpClient.AddCookiesToContainer(HttpUri url, String[] cookieHeaders, CookieContainer container) in ./NzbDrone.Common/Http/HttpClient.cs:line 316
+
+
+2026-02-16 14:11:38.8|Debug|Cardigann|Downloading Feed https://www.magnetdownload.com/search/tt0362359/
+2026-02-16 14:11:38.8|Debug|Cardigann|Downloading Feed https://www.magnetdownload.com/search/The%20O.C.%201x2/
+2026-02-16 14:11:38.9|Debug|Cardigann|Downloading Feed https://www.magnetdownload.com/search/The%20O.C./
+2026-02-16 14:11:38.9|Debug|Cardigann|Downloading Feed https://www.torrentdownload.info/searchd?q=The%20O.C.%20S01E02
+2026-02-16 14:11:39.1|Debug|Cardigann|Adding request for TorrentDownload: https://www.torrentdownload.info/searchd?q=tt0362359
+2026-02-16 14:11:39.1|Debug|Cardigann|Adding request for TorrentDownload: https://www.torrentdownload.info/searchd?q=The%20O.C.%201x2
+2026-02-16 14:11:39.1|Debug|Cardigann|Adding request for TorrentDownload: https://www.torrentdownload.info/searchd?q=The%20O.C.
+2026-02-16 14:11:39.2|Debug|Knaben|Downloading Feed https://api.knaben.org/v1: {"order_by":"date","order_direction":"desc","from":0,"size":100,"hide_unsafe":true,"search_type":"100%","search_field":"title","query":"The O.C. S01E02"}
+2026-02-16 14:11:39.2|Debug|Cardigann|Downloading Feed https://www.torrentdownload.info/searchd?q=tt0362359
+2026-02-16 14:11:39.2|Debug|Cardigann|Downloading Feed https://www.torrentdownload.info/searchd?q=The%20O.C.%201x2
+2026-02-16 14:11:39.3|Debug|Cardigann|Downloading Feed https://www.torrentdownload.info/searchd?q=The%20O.C.
+2026-02-16 14:11:39.3|Debug|TorrentsCSV|Downloading Feed https://torrents-csv.com/service/search?size=100&q=The+O.C.+S01E02
+2026-02-16 14:11:39.4|Debug|Knaben|Downloading Feed https://api.knaben.org/v1: {"order_by":"date","order_direction":"desc","from":0,"size":100,"hide_unsafe":true,"search_type":"100%","search_field":"title","query":"tt0362359"}
+2026-02-16 14:11:39.4|Debug|Knaben|Downloading Feed https://api.knaben.org/v1: {"order_by":"date","order_direction":"desc","from":0,"size":100,"hide_unsafe":true,"search_type":"100%","search_field":"title","query":"The O.C. 1x2"}
+2026-02-16 14:11:39.5|Debug|Knaben|Downloading Feed https://api.knaben.org/v1: {"order_by":"date","order_direction":"desc","from":0,"size":100,"hide_unsafe":true,"search_type":"100%","search_field":"title","query":"The O.C."}
+2026-02-16 14:11:39.5|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=The+O.C.+S01E02&orderby=latest
+2026-02-16 14:11:39.5|Debug|TorrentsCSV|Downloading Feed https://torrents-csv.com/service/search?size=100&q=tt0362359
+2026-02-16 14:11:39.6|Debug|TorrentsCSV|Downloading Feed https://torrents-csv.com/service/search?size=100&q=The+O.C.+1x2
+2026-02-16 14:11:39.6|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=The+O.C.+S01E02&orderby=latest
+2026-02-16 14:11:39.6|Debug|TorrentsCSV|Downloading Feed https://torrents-csv.com/service/search?size=100&q=The+O.C.
+2026-02-16 14:11:39.7|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=tt0362359&orderby=latest
+2026-02-16 14:11:39.7|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=The+O.C.+1x2&orderby=latest
+2026-02-16 14:11:39.8|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=The+O.C.&orderby=latest
+2026-02-16 14:11:39.8|Debug|Cardigann|Adding request for Magnetz: https://magnetz.eu/search?query=The+O.C.+S01E02
+2026-02-16 14:11:39.8|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=tt0362359&orderby=latest
+2026-02-16 14:11:39.8|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=The+O.C.+1x2&orderby=latest
+2026-02-16 14:11:39.9|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=The+O.C.&orderby=latest
+2026-02-16 14:11:39.9|Debug|Cardigann|Downloading Feed https://magnetz.eu/search?query=The+O.C.+S01E02
+2026-02-16 14:11:39.9|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=The+O.C.+S01E02&orderby=latest&p=1
+2026-02-16 14:11:40.0|Debug|Cardigann|Adding request for Magnetz: https://magnetz.eu/search?query=tt0362359
+2026-02-16 14:11:40.0|Debug|Cardigann|Adding request for Magnetz: https://magnetz.eu/search?query=The+O.C.+1x2
+2026-02-16 14:11:40.0|Debug|Cardigann|Adding request for Magnetz: https://magnetz.eu/search?query=The+O.C.
+2026-02-16 14:11:40.1|Debug|Cardigann|Adding request for Nyaa.si: https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=The+O.C.+S01E02
+2026-02-16 14:11:40.1|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=The+O.C.+S01E02&orderby=latest&p=1
+2026-02-16 14:11:40.1|Debug|Cardigann|Downloading Feed https://magnetz.eu/search?query=tt0362359
+2026-02-16 14:11:40.1|Debug|Cardigann|Downloading Feed https://magnetz.eu/search?query=The+O.C.+1x2
+2026-02-16 14:11:40.2|Debug|Cardigann|Downloading Feed https://magnetz.eu/search?query=The+O.C.
+2026-02-16 14:11:40.2|Debug|Cardigann|Downloading Feed https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=The+O.C.+S01E02
+2026-02-16 14:11:40.3|Debug|Cardigann|Adding request for Nyaa.si: https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=tt0362359
+2026-02-16 14:11:40.3|Debug|Cardigann|Adding request for Nyaa.si: https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=The+O.C.+1x2
+2026-02-16 14:11:40.3|Debug|Cardigann|Adding request for Nyaa.si: https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=The+O.C.
+2026-02-16 14:11:40.4|Debug|SubsPlease|Downloading Feed https://subsplease.org/api/?tz=UTC&f=search&s=The+O.C.+S01E02
+2026-02-16 14:11:40.4|Debug|Cardigann|Downloading Feed https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=tt0362359
+2026-02-16 14:11:40.4|Debug|Cardigann|Downloading Feed https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=The+O.C.+1x2
+2026-02-16 14:11:40.5|Debug|Cardigann|Downloading Feed https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=The+O.C.
+2026-02-16 14:11:40.5|Debug|Cardigann|Adding request for Magnet Cat: https://magnetcatcat.com/search-The%20O.C.%20S01E02-0-2-1.html
+2026-02-16 14:11:40.5|Debug|SubsPlease|Downloading Feed https://subsplease.org/api/?tz=UTC&f=search&s=tt0362359
+2026-02-16 14:11:40.6|Debug|SubsPlease|Downloading Feed https://subsplease.org/api/?tz=UTC&f=search&s=The+O.C.+1x2
+2026-02-16 14:11:40.6|Debug|SubsPlease|Downloading Feed https://subsplease.org/api/?tz=UTC&f=search&s=The+O.C.
+2026-02-16 14:11:40.6|Debug|Cardigann|Downloading Feed https://magnetcatcat.com/search-The%20O.C.%20S01E02-0-2-1.html
+2026-02-16 14:11:40.7|Debug|Cardigann|Adding request for Magnet Cat: https://magnetcatcat.com/search-tt0362359-0-2-1.html
+2026-02-16 14:11:40.7|Debug|IndexerHttpClient|Invalid cookie in https://www.limetorrents.fun/search/all/tt0362359/date/1/
+
+[v2.3.0.5236] System.Net.CookieException: An error occurred when parsing the Cookie header for Uri 'https://www.limetorrents.fun/search/all/tt0362359/date/1/'.
+ ---> System.ArgumentOutOfRangeException: Count must be positive and count must refer to a location within the string/array/collection. (Parameter 'count')
+   at System.Net.Cookie.VerifySetDefaults(CookieVariant variant, Uri uri, Boolean isLocalDomain, String localDomain, Boolean setDefault, Boolean shouldThrow)
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   --- End of inner exception stack trace ---
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   at NzbDrone.Common.Http.HttpClient.AddCookiesToContainer(HttpUri url, String[] cookieHeaders, CookieContainer container) in ./NzbDrone.Common/Http/HttpClient.cs:line 316
+
+
+2026-02-16 14:11:40.7|Debug|Cardigann|Adding request for Magnet Cat: https://magnetcatcat.com/search-The%20O.C.%201x2-0-2-1.html
+2026-02-16 14:11:40.8|Debug|Cardigann|Adding request for Magnet Cat: https://magnetcatcat.com/search-The%20O.C.-0-2-1.html
+2026-02-16 14:11:40.8|Debug|Cardigann|Downloading Feed https://magnetcatcat.com/search-tt0362359-0-2-1.html
+2026-02-16 14:11:40.9|Debug|Cardigann|Downloading Feed https://magnetcatcat.com/search-The%20O.C.%201x2-0-2-1.html
+2026-02-16 14:11:40.9|Debug|Cardigann|Downloading Feed https://magnetcatcat.com/search-The%20O.C.-0-2-1.html
+2026-02-16 14:11:42.0|Debug|FlareSolverr|CF Protection not detected, returning original response
+2026-02-16 14:11:43.0|Debug|IndexerHttpClient|Invalid cookie in https://www.limetorrents.fun/search/all/The%20O.C.%201x2/date/1/
+
+[v2.3.0.5236] System.Net.CookieException: An error occurred when parsing the Cookie header for Uri 'https://www.limetorrents.fun/search/all/The%20O.C.%201x2/date/1/'.
+ ---> System.ArgumentOutOfRangeException: Count must be positive and count must refer to a location within the string/array/collection. (Parameter 'count')
+   at System.Net.Cookie.VerifySetDefaults(CookieVariant variant, Uri uri, Boolean isLocalDomain, String localDomain, Boolean setDefault, Boolean shouldThrow)
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   --- End of inner exception stack trace ---
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   at NzbDrone.Common.Http.HttpClient.AddCookiesToContainer(HttpUri url, String[] cookieHeaders, CookieContainer container) in ./NzbDrone.Common/Http/HttpClient.cs:line 316
+
+
+2026-02-16 14:11:43.6|Warn|Cardigann|[torrentdownload] Invalid category for value: 'Series'
+2026-02-16 14:11:43.8|Debug|FlareSolverr|CF Protection not detected, returning original response
+2026-02-16 14:11:45.2|Debug|IndexerHttpClient|Invalid cookie in https://www.limetorrents.fun/search/all/The%20O.C./date/1/
+
+[v2.3.0.5236] System.Net.CookieException: An error occurred when parsing the Cookie header for Uri 'https://www.limetorrents.fun/search/all/The%20O.C./date/1/'.
+ ---> System.ArgumentOutOfRangeException: Count must be positive and count must refer to a location within the string/array/collection. (Parameter 'count')
+   at System.Net.Cookie.VerifySetDefaults(CookieVariant variant, Uri uri, Boolean isLocalDomain, String localDomain, Boolean setDefault, Boolean shouldThrow)
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   --- End of inner exception stack trace ---
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   at NzbDrone.Common.Http.HttpClient.AddCookiesToContainer(HttpUri url, String[] cookieHeaders, CookieContainer container) in ./NzbDrone.Common/Http/HttpClient.cs:line 316
+
+
+2026-02-16 14:11:45.6|Debug|FlareSolverr|CF Protection not detected, returning original response
+2026-02-16 14:11:46.1|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=The+O.C.&orderby=latest&p=1
+2026-02-16 14:11:46.1|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=The+O.C.&orderby=latest&p=1
+2026-02-16 14:11:47.1|Debug|ReleaseSearchService|Total of 36 reports were found for Term: [tt0362359], Offset: 0, Limit: 0, Categories: [] from 14 indexer(s)
+2026-02-16 14:11:47.1|Debug|Api|[GET] /api/v1/search?query=tt0362359: 200.OK (63299 ms)
+2026-02-16 14:11:47.4|Debug|ReleaseSearchService|Total of 304 reports were found for Term: [The O.C. S01E01], Offset: 0, Limit: 0, Categories: [] from 14 indexer(s)
+2026-02-16 14:11:47.5|Debug|Api|[GET] /api/v1/search?query=The+O.C.+S01E01: 200.OK (63651 ms)
+2026-02-16 14:11:47.6|Debug|ReleaseSearchService|Total of 440 reports were found for Term: [The O.C.], Offset: 0, Limit: 0, Categories: [] from 14 indexer(s)
+2026-02-16 14:11:47.6|Debug|Api|[GET] /api/v1/search?query=The+O.C.: 200.OK (63797 ms)
+2026-02-16 14:11:47.6|Debug|ReleaseSearchService|Total of 81 reports were found for Term: [The O.C. 1x1], Offset: 0, Limit: 0, Categories: [] from 14 indexer(s)
+2026-02-16 14:11:47.7|Debug|Api|[GET] /api/v1/search?query=The+O.C.+1x1: 200.OK (63868 ms)
+2026-02-16 14:11:48.7|Debug|FlareSolverr|CF Protection not detected, returning original response
+2026-02-16 14:11:50.5|Debug|ReleaseSearchService|Total of 36 reports were found for Term: [tt0362359], Offset: 0, Limit: 0, Categories: [] from 14 indexer(s)
+2026-02-16 14:11:50.5|Debug|Api|[GET] /api/v1/search?query=tt0362359: 200.OK (14622 ms)
+2026-02-16 14:11:50.5|Debug|ReleaseSearchService|Total of 304 reports were found for Term: [The O.C. S01E02], Offset: 0, Limit: 0, Categories: [] from 14 indexer(s)
+2026-02-16 14:11:50.6|Debug|Api|[GET] /api/v1/search?query=The+O.C.+S01E02: 200.OK (14710 ms)
+2026-02-16 14:11:50.8|Debug|ReleaseSearchService|Total of 440 reports were found for Term: [The O.C.], Offset: 0, Limit: 0, Categories: [] from 14 indexer(s)
+2026-02-16 14:11:50.8|Debug|Api|[GET] /api/v1/search?query=The+O.C.: 200.OK (14984 ms)
+2026-02-16 14:11:56.7|Debug|ReleaseSearchService|Total of 115 reports were found for Term: [The O.C. 1x2], Offset: 0, Limit: 0, Categories: [] from 14 indexer(s)
+2026-02-16 14:11:56.7|Debug|Api|[GET] /api/v1/search?query=The+O.C.+1x2: 200.OK (20876 ms)
+2026-02-16 14:58:59.9|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 14:58:59.9|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 14:59:00.0|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 14:59:00.0|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 14:59:00.0|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, EZTV Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, Magnet Cat] for Term: [tt33028778], Offset: 0, Limit: 0, Categories: []
+2026-02-16 14:59:00.0|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 14:59:00.1|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 14:59:00.1|Debug|Cardigann|Adding request for YTS Test: https://yts.bz/api/v2/list_movies.json?query_term=tt33028778&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:59:00.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, EZTV Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, Magnet Cat] for Term: [Primate tt33028778], Offset: 0, Limit: 0, Categories: []
+2026-02-16 14:59:00.2|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, EZTV Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, Magnet Cat] for Term: [Primate], Offset: 0, Limit: 0, Categories: []
+2026-02-16 14:59:00.2|Debug|Cardigann|Downloading Feed https://yts.bz/api/v2/list_movies.json?query_term=tt33028778&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:59:00.2|Debug|Cardigann|Adding request for YTS Test: https://yts.bz/api/v2/list_movies.json?query_term=Primate+tt33028778&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:59:00.3|Debug|Cardigann|Adding request for YTS Test: https://yts.bz/api/v2/list_movies.json?query_term=Primate&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:59:00.3|Debug|Cardigann|Adding request for EZTV Test: https://eztvx.to/search/tt33028778
+2026-02-16 14:59:00.3|Debug|Cardigann|Downloading Feed https://yts.bz/api/v2/list_movies.json?query_term=Primate+tt33028778&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:59:00.4|Debug|Cardigann|Downloading Feed https://yts.bz/api/v2/list_movies.json?query_term=Primate&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 14:59:00.4|Debug|Cardigann|Downloading Feed https://eztvx.to/search/tt33028778
+2026-02-16 14:59:00.4|Debug|Cardigann|Adding request for EZTV Test: https://eztvx.to/search/Primate-tt33028778
+2026-02-16 14:59:00.4|Debug|Cardigann|Adding request for EZTV Test: https://eztvx.to/search/Primate
+2026-02-16 14:59:00.5|Debug|Cardigann|Adding request for BitSearch: https://bitsearch.to/search?q=tt33028778&sortBy=created&order=desc&page=1
+2026-02-16 14:59:00.5|Debug|Cardigann|Downloading Feed https://eztvx.to/search/Primate-tt33028778
+2026-02-16 14:59:00.5|Debug|Cardigann|Downloading Feed https://eztvx.to/search/Primate
+2026-02-16 14:59:00.6|Debug|Cardigann|Downloading Feed https://bitsearch.to/search?q=tt33028778&sortBy=created&order=desc&page=1
+2026-02-16 14:59:00.6|Debug|Cardigann|Adding request for BitSearch: https://bitsearch.to/search?q=Primate%20tt33028778&sortBy=created&order=desc&page=1
+2026-02-16 14:59:00.6|Debug|Cardigann|Adding request for BitSearch: https://bitsearch.to/search?q=Primate&sortBy=created&order=desc&page=1
+2026-02-16 14:59:00.7|Debug|Cardigann|Adding request for The Pirate Bay: https://apibay.org/q.php?q=tt33028778&cat=
+2026-02-16 14:59:00.7|Debug|Cardigann|Downloading Feed https://bitsearch.to/search?q=Primate%20tt33028778&sortBy=created&order=desc&page=1
+2026-02-16 14:59:00.7|Debug|Cardigann|Downloading Feed https://bitsearch.to/search?q=Primate&sortBy=created&order=desc&page=1
+2026-02-16 14:59:00.8|Debug|Cardigann|Downloading Feed https://apibay.org/q.php?q=tt33028778&cat=
+2026-02-16 14:59:00.8|Debug|Cardigann|Adding request for The Pirate Bay: https://apibay.org/q.php?q=primate.tt33028778&cat=
+2026-02-16 14:59:00.9|Debug|Cardigann|Adding request for The Pirate Bay: https://apibay.org/q.php?q=primate&cat=
+2026-02-16 14:59:00.9|Debug|Cardigann|Adding request for LimeTorrents: https://www.limetorrents.fun/search/all/tt33028778/date/1/
+2026-02-16 14:59:00.9|Debug|Cardigann|Downloading Feed https://apibay.org/q.php?q=primate.tt33028778&cat=
+2026-02-16 14:59:01.0|Debug|Cardigann|Downloading Feed https://apibay.org/q.php?q=primate&cat=
+2026-02-16 14:59:01.0|Debug|Cardigann|Downloading Feed https://www.limetorrents.fun/search/all/tt33028778/date/1/
+2026-02-16 14:59:01.1|Debug|Cardigann|Adding request for LimeTorrents: https://www.limetorrents.fun/search/all/Primate%20tt33028778/date/1/
+2026-02-16 14:59:01.1|Debug|Cardigann|Adding request for LimeTorrents: https://www.limetorrents.fun/search/all/Primate/date/1/
+2026-02-16 14:59:01.1|Debug|Cardigann|Adding request for MagnetDownload: https://www.magnetdownload.com/search/tt33028778/
+2026-02-16 14:59:01.2|Debug|Cardigann|Downloading Feed https://www.limetorrents.fun/search/all/Primate%20tt33028778/date/1/
+2026-02-16 14:59:01.2|Debug|Cardigann|Downloading Feed https://www.limetorrents.fun/search/all/Primate/date/1/
+2026-02-16 14:59:01.2|Debug|Cardigann|Downloading Feed https://www.magnetdownload.com/search/tt33028778/
+2026-02-16 14:59:01.3|Debug|Cardigann|Adding request for MagnetDownload: https://www.magnetdownload.com/search/Primate%20tt33028778/
+2026-02-16 14:59:01.3|Debug|Cardigann|Adding request for MagnetDownload: https://www.magnetdownload.com/search/Primate/
+2026-02-16 14:59:01.4|Debug|Cardigann|Adding request for TorrentDownload: https://www.torrentdownload.info/searchd?q=tt33028778
+2026-02-16 14:59:01.4|Debug|Cardigann|Downloading Feed https://www.magnetdownload.com/search/Primate%20tt33028778/
+2026-02-16 14:59:01.4|Debug|Cardigann|Downloading Feed https://www.magnetdownload.com/search/Primate/
+2026-02-16 14:59:01.5|Debug|Cardigann|Downloading Feed https://www.torrentdownload.info/searchd?q=tt33028778
+2026-02-16 14:59:01.5|Debug|Cardigann|Adding request for TorrentDownload: https://www.torrentdownload.info/searchd?q=Primate%20tt33028778
+2026-02-16 14:59:01.6|Debug|Cardigann|Adding request for TorrentDownload: https://www.torrentdownload.info/searchd?q=Primate
+2026-02-16 14:59:01.6|Debug|Knaben|Downloading Feed https://api.knaben.org/v1: {"order_by":"date","order_direction":"desc","from":0,"size":100,"hide_unsafe":true,"search_type":"100%","search_field":"title","query":"tt33028778"}
+2026-02-16 14:59:01.7|Debug|Cardigann|Downloading Feed https://www.torrentdownload.info/searchd?q=Primate%20tt33028778
+2026-02-16 14:59:01.7|Debug|Cardigann|Downloading Feed https://www.torrentdownload.info/searchd?q=Primate
+2026-02-16 14:59:01.8|Debug|TorrentsCSV|Downloading Feed https://torrents-csv.com/service/search?size=100&q=tt33028778
+2026-02-16 14:59:01.8|Debug|Knaben|Downloading Feed https://api.knaben.org/v1: {"order_by":"date","order_direction":"desc","from":0,"size":100,"hide_unsafe":true,"search_type":"100%","search_field":"title","query":"Primate tt33028778"}
+2026-02-16 14:59:01.8|Debug|Knaben|Downloading Feed https://api.knaben.org/v1: {"order_by":"date","order_direction":"desc","from":0,"size":100,"hide_unsafe":true,"search_type":"100%","search_field":"title","query":"Primate"}
+2026-02-16 14:59:01.9|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=tt33028778&orderby=latest
+2026-02-16 14:59:02.0|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=tt33028778&orderby=latest
+2026-02-16 14:59:02.0|Debug|TorrentsCSV|Downloading Feed https://torrents-csv.com/service/search?size=100&q=Primate
+2026-02-16 14:59:01.9|Debug|TorrentsCSV|Downloading Feed https://torrents-csv.com/service/search?size=100&q=Primate+tt33028778
+2026-02-16 14:59:02.1|Debug|Cardigann|Adding request for Magnetz: https://magnetz.eu/search?query=tt33028778
+2026-02-16 14:59:02.1|Debug|IndexerHttpClient|Invalid cookie in https://www.limetorrents.fun/search/all/tt33028778/date/1/
+
+[v2.3.0.5236] System.Net.CookieException: An error occurred when parsing the Cookie header for Uri 'https://www.limetorrents.fun/search/all/tt33028778/date/1/'.
+ ---> System.ArgumentOutOfRangeException: Count must be positive and count must refer to a location within the string/array/collection. (Parameter 'count')
+   at System.Net.Cookie.VerifySetDefaults(CookieVariant variant, Uri uri, Boolean isLocalDomain, String localDomain, Boolean setDefault, Boolean shouldThrow)
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   --- End of inner exception stack trace ---
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   at NzbDrone.Common.Http.HttpClient.AddCookiesToContainer(HttpUri url, String[] cookieHeaders, CookieContainer container) in ./NzbDrone.Common/Http/HttpClient.cs:line 316
+
+
+2026-02-16 14:59:02.1|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=Primate&orderby=latest
+2026-02-16 14:59:02.1|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=Primate+tt33028778&orderby=latest
+2026-02-16 14:59:02.2|Debug|Cardigann|Downloading Feed https://magnetz.eu/search?query=tt33028778
+2026-02-16 14:59:02.3|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=Primate&orderby=latest
+2026-02-16 14:59:02.3|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=Primate+tt33028778&orderby=latest
+2026-02-16 14:59:02.4|Debug|Cardigann|Adding request for Nyaa.si: https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=tt33028778
+2026-02-16 14:59:02.4|Debug|Cardigann|Adding request for Magnetz: https://magnetz.eu/search?query=Primate
+2026-02-16 14:59:02.4|Debug|Cardigann|Adding request for Magnetz: https://magnetz.eu/search?query=Primate+tt33028778
+2026-02-16 14:59:02.5|Debug|Cardigann|Downloading Feed https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=tt33028778
+2026-02-16 14:59:02.5|Debug|Cardigann|Downloading Feed https://magnetz.eu/search?query=Primate
+2026-02-16 14:59:02.6|Debug|Cardigann|Downloading Feed https://magnetz.eu/search?query=Primate+tt33028778
+2026-02-16 14:59:02.6|Debug|SubsPlease|Downloading Feed https://subsplease.org/api/?tz=UTC&f=search&s=tt33028778
+2026-02-16 14:59:02.7|Debug|Cardigann|Adding request for Nyaa.si: https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=Primate
+2026-02-16 14:59:02.7|Debug|Cardigann|Adding request for Nyaa.si: https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=Primate+tt33028778
+2026-02-16 14:59:02.7|Debug|Cardigann|Adding request for Magnet Cat: https://magnetcatcat.com/search-tt33028778-0-2-1.html
+2026-02-16 14:59:02.8|Debug|Cardigann|Downloading Feed https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=Primate
+2026-02-16 14:59:02.8|Debug|Cardigann|Downloading Feed https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=Primate+tt33028778
+2026-02-16 14:59:02.9|Debug|Cardigann|Downloading Feed https://magnetcatcat.com/search-tt33028778-0-2-1.html
+2026-02-16 14:59:02.9|Debug|SubsPlease|Downloading Feed https://subsplease.org/api/?tz=UTC&f=search&s=Primate
+2026-02-16 14:59:02.9|Debug|SubsPlease|Downloading Feed https://subsplease.org/api/?tz=UTC&f=search&s=Primate+tt33028778
+2026-02-16 14:59:03.0|Debug|Cardigann|Adding request for Magnet Cat: https://magnetcatcat.com/search-Primate-0-2-1.html
+2026-02-16 14:59:03.0|Debug|Cardigann|Adding request for Magnet Cat: https://magnetcatcat.com/search-Primate%20tt33028778-0-2-1.html
+2026-02-16 14:59:03.1|Debug|Cardigann|Downloading Feed https://magnetcatcat.com/search-Primate-0-2-1.html
+2026-02-16 14:59:03.1|Debug|Cardigann|Downloading Feed https://magnetcatcat.com/search-Primate%20tt33028778-0-2-1.html
+2026-02-16 14:59:03.5|Debug|IndexerHttpClient|Invalid cookie in https://www.limetorrents.fun/search/all/Primate%20tt33028778/date/1/
+
+[v2.3.0.5236] System.Net.CookieException: An error occurred when parsing the Cookie header for Uri 'https://www.limetorrents.fun/search/all/Primate%20tt33028778/date/1/'.
+ ---> System.ArgumentOutOfRangeException: Count must be positive and count must refer to a location within the string/array/collection. (Parameter 'count')
+   at System.Net.Cookie.VerifySetDefaults(CookieVariant variant, Uri uri, Boolean isLocalDomain, String localDomain, Boolean setDefault, Boolean shouldThrow)
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   --- End of inner exception stack trace ---
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   at NzbDrone.Common.Http.HttpClient.AddCookiesToContainer(HttpUri url, String[] cookieHeaders, CookieContainer container) in ./NzbDrone.Common/Http/HttpClient.cs:line 316
+
+
+2026-02-16 14:59:04.1|Debug|FlareSolverr|CF Protection not detected, returning original response
+2026-02-16 14:59:05.3|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=Primate&orderby=latest&p=1
+2026-02-16 14:59:05.3|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=Primate&orderby=latest&p=1
+2026-02-16 14:59:05.5|Debug|IndexerHttpClient|Invalid cookie in https://www.limetorrents.fun/search/all/Primate/date/1/
+
+[v2.3.0.5236] System.Net.CookieException: An error occurred when parsing the Cookie header for Uri 'https://www.limetorrents.fun/search/all/Primate/date/1/'.
+ ---> System.ArgumentOutOfRangeException: Count must be positive and count must refer to a location within the string/array/collection. (Parameter 'count')
+   at System.Net.Cookie.VerifySetDefaults(CookieVariant variant, Uri uri, Boolean isLocalDomain, String localDomain, Boolean setDefault, Boolean shouldThrow)
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   --- End of inner exception stack trace ---
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   at NzbDrone.Common.Http.HttpClient.AddCookiesToContainer(HttpUri url, String[] cookieHeaders, CookieContainer container) in ./NzbDrone.Common/Http/HttpClient.cs:line 316
+
+
+2026-02-16 14:59:05.8|Debug|FlareSolverr|CF Protection not detected, returning original response
+2026-02-16 14:59:06.1|Debug|ReleaseSearchService|Total of 17 reports were found for Term: [tt33028778], Offset: 0, Limit: 0, Categories: [] from 14 indexer(s)
+2026-02-16 14:59:06.1|Debug|Api|[GET] /api/v1/search?query=tt33028778: 200.OK (6247 ms)
+2026-02-16 14:59:07.8|Debug|FlareSolverr|CF Protection not detected, returning original response
+2026-02-16 14:59:07.8|Debug|ReleaseSearchService|Total of 29 reports were found for Term: [Primate tt33028778], Offset: 0, Limit: 0, Categories: [] from 14 indexer(s)
+2026-02-16 14:59:07.8|Debug|Api|[GET] /api/v1/search?query=Primate+tt33028778: 200.OK (7983 ms)
+2026-02-16 14:59:09.3|Debug|ReleaseSearchService|Total of 435 reports were found for Term: [Primate], Offset: 0, Limit: 0, Categories: [] from 14 indexer(s)
+2026-02-16 14:59:09.3|Debug|Api|[GET] /api/v1/search?query=Primate: 200.OK (9462 ms)
+2026-02-16 15:40:16.1|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 15:40:16.1|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 15:40:16.1|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 15:40:16.1|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 15:40:16.1|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 15:40:16.1|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, EZTV Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, Magnet Cat] for Term: [Medabots S01E01], Offset: 0, Limit: 0, Categories: []
+2026-02-16 15:40:16.2|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 15:40:16.2|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 15:40:16.3|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 15:40:16.3|Debug|Cardigann|Adding request for YTS Test: https://yts.bz/api/v2/list_movies.json?query_term=Medabots+S01E01&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 15:40:16.3|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, EZTV Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, Magnet Cat] for Term: [tt0293731], Offset: 0, Limit: 0, Categories: []
+2026-02-16 15:40:16.4|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, EZTV Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, Magnet Cat] for Term: [Medabots], Offset: 0, Limit: 0, Categories: []
+2026-02-16 15:40:16.4|Info|ReleaseSearchService|Searching indexer(s): [YTS Test, EZTV Test, BitSearch, The Pirate Bay, LimeTorrents, MagnetDownload, TorrentDownload, Knaben, TorrentsCSV, TorrentProject2, Magnetz, Nyaa.si, SubsPlease, Magnet Cat] for Term: [Medabots 1x1], Offset: 0, Limit: 0, Categories: []
+2026-02-16 15:40:16.5|Debug|Cardigann|Downloading Feed https://yts.bz/api/v2/list_movies.json?query_term=Medabots+S01E01&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 15:40:16.5|Debug|Cardigann|Adding request for YTS Test: https://yts.bz/api/v2/list_movies.json?query_term=tt0293731&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 15:40:16.5|Debug|Cardigann|Adding request for YTS Test: https://yts.bz/api/v2/list_movies.json?query_term=Medabots&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 15:40:16.6|Debug|Cardigann|Adding request for YTS Test: https://yts.bz/api/v2/list_movies.json?query_term=Medabots+1x1&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 15:40:16.6|Debug|Cardigann|Adding request for EZTV Test: https://eztvx.to/search/Medabots-S01E01
+2026-02-16 15:40:16.6|Debug|Cardigann|Downloading Feed https://yts.bz/api/v2/list_movies.json?query_term=tt0293731&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 15:40:16.7|Debug|Cardigann|Downloading Feed https://yts.bz/api/v2/list_movies.json?query_term=Medabots&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 15:40:16.7|Debug|Cardigann|Downloading Feed https://yts.bz/api/v2/list_movies.json?query_term=Medabots+1x1&limit=50&sort_by=date_added&order_by=desc
+2026-02-16 15:40:16.7|Debug|Cardigann|Downloading Feed https://eztvx.to/search/Medabots-S01E01
+2026-02-16 15:40:16.8|Debug|Cardigann|Adding request for EZTV Test: https://eztvx.to/search/tt0293731
+2026-02-16 15:40:16.8|Debug|Cardigann|Adding request for EZTV Test: https://eztvx.to/search/Medabots
+2026-02-16 15:40:16.9|Debug|Cardigann|Adding request for EZTV Test: https://eztvx.to/search/Medabots-1x1
+2026-02-16 15:40:16.9|Debug|Cardigann|Adding request for BitSearch: https://bitsearch.to/search?q=Medabots%20S01E01&sortBy=created&order=desc&page=1
+2026-02-16 15:40:16.9|Debug|Cardigann|Downloading Feed https://eztvx.to/search/tt0293731
+2026-02-16 15:40:16.9|Debug|Cardigann|Downloading Feed https://eztvx.to/search/Medabots
+2026-02-16 15:40:17.0|Debug|Cardigann|Downloading Feed https://eztvx.to/search/Medabots-1x1
+2026-02-16 15:40:17.0|Debug|Cardigann|Downloading Feed https://bitsearch.to/search?q=Medabots%20S01E01&sortBy=created&order=desc&page=1
+2026-02-16 15:40:17.0|Debug|Cardigann|Adding request for BitSearch: https://bitsearch.to/search?q=tt0293731&sortBy=created&order=desc&page=1
+2026-02-16 15:40:17.1|Debug|Cardigann|Adding request for BitSearch: https://bitsearch.to/search?q=Medabots&sortBy=created&order=desc&page=1
+2026-02-16 15:40:17.1|Debug|Cardigann|Adding request for BitSearch: https://bitsearch.to/search?q=Medabots%201x1&sortBy=created&order=desc&page=1
+2026-02-16 15:40:17.2|Debug|Cardigann|Adding request for The Pirate Bay: https://apibay.org/q.php?q=medabots.s01e01&cat=
+2026-02-16 15:40:17.2|Debug|Cardigann|Downloading Feed https://bitsearch.to/search?q=tt0293731&sortBy=created&order=desc&page=1
+2026-02-16 15:40:17.2|Debug|Cardigann|Downloading Feed https://bitsearch.to/search?q=Medabots&sortBy=created&order=desc&page=1
+2026-02-16 15:40:17.2|Debug|Cardigann|Downloading Feed https://bitsearch.to/search?q=Medabots%201x1&sortBy=created&order=desc&page=1
+2026-02-16 15:40:17.3|Debug|Cardigann|Downloading Feed https://apibay.org/q.php?q=medabots.s01e01&cat=
+2026-02-16 15:40:17.3|Debug|Cardigann|Adding request for The Pirate Bay: https://apibay.org/q.php?q=tt0293731&cat=
+2026-02-16 15:40:17.4|Debug|Cardigann|Adding request for The Pirate Bay: https://apibay.org/q.php?q=medabots&cat=
+2026-02-16 15:40:17.4|Debug|Cardigann|Adding request for The Pirate Bay: https://apibay.org/q.php?q=medabots.1x1&cat=
+2026-02-16 15:40:17.5|Debug|Cardigann|Downloading Feed https://apibay.org/q.php?q=tt0293731&cat=
+2026-02-16 15:40:17.5|Debug|Cardigann|Adding request for LimeTorrents: https://www.limetorrents.fun/search/all/Medabots%20S01E01/date/1/
+2026-02-16 15:40:17.5|Debug|Cardigann|Downloading Feed https://apibay.org/q.php?q=medabots&cat=
+2026-02-16 15:40:17.6|Debug|Cardigann|Downloading Feed https://apibay.org/q.php?q=medabots.1x1&cat=
+2026-02-16 15:40:17.6|Debug|Cardigann|Adding request for LimeTorrents: https://www.limetorrents.fun/search/all/tt0293731/date/1/
+2026-02-16 15:40:17.6|Debug|Cardigann|Downloading Feed https://www.limetorrents.fun/search/all/Medabots%20S01E01/date/1/
+2026-02-16 15:40:17.7|Debug|Cardigann|Adding request for LimeTorrents: https://www.limetorrents.fun/search/all/Medabots/date/1/
+2026-02-16 15:40:17.7|Debug|Cardigann|Adding request for LimeTorrents: https://www.limetorrents.fun/search/all/Medabots%201x1/date/1/
+2026-02-16 15:40:17.8|Debug|Cardigann|Downloading Feed https://www.limetorrents.fun/search/all/tt0293731/date/1/
+2026-02-16 15:40:17.8|Debug|Cardigann|Adding request for MagnetDownload: https://www.magnetdownload.com/search/Medabots%20S01E01/
+2026-02-16 15:40:17.8|Debug|Cardigann|Downloading Feed https://www.limetorrents.fun/search/all/Medabots/date/1/
+2026-02-16 15:40:17.9|Debug|Cardigann|Downloading Feed https://www.limetorrents.fun/search/all/Medabots%201x1/date/1/
+2026-02-16 15:40:17.9|Debug|Cardigann|Adding request for MagnetDownload: https://www.magnetdownload.com/search/tt0293731/
+2026-02-16 15:40:18.0|Debug|Cardigann|Downloading Feed https://www.magnetdownload.com/search/Medabots%20S01E01/
+2026-02-16 15:40:18.0|Debug|Cardigann|Adding request for MagnetDownload: https://www.magnetdownload.com/search/Medabots/
+2026-02-16 15:40:18.1|Debug|Cardigann|Adding request for MagnetDownload: https://www.magnetdownload.com/search/Medabots%201x1/
+2026-02-16 15:40:18.1|Debug|Cardigann|Downloading Feed https://www.magnetdownload.com/search/tt0293731/
+2026-02-16 15:40:18.1|Debug|Cardigann|Adding request for TorrentDownload: https://www.torrentdownload.info/searchd?q=Medabots%20S01E01
+2026-02-16 15:40:18.2|Debug|Cardigann|Downloading Feed https://www.magnetdownload.com/search/Medabots/
+2026-02-16 15:40:18.2|Debug|Cardigann|Downloading Feed https://www.magnetdownload.com/search/Medabots%201x1/
+2026-02-16 15:40:18.3|Debug|Cardigann|Adding request for TorrentDownload: https://www.torrentdownload.info/searchd?q=tt0293731
+2026-02-16 15:40:18.3|Debug|Cardigann|Downloading Feed https://www.torrentdownload.info/searchd?q=Medabots%20S01E01
+2026-02-16 15:40:18.4|Debug|Cardigann|Adding request for TorrentDownload: https://www.torrentdownload.info/searchd?q=Medabots
+2026-02-16 15:40:18.4|Debug|Cardigann|Adding request for TorrentDownload: https://www.torrentdownload.info/searchd?q=Medabots%201x1
+2026-02-16 15:40:18.4|Debug|Cardigann|Downloading Feed https://www.torrentdownload.info/searchd?q=tt0293731
+2026-02-16 15:40:18.5|Debug|Knaben|Downloading Feed https://api.knaben.org/v1: {"order_by":"date","order_direction":"desc","from":0,"size":100,"hide_unsafe":true,"search_type":"100%","search_field":"title","query":"Medabots S01E01"}
+2026-02-16 15:40:18.5|Debug|Cardigann|Downloading Feed https://www.torrentdownload.info/searchd?q=Medabots
+2026-02-16 15:40:18.6|Debug|Cardigann|Downloading Feed https://www.torrentdownload.info/searchd?q=Medabots%201x1
+2026-02-16 15:40:18.6|Debug|Knaben|Downloading Feed https://api.knaben.org/v1: {"order_by":"date","order_direction":"desc","from":0,"size":100,"hide_unsafe":true,"search_type":"100%","search_field":"title","query":"tt0293731"}
+2026-02-16 15:40:18.7|Debug|TorrentsCSV|Downloading Feed https://torrents-csv.com/service/search?size=100&q=Medabots+S01E01
+2026-02-16 15:40:18.7|Debug|Knaben|Downloading Feed https://api.knaben.org/v1: {"order_by":"date","order_direction":"desc","from":0,"size":100,"hide_unsafe":true,"search_type":"100%","search_field":"title","query":"Medabots"}
+2026-02-16 15:40:18.7|Debug|Knaben|Downloading Feed https://api.knaben.org/v1: {"order_by":"date","order_direction":"desc","from":0,"size":100,"hide_unsafe":true,"search_type":"100%","search_field":"title","query":"Medabots 1x1"}
+2026-02-16 15:40:18.7|Debug|IndexerHttpClient|Invalid cookie in https://www.limetorrents.fun/search/all/Medabots%20S01E01/date/1/
+
+[v2.3.0.5236] System.Net.CookieException: An error occurred when parsing the Cookie header for Uri 'https://www.limetorrents.fun/search/all/Medabots%20S01E01/date/1/'.
+ ---> System.ArgumentOutOfRangeException: Count must be positive and count must refer to a location within the string/array/collection. (Parameter 'count')
+   at System.Net.Cookie.VerifySetDefaults(CookieVariant variant, Uri uri, Boolean isLocalDomain, String localDomain, Boolean setDefault, Boolean shouldThrow)
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   --- End of inner exception stack trace ---
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   at NzbDrone.Common.Http.HttpClient.AddCookiesToContainer(HttpUri url, String[] cookieHeaders, CookieContainer container) in ./NzbDrone.Common/Http/HttpClient.cs:line 316
+
+
+2026-02-16 15:40:18.8|Debug|TorrentsCSV|Downloading Feed https://torrents-csv.com/service/search?size=100&q=tt0293731
+2026-02-16 15:40:18.8|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=Medabots+S01E01&orderby=latest
+2026-02-16 15:40:18.9|Debug|TorrentsCSV|Downloading Feed https://torrents-csv.com/service/search?size=100&q=Medabots
+2026-02-16 15:40:18.9|Debug|TorrentsCSV|Downloading Feed https://torrents-csv.com/service/search?size=100&q=Medabots+1x1
+2026-02-16 15:40:19.0|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=tt0293731&orderby=latest
+2026-02-16 15:40:19.0|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=Medabots+S01E01&orderby=latest
+2026-02-16 15:40:19.1|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=Medabots&orderby=latest
+2026-02-16 15:40:19.1|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=Medabots+1x1&orderby=latest
+2026-02-16 15:40:19.2|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=tt0293731&orderby=latest
+2026-02-16 15:40:19.2|Debug|Cardigann|Adding request for Magnetz: https://magnetz.eu/search?query=Medabots+S01E01
+2026-02-16 15:40:19.2|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=Medabots&orderby=latest
+2026-02-16 15:40:19.3|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=Medabots+1x1&orderby=latest
+2026-02-16 15:40:19.3|Debug|Cardigann|Adding request for Magnetz: https://magnetz.eu/search?query=tt0293731
+2026-02-16 15:40:19.3|Debug|Cardigann|Downloading Feed https://magnetz.eu/search?query=Medabots+S01E01
+2026-02-16 15:40:19.4|Debug|Cardigann|Adding request for Magnetz: https://magnetz.eu/search?query=Medabots
+2026-02-16 15:40:19.4|Debug|Cardigann|Adding request for Magnetz: https://magnetz.eu/search?query=Medabots+1x1
+2026-02-16 15:40:19.5|Debug|Cardigann|Downloading Feed https://magnetz.eu/search?query=tt0293731
+2026-02-16 15:40:19.5|Debug|Cardigann|Adding request for Nyaa.si: https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=Medabots+S01E01
+2026-02-16 15:40:19.6|Debug|Cardigann|Downloading Feed https://magnetz.eu/search?query=Medabots
+2026-02-16 15:40:19.6|Debug|Cardigann|Downloading Feed https://magnetz.eu/search?query=Medabots+1x1
+2026-02-16 15:40:19.6|Debug|Cardigann|Adding request for Nyaa.si: https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=tt0293731
+2026-02-16 15:40:19.7|Debug|Cardigann|Downloading Feed https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=Medabots+S01E01
+2026-02-16 15:40:19.7|Debug|Cardigann|Adding request for Nyaa.si: https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=Medabots
+2026-02-16 15:40:19.8|Debug|Cardigann|Adding request for Nyaa.si: https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=Medabots+1x1
+2026-02-16 15:40:19.8|Debug|Cardigann|Downloading Feed https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=tt0293731
+2026-02-16 15:40:19.9|Debug|SubsPlease|Downloading Feed https://subsplease.org/api/?tz=UTC&f=search&s=Medabots+S01E01
+2026-02-16 15:40:19.9|Debug|Cardigann|Downloading Feed https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=Medabots
+2026-02-16 15:40:19.9|Debug|Cardigann|Downloading Feed https://nyaa.si/?f=0&c=0_0&s=id&o=desc&q=Medabots+1x1
+2026-02-16 15:40:19.9|Debug|SubsPlease|Downloading Feed https://subsplease.org/api/?tz=UTC&f=search&s=tt0293731
+2026-02-16 15:40:20.0|Debug|Cardigann|Adding request for Magnet Cat: https://magnetcatcat.com/search-Medabots%20S01E01-0-2-1.html
+2026-02-16 15:40:20.0|Debug|SubsPlease|Downloading Feed https://subsplease.org/api/?tz=UTC&f=search&s=Medabots
+2026-02-16 15:40:20.1|Debug|SubsPlease|Downloading Feed https://subsplease.org/api/?tz=UTC&f=search&s=Medabots+1x1
+2026-02-16 15:40:20.1|Debug|Cardigann|Adding request for Magnet Cat: https://magnetcatcat.com/search-tt0293731-0-2-1.html
+2026-02-16 15:40:20.1|Debug|Cardigann|Downloading Feed https://magnetcatcat.com/search-Medabots%20S01E01-0-2-1.html
+2026-02-16 15:40:20.2|Debug|IndexerHttpClient|Invalid cookie in https://www.limetorrents.fun/search/all/tt0293731/date/1/
+
+[v2.3.0.5236] System.Net.CookieException: An error occurred when parsing the Cookie header for Uri 'https://www.limetorrents.fun/search/all/tt0293731/date/1/'.
+ ---> System.ArgumentOutOfRangeException: Count must be positive and count must refer to a location within the string/array/collection. (Parameter 'count')
+   at System.Net.Cookie.VerifySetDefaults(CookieVariant variant, Uri uri, Boolean isLocalDomain, String localDomain, Boolean setDefault, Boolean shouldThrow)
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   --- End of inner exception stack trace ---
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   at NzbDrone.Common.Http.HttpClient.AddCookiesToContainer(HttpUri url, String[] cookieHeaders, CookieContainer container) in ./NzbDrone.Common/Http/HttpClient.cs:line 316
+
+
+2026-02-16 15:40:20.2|Debug|Cardigann|Adding request for Magnet Cat: https://magnetcatcat.com/search-Medabots-0-2-1.html
+2026-02-16 15:40:20.2|Debug|Cardigann|Adding request for Magnet Cat: https://magnetcatcat.com/search-Medabots%201x1-0-2-1.html
+2026-02-16 15:40:20.2|Debug|Cardigann|Downloading Feed https://magnetcatcat.com/search-tt0293731-0-2-1.html
+2026-02-16 15:40:20.3|Debug|Cardigann|Downloading Feed https://magnetcatcat.com/search-Medabots-0-2-1.html
+2026-02-16 15:40:20.3|Debug|Cardigann|Downloading Feed https://magnetcatcat.com/search-Medabots%201x1-0-2-1.html
+2026-02-16 15:40:21.9|Debug|FlareSolverr|CF Protection not detected, returning original response
+2026-02-16 15:40:21.9|Debug|ReleaseSearchService|Total of 18 reports were found for Term: [Medabots S01E01], Offset: 0, Limit: 0, Categories: [] from 14 indexer(s)
+2026-02-16 15:40:21.9|Debug|Api|[GET] /api/v1/search?query=Medabots+S01E01: 200.OK (5880 ms)
+2026-02-16 15:40:22.3|Debug|IndexerHttpClient|Invalid cookie in https://www.limetorrents.fun/search/all/Medabots/date/1/
+
+[v2.3.0.5236] System.Net.CookieException: An error occurred when parsing the Cookie header for Uri 'https://www.limetorrents.fun/search/all/Medabots/date/1/'.
+ ---> System.ArgumentOutOfRangeException: Count must be positive and count must refer to a location within the string/array/collection. (Parameter 'count')
+   at System.Net.Cookie.VerifySetDefaults(CookieVariant variant, Uri uri, Boolean isLocalDomain, String localDomain, Boolean setDefault, Boolean shouldThrow)
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   --- End of inner exception stack trace ---
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   at NzbDrone.Common.Http.HttpClient.AddCookiesToContainer(HttpUri url, String[] cookieHeaders, CookieContainer container) in ./NzbDrone.Common/Http/HttpClient.cs:line 316
+
+
+2026-02-16 15:40:23.1|Debug|FlareSolverr|CF Protection not detected, returning original response
+2026-02-16 15:40:23.2|Debug|ReleaseSearchService|Total of 4 reports were found for Term: [tt0293731], Offset: 0, Limit: 0, Categories: [] from 14 indexer(s)
+2026-02-16 15:40:23.2|Debug|Api|[GET] /api/v1/search?query=tt0293731: 200.OK (7181 ms)
+2026-02-16 15:40:24.3|Debug|IndexerHttpClient|Invalid cookie in https://www.limetorrents.fun/search/all/Medabots%201x1/date/1/
+
+[v2.3.0.5236] System.Net.CookieException: An error occurred when parsing the Cookie header for Uri 'https://www.limetorrents.fun/search/all/Medabots%201x1/date/1/'.
+ ---> System.ArgumentOutOfRangeException: Count must be positive and count must refer to a location within the string/array/collection. (Parameter 'count')
+   at System.Net.Cookie.VerifySetDefaults(CookieVariant variant, Uri uri, Boolean isLocalDomain, String localDomain, Boolean setDefault, Boolean shouldThrow)
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   --- End of inner exception stack trace ---
+   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)
+   at NzbDrone.Common.Http.HttpClient.AddCookiesToContainer(HttpUri url, String[] cookieHeaders, CookieContainer container) in ./NzbDrone.Common/Http/HttpClient.cs:line 316
+
+
+2026-02-16 15:40:24.6|Debug|Cardigann|Adding request for TorrentProject2: https://torrentproject2.net/?t=Medabots&orderby=latest&p=1
+2026-02-16 15:40:24.6|Debug|Cardigann|Downloading Feed https://torrentproject2.net/?t=Medabots&orderby=latest&p=1
+2026-02-16 15:40:25.4|Debug|FlareSolverr|CF Protection not detected, returning original response
+2026-02-16 15:40:27.2|Debug|FlareSolverr|CF Protection not detected, returning original response
+2026-02-16 15:40:40.8|Debug|ReleaseSearchService|Total of 237 reports were found for Term: [Medabots], Offset: 0, Limit: 0, Categories: [] from 14 indexer(s)
+2026-02-16 15:40:40.8|Debug|Api|[GET] /api/v1/search?query=Medabots: 200.OK (24770 ms)
+2026-02-16 15:40:42.8|Debug|ReleaseSearchService|Total of 13 reports were found for Term: [Medabots 1x1], Offset: 0, Limit: 0, Categories: [] from 14 indexer(s)
+2026-02-16 15:40:42.8|Debug|Api|[GET] /api/v1/search?query=Medabots+1x1: 200.OK (26768 ms)
+2026-02-16 16:19:39.4|Debug|InstallUpdateService|Checking for updates
+2026-02-16 16:19:39.4|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 16:19:39.4|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 16:19:39.7|Debug|InstallUpdateService|No update available
+2026-02-16 16:19:39.8|Debug|FlareSolverr|Cloudflare Detected, Applying FlareSolverr Proxy FlareSolverr to request https://prowlarr.servarr.com/v1/ping

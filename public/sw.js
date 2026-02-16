@@ -1,4 +1,4 @@
-const CACHE_NAME = "streams-v2";
+const CACHE_NAME = "streams-v4";
 const PRECACHE = [
   "/",
   "/index.html",
@@ -38,7 +38,30 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Cache-first para assets estáticos
+  // Network-first para HTML (index.html y navegacion SPA)
+  // Esto asegura que tras un nuevo build, el browser siempre cargue el HTML actualizado
+  const isNavigationOrHtml =
+    event.request.mode === "navigate" ||
+    url.pathname === "/" ||
+    url.pathname === "/index.html" ||
+    url.pathname.endsWith(".html");
+
+  if (isNavigationOrHtml) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((cached) => cached || caches.match("/index.html")))
+    );
+    return;
+  }
+
+  // Cache-first para assets estaticos (con hash en el nombre, cambian por build)
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;

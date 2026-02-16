@@ -1,0 +1,275 @@
+#EXTM3U
+#EXTINF:-1 tvg-id="ae" tvg-name="A&E" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",A&E
+https://bigboss.bemtv.cn/STREAM/452/playlist.m3u8
+#EXTINF:-1 tvg-id="ae" tvg-name="A&E" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",A&E (Alt 2)
+https://router.cdn.rcs.net.ar/mnp/ae_hls/playlist.m3u8
+#EXTINF:-1 tvg-id="ae" tvg-name="A&E" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",A&E (Alt 3)
+http://138.121.114.86:8000/play/a0cz/index.m3u8
+#EXTINF:-1 tvg-id="ae" tvg-name="A&E" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",A&E (Alt 4)
+http://181.78.201.70:8000/play/a0pg/index.m3u8
+#EXTINF:-1 tvg-id="ae" tvg-name="A&E" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",A&E (Alt 5)
+http://190.60.37.154:45000/play/a03j/index.m3u8
+#EXTINF:-1 tvg-id="ae" tvg-name="A&E" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",A&E (Alt 6)
+http://190.119.43.180:8000/play/a0yq/index.m3u8
+#EXTINF:-1 tvg-id="ae" tvg-name="A&E" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",A&E (Alt 7)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/9614
+#EXTINF:-1 tvg-id="ae" tvg-name="A&E" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",A&E (Alt 8)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/9615
+#EXTINF:-1 tvg-id="ae" tvg-name="A&E" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",A&E (Alt 9)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/45813
+#EXTINF:-1 tvg-id="ae" tvg-name="A&E" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",A&E (Alt 10)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/162600
+#EXTINF:-1 tvg-id="amc" tvg-name="AMC" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",AMC
+https://stitcher.pluto.tv/stitch/hls/channel/678aa0b3680721c77c5035dd/master.m3u8?deviceType=web&servertSideAds=false&deviceMake=safari&deviceVersion=1&deviceId=spencer&appVersion=1&deviceDNT=0&deviceModel=web&sid=91508f22-9c45-11f0-a2e8-e6529e9ee743
+#EXTINF:-1 tvg-id="amc" tvg-name="AMC" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",AMC (Alt 2)
+https://router.cdn.rcs.net.ar/mnp/amc_hls/playlist.m3u8
+#EXTINF:-1 tvg-id="amc" tvg-name="AMC" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",AMC (Alt 3)
+http://179.1.148.246:8888/play/a0c5/index.m3u8
+#EXTINF:-1 tvg-id="amc" tvg-name="AMC" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",AMC (Alt 4)
+http://38.44.109.41:8003/play/a02a/index.m3u8
+#EXTINF:-1 tvg-id="amc" tvg-name="AMC" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",AMC (Alt 5)
+http://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/5e8254118601b80007b4b7ae/master.m3u8?appName=web&appVersion=unknown&clientTime=0&deviceDNT=0&deviceId=6c2bd7a7-30d3-11ef-9cf5-e9ddff8ff496&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&serverSideAds=false&sid=376bc851-10a1-4952-ada7-86e9d28d5845
+#EXTINF:-1 tvg-id="amc" tvg-name="AMC" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",AMC (Alt 6)
+http://190.119.43.180:8000/play/a0l2/index.m3u8
+#EXTINF:-1 tvg-id="amc" tvg-name="AMC" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",AMC (Alt 7)
+http://tv14s.xyz:8080/FxQ7fU/508292/18925
+#EXTINF:-1 tvg-id="axn" tvg-name="AXN" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",AXN
+https://bigboss.bemtv.cn/STREAM/465/playlist.m3u8
+#EXTINF:-1 tvg-id="axn" tvg-name="AXN" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",AXN (Alt 2)
+https://router.cdn.rcs.net.ar/mnp/axn_hls/playlist.m3u8
+#EXTINF:-1 tvg-id="axn" tvg-name="AXN" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",AXN (Alt 3)
+http://179.1.148.246:8888/play/a0f1/index.m3u8
+#EXTINF:-1 tvg-id="axn" tvg-name="AXN" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",AXN (Alt 4)
+http://38.44.109.41:8003/play/a031/index.m3u8
+#EXTINF:-1 tvg-id="axn" tvg-name="AXN" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",AXN (Alt 5)
+http://190.119.43.180:8000/play/a0s9/index.m3u8
+#EXTINF:-1 tvg-id="axn" tvg-name="AXN" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",AXN (Alt 6)
+http://190.60.37.154:45000/play/a04n/index.m3u8
+#EXTINF:-1 tvg-id="cinecanal" tvg-name="Cinecanal" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Cinecanal
+https://router.cdn.rcs.net.ar/mnp/cinecanal_hls/playlist.m3u8
+#EXTINF:-1 tvg-id="cinecanal" tvg-name="Cinecanal" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Cinecanal (Alt 2)
+http://179.1.148.246:8888/play/a0jg/index.m3u8
+#EXTINF:-1 tvg-id="cinecanal" tvg-name="Cinecanal" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Cinecanal (Alt 3)
+http://38.44.109.41:8003/play/a03a/index.m3u8
+#EXTINF:-1 tvg-id="cinecanal" tvg-name="Cinecanal" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Cinecanal (Alt 4)
+http://xcm.budtv-ultra.com:9000/budtv/budtvline/8Y3ymUpJESps/278462.m3u8
+#EXTINF:-1 tvg-id="cinecanal" tvg-name="Cinecanal" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Cinecanal (Alt 5)
+http://190.119.43.180:8000/play/a0vn/index.m3u8
+#EXTINF:-1 tvg-id="cinecanal" tvg-name="Cinecanal" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Cinecanal (Alt 6)
+http://181.205.130.194:4000/play/a06e
+#EXTINF:-1 tvg-id="cinemax" tvg-name="Cinemax" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Cinemax
+http://179.1.148.246:8888/play/a0d8/index.m3u8
+#EXTINF:-1 tvg-id="cinemax" tvg-name="Cinemax" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Cinemax (Alt 2)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/9633
+#EXTINF:-1 tvg-id="cinemax" tvg-name="Cinemax" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Cinemax (Alt 3)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/162669
+#EXTINF:-1 tvg-id="cinemax" tvg-name="Cinemax" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Cinemax (Alt 4)
+http://vipgerretger.top:8080/VIP01291755248523551/9feb67bc364a/3430
+#EXTINF:-1 tvg-id="cinemax" tvg-name="Cinemax" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Cinemax (Alt 5)
+http://vipgerretger.top:8080/VIP01291755248523551/9feb67bc364a/3431
+#EXTINF:-1 tvg-id="cinemax" tvg-name="Cinemax" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Cinemax (Alt 6)
+http://vipgerretger.top:8080/VIP01291755248523551/9feb67bc364a/144335
+#EXTINF:-1 tvg-id="cinemax" tvg-name="Cinemax" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Cinemax (Alt 7)
+http://vipgerretger.top:8080/VIP01291755248523551/9feb67bc364a/144336
+#EXTINF:-1 tvg-id="cinemax" tvg-name="Cinemax" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Cinemax (Alt 8)
+http://lunar.pm:8080/shacara/7274249488/115070
+#EXTINF:-1 tvg-id="film_arts" tvg-name="Film&Arts" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Film&Arts
+http://190.7.19.197:232/play/a01e/index.m3u8
+#EXTINF:-1 tvg-id="film_arts" tvg-name="Film&Arts" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Film&Arts (Alt 2)
+http://xcm.budtv-ultra.com:9000/budtv/budtvline/8Y3ymUpJESps/278511.m3u8
+#EXTINF:-1 tvg-id="fx" tvg-name="FX" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",FX
+https://bigboss.bemtv.cn/STREAM/7500/playlist.m3u8
+#EXTINF:-1 tvg-id="fx" tvg-name="FX" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",FX (Alt 2)
+https://router.cdn.rcs.net.ar/mnp/fx_hls/playlist.m3u8
+#EXTINF:-1 tvg-id="fx" tvg-name="FX" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",FX (Alt 3)
+https://fxtvhls.wns.live/hls/stream.m3u8
+#EXTINF:-1 tvg-id="fx" tvg-name="FX" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",FX (Alt 4)
+https://toonixhls.wns.live/hls/stream.m3u8
+#EXTINF:-1 tvg-id="fx" tvg-name="FX" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",FX (Alt 5)
+http://190.60.37.154:45000/play/a05e/index.m3u8
+#EXTINF:-1 tvg-id="fx" tvg-name="FX" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",FX (Alt 6)
+http://179.1.148.246:8888/play/a0jk/index.m3u8
+#EXTINF:-1 tvg-id="fx" tvg-name="FX" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",FX (Alt 7)
+http://38.44.109.41:8003/play/a01g/index.m3u8
+#EXTINF:-1 tvg-id="fx" tvg-name="FX" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",FX (Alt 8)
+http://190.119.43.180:8000/play/a0vv/index.m3u8
+#EXTINF:-1 tvg-id="fx" tvg-name="FX" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",FX (Alt 9)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/9653
+#EXTINF:-1 tvg-id="fx" tvg-name="FX" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",FX (Alt 10)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/162543
+#EXTINF:-1 tvg-id="fx" tvg-name="FX" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",FX (Alt 11)
+http://live.detodotvplay.com:8080/Risario8/Pineda13/65
+#EXTINF:-1 tvg-id="hbo" tvg-name="HBO" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO
+https://router.cdn.rcs.net.ar/mnp/hbo_hls/playlist.m3u8
+#EXTINF:-1 tvg-id="hbo" tvg-name="HBO" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO (Alt 2)
+https://router.cdn.rcs.net.ar/mnp/hbopop_hls/playlist.m3u8
+#EXTINF:-1 tvg-id="hbo" tvg-name="HBO" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO (Alt 3)
+http://181.13.252.102:8000/play/a06o/index.m3u8
+#EXTINF:-1 tvg-id="hbo" tvg-name="HBO" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO (Alt 4)
+http://179.1.148.246:8888/play/a0c6/index.m3u8
+#EXTINF:-1 tvg-id="hbo" tvg-name="HBO" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO (Alt 5)
+http://179.1.148.246:8888/play/a0j4/index.m3u8
+#EXTINF:-1 tvg-id="hbo" tvg-name="HBO" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO (Alt 6)
+http://190.7.19.197:232/play/a016/index.m3u8
+#EXTINF:-1 tvg-id="hbo" tvg-name="HBO" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO (Alt 7)
+http://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/65e23f340d4561000821540d/master.m3u8?appName=web&appVersion=unknown&clientTime=0&deviceDNT=0&deviceId=6c29dbd1-30d3-11ef-9cf5-e9ddff8ff496&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&serverSideAds=false&sid=18721deb-08cc-4fc5-b3dd-89d418b508de
+#EXTINF:-1 tvg-id="hbo" tvg-name="HBO" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO (Alt 8)
+http://xcm.budtv-ultra.com:9000/budtv/budtvline/8Y3ymUpJESps/278488.m3u8
+#EXTINF:-1 tvg-id="hbo" tvg-name="HBO" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO (Alt 9)
+http://51.79.81.69:8080/live/tVoIdcGo63/3k9huT771I/105.ts
+#EXTINF:-1 tvg-id="hbo" tvg-name="HBO" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO (Alt 10)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/9666
+#EXTINF:-1 tvg-id="hbo" tvg-name="HBO" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO (Alt 11)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/9689
+#EXTINF:-1 tvg-id="hbo" tvg-name="HBO" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO (Alt 12)
+http://live.detodotvplay.com:8080/Risario8/Pineda13/47
+#EXTINF:-1 tvg-id="hbo2" tvg-name="HBO 2" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO 2
+https://router.cdn.rcs.net.ar/mnp/hbo2_hls/playlist.m3u8
+#EXTINF:-1 tvg-id="hbo2" tvg-name="HBO 2" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO 2 (Alt 2)
+http://181.13.252.102:8000/play/a06q/index.m3u8
+#EXTINF:-1 tvg-id="hbo2" tvg-name="HBO 2" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO 2 (Alt 3)
+http://179.1.148.246:8888/play/a0aa/index.m3u8
+#EXTINF:-1 tvg-id="hbo2" tvg-name="HBO 2" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO 2 (Alt 4)
+http://190.119.43.180:8000/play/a0rf/index.m3u8
+#EXTINF:-1 tvg-id="hbo2" tvg-name="HBO 2" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO 2 (Alt 5)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/9673
+#EXTINF:-1 tvg-id="hbo2" tvg-name="HBO 2" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO 2 (Alt 6)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/9672
+#EXTINF:-1 tvg-id="hbo2" tvg-name="HBO 2" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO 2 (Alt 7)
+http://live.detodotvplay.com:8080/Risario8/Pineda13/49
+#EXTINF:-1 tvg-id="hbo_family" tvg-name="HBO Family" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Family
+https://router.cdn.rcs.net.ar/mnp/hbofam_hls/playlist.m3u8
+#EXTINF:-1 tvg-id="hbo_family" tvg-name="HBO Family" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Family (Alt 2)
+http://181.13.252.102:8000/play/a06r/index.m3u8
+#EXTINF:-1 tvg-id="hbo_family" tvg-name="HBO Family" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Family (Alt 3)
+http://179.1.148.246:8888/play/a0di/index.m3u8
+#EXTINF:-1 tvg-id="hbo_family" tvg-name="HBO Family" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Family (Alt 4)
+http://38.44.109.41:8003/play/a03j/index.m3u8
+#EXTINF:-1 tvg-id="hbo_family" tvg-name="HBO Family" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Family (Alt 5)
+http://190.119.43.180:8000/play/a0rq/index.m3u8
+#EXTINF:-1 tvg-id="hbo_family" tvg-name="HBO Family" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Family (Alt 6)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/9676
+#EXTINF:-1 tvg-id="hbo_family" tvg-name="HBO Family" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Family (Alt 7)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/9678
+#EXTINF:-1 tvg-id="hbo_plus" tvg-name="HBO Plus" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Plus
+https://router.cdn.rcs.net.ar/mnp/hboplus_hls/playlist.m3u8
+#EXTINF:-1 tvg-id="hbo_plus" tvg-name="HBO Plus" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Plus (Alt 2)
+http://179.1.148.246:8888/play/a0a9/index.m3u8
+#EXTINF:-1 tvg-id="hbo_plus" tvg-name="HBO Plus" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Plus (Alt 3)
+http://xcm.budtv-ultra.com:9000/budtv/budtvline/8Y3ymUpJESps/278489.m3u8
+#EXTINF:-1 tvg-id="hbo_plus" tvg-name="HBO Plus" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Plus (Alt 4)
+http://190.119.43.180:8000/play/a0zg/index.m3u8
+#EXTINF:-1 tvg-id="hbo_plus" tvg-name="HBO Plus" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Plus (Alt 5)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/9685
+#EXTINF:-1 tvg-id="hbo_signature" tvg-name="HBO Signature" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Signature
+https://router.cdn.rcs.net.ar/mnp/hbosig_hls/playlist.m3u8
+#EXTINF:-1 tvg-id="hbo_signature" tvg-name="HBO Signature" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Signature (Alt 2)
+http://179.1.148.246:8888/play/a0ap/index.m3u8
+#EXTINF:-1 tvg-id="hbo_xtreme" tvg-name="HBO Xtreme" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Xtreme
+https://router.cdn.rcs.net.ar/mnp/hboxtr_hls/playlist.m3u8
+#EXTINF:-1 tvg-id="hbo_xtreme" tvg-name="HBO Xtreme" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Xtreme (Alt 2)
+http://138.121.114.86:8000/play/a06g/index.m3u8
+#EXTINF:-1 tvg-id="hbo_xtreme" tvg-name="HBO Xtreme" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Xtreme (Alt 3)
+http://179.1.148.246:8888/play/a0ex/index.m3u8
+#EXTINF:-1 tvg-id="hbo_xtreme" tvg-name="HBO Xtreme" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",HBO Xtreme (Alt 4)
+http://190.119.43.180:8000/play/a0yh/index.m3u8
+#EXTINF:-1 tvg-id="lifetime" tvg-name="Lifetime" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Lifetime
+http://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/63335b193583440007c859fb/master.m3u8?appName=web&appVersion=unknown&clientTime=0&deviceDNT=0&deviceId=6c2a02e2-30d3-11ef-9cf5-e9ddff8ff496&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&serverSideAds=false&sid=c32f13eb-8395-4e23-87b8-0bd6e7d05f16
+#EXTINF:-1 tvg-id="sony" tvg-name="Sony Channel" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Sony Channel
+http://190.60.37.154:45000/play/a04m/index.m3u8
+#EXTINF:-1 tvg-id="sony" tvg-name="Sony Channel" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Sony Channel (Alt 2)
+http://190.119.43.180:8000/play/a0s5/index.m3u8
+#EXTINF:-1 tvg-id="sony" tvg-name="Sony Channel" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Sony Channel (Alt 3)
+http://xcm.budtv-ultra.com:9000/budtv/budtvline/8Y3ymUpJESps/278405.m3u8
+#EXTINF:-1 tvg-id="sony" tvg-name="Sony Channel" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Sony Channel (Alt 4)
+http://38.252.213.12:8000/play/a01i
+#EXTINF:-1 tvg-id="space" tvg-name="Space" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Space
+https://router.cdn.rcs.net.ar/mnp/space_hls/playlist.m3u8
+#EXTINF:-1 tvg-id="space" tvg-name="Space" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Space (Alt 2)
+https://streams2.sofast.tv/v1/master/611d79b11b77e2f571934fd80ca1413453772ac7/18d329ef-d478-413c-b68f-c123494ac434/manifest.m3u8
+#EXTINF:-1 tvg-id="space" tvg-name="Space" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Space (Alt 3)
+https://raw.githubusercontent.com/UzunMuhalefet/streams/main/myvideo-az/space-tv.m3u8
+#EXTINF:-1 tvg-id="space" tvg-name="Space" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Space (Alt 4)
+http://179.1.148.246:8888/play/a0ji/index.m3u8
+#EXTINF:-1 tvg-id="space" tvg-name="Space" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Space (Alt 5)
+http://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/61409f8d6feb30000766b675/master.m3u8?appName=web&appVersion=unknown&clientTime=0&deviceDNT=0&deviceId=bc85c846-4b91-11ef-8a44-83c5e90e038f&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&serverSideAds=false&sid=107edfdc-70b3-44a9-b352-7604fe6120d9
+#EXTINF:-1 tvg-id="space" tvg-name="Space" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Space (Alt 6)
+http://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/65a67d200c7ff50008cb131a/master.m3u8?appName=web&appVersion=unknown&clientTime=0&deviceDNT=0&deviceId=1b210d34-4b81-11ef-a8ac-e146e4e7be02&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&serverSideAds=false&sid=35795be0-a9bf-4b10-b542-2134b369c86c
+#EXTINF:-1 tvg-id="space" tvg-name="Space" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Space (Alt 7)
+http://38.44.109.41:8003/play/a01y/index.m3u8
+#EXTINF:-1 tvg-id="space" tvg-name="Space" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Space (Alt 8)
+http://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/65c69bbfd77d450008c7ffee/master.m3u8?appName=web&appVersion=unknown&clientTime=0&deviceDNT=0&deviceId=6c2bd7a3-30d3-11ef-9cf5-e9ddff8ff496&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&serverSideAds=false&sid=6e3a3277-9d15-4813-a57c-5547e9d53d6e
+#EXTINF:-1 tvg-id="space" tvg-name="Space" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Space (Alt 9)
+http://190.60.37.154:45000/play/a04o/index.m3u8
+#EXTINF:-1 tvg-id="space" tvg-name="Space" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Space (Alt 10)
+http://190.119.43.180:8000/play/a0vu/index.m3u8
+#EXTINF:-1 tvg-id="star_channel" tvg-name="Star Channel" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Star Channel
+https://live-fi.tvkaista.net/star-channel/live.m3u8
+#EXTINF:-1 tvg-id="star_channel" tvg-name="Star Channel" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Star Channel (Alt 2)
+http://179.1.148.246:8888/play/a0ez/index.m3u8
+#EXTINF:-1 tvg-id="star_channel" tvg-name="Star Channel" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Star Channel (Alt 3)
+http://38.44.109.41:8003/play/a012/index.m3u8
+#EXTINF:-1 tvg-id="star_channel" tvg-name="Star Channel" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Star Channel (Alt 4)
+http://190.119.43.180:8000/play/a0yl/index.m3u8
+#EXTINF:-1 tvg-id="star_channel" tvg-name="Star Channel" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Star Channel (Alt 5)
+http://190.60.37.154:45000/play/a02y/index.m3u8
+#EXTINF:-1 tvg-id="studio_universal" tvg-name="Studio Universal" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Studio Universal
+http://179.1.148.246:8888/play/a08x/index.m3u8
+#EXTINF:-1 tvg-id="studio_universal" tvg-name="Studio Universal" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Studio Universal (Alt 2)
+http://38.44.109.41:8003/play/a03e/index.m3u8
+#EXTINF:-1 tvg-id="studio_universal" tvg-name="Studio Universal" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Studio Universal (Alt 3)
+http://190.119.43.180:8000/play/a0xo/index.m3u8
+#EXTINF:-1 tvg-id="studio_universal" tvg-name="Studio Universal" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Studio Universal (Alt 4)
+http://190.60.37.154:45000/play/a038/index.m3u8
+#EXTINF:-1 tvg-id="tcm" tvg-name="TCM" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",TCM
+http://179.1.148.246:8888/play/a0a6/index.m3u8
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT
+https://bigboss.bemtv.cn/STREAM/584/playlist.m3u8
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 2)
+http://138.121.114.86:8000/play/a0d4/index.m3u8
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 3)
+http://38.199.6.1:17001/play/a036/index.m3u8
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 4)
+http://190.60.37.154:45000/play/a045/index.m3u8
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 5)
+http://179.1.148.246:8888/play/a0ey/index.m3u8
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 6)
+http://179.1.148.246:8888/play/a0eq/index.m3u8
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 7)
+http://190.7.19.197:232/play/a00g/index.m3u8
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 8)
+http://38.44.109.41:8003/play/a01v/index.m3u8
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 9)
+http://xcm.budtv-ultra.com:9000/budtv/budtvline/8Y3ymUpJESps/278403.m3u8
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 10)
+http://xcm.budtv-ultra.com:9000/budtv/budtvline/8Y3ymUpJESps/278519.m3u8
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 11)
+http://190.119.43.180:8000/play/a0zs/index.m3u8
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 12)
+http://181.78.201.70:8000/play/a0pr/index.m3u8
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 13)
+http://181.205.130.194:4000/play/a06n
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 14)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/9743
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 15)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/10256
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 16)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/162593
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 17)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/161898
+#EXTINF:-1 tvg-id="tnt" tvg-name="TNT" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT (Alt 18)
+http://live.proyectoxpro.com:8080/vasqueznestor1/cdKvFeY4RK/161987
+#EXTINF:-1 tvg-id="tnt_series" tvg-name="TNT Series" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT Series
+http://179.1.148.246:8888/play/a0ep/index.m3u8
+#EXTINF:-1 tvg-id="tnt_series" tvg-name="TNT Series" tvg-logo="https://i.imgur.com/zV8QWwW.png" group-title="Peliculas",TNT Series (Alt 2)
+http://38.44.109.41:8003/play/a01x/index.m3u8
+#EXTINF:-1 tvg-id="universal" tvg-name="Universal TV" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Universal TV
+http://live.detodotvplay.com:8080/Risario8/Pineda13/204
+#EXTINF:-1 tvg-id="warner" tvg-name="Warner" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Warner
+https://router.cdn.rcs.net.ar/mnp/warner_hls/playlist.m3u8
+#EXTINF:-1 tvg-id="warner" tvg-name="Warner" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Warner (Alt 2)
+http://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/6532e8342cf13100083b404c/master.m3u8?appName=web&appVersion=unknown&clientTime=0&deviceDNT=0&deviceId=6c2d1026-30d3-11ef-9cf5-e9ddff8ff496&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&serverSideAds=false&sid=f2a7d6f8-3ba5-4ec9-acb3-0ba652bd6b1a
+#EXTINF:-1 tvg-id="warner" tvg-name="Warner" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Warner (Alt 3)
+http://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv/stitch/hls/channel/6532e7fa045c3d0008514ca7/master.m3u8?appName=web&appVersion=unknown&clientTime=0&deviceDNT=0&deviceId=6c2d1027-30d3-11ef-9cf5-e9ddff8ff496&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&serverSideAds=false&sid=ef9213e0-68a9-467b-a8ec-30b182841c0b
+#EXTINF:-1 tvg-id="warner" tvg-name="Warner" tvg-logo="https://i.imgur.com/XpX3X0W.png" group-title="Peliculas",Warner (Alt 4)
+http://xcm.budtv-ultra.com:9000/budtv/budtvline/8Y3ymUpJESps/278453.m3u8

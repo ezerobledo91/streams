@@ -18,6 +18,25 @@ const { loadLiveTvFromDisk } = require("./lib/live-tv/manager");
 const { cleanupPlaybackSessions } = require("./lib/playback/sessions");
 const { registerApiRoutes } = require("./lib/routes");
 
+function cleanupStaleHlsOnStartup() {
+  try {
+    if (!fs.existsSync(PLAYBACK_HLS_DIR)) return;
+    const entries = fs.readdirSync(PLAYBACK_HLS_DIR, { withFileTypes: true });
+    let removed = 0;
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const dirPath = path.join(PLAYBACK_HLS_DIR, entry.name);
+      fs.rmSync(dirPath, { recursive: true, force: true });
+      removed++;
+    }
+    if (removed > 0) {
+      console.log(`[HLS-STARTUP] Eliminadas ${removed} carpetas HLS de sesiones anteriores.`);
+    }
+  } catch (err) {
+    console.error("[HLS-STARTUP] Error limpiando carpetas HLS:", err.message);
+  }
+}
+
 const app = express();
 
 app.use(express.json({ limit: "1mb" }));
@@ -67,6 +86,7 @@ function startServer() {
   loadReliabilityFromDisk();
   console.log(`Confiabilidad de streams cargada desde ${STREAM_RELIABILITY_FILE}`);
   ensureDirSync(PLAYBACK_HLS_DIR);
+  cleanupStaleHlsOnStartup();
 
   try {
     const summary = loadSourcesFromDisk();
@@ -98,6 +118,6 @@ function startServer() {
   });
 }
 
-setInterval(cleanupPlaybackSessions, 5 * 60 * 1000);
+setInterval(cleanupPlaybackSessions, 2 * 60 * 1000);
 
 startServer();

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   AlertTriangle,
   ChevronDown,
@@ -20,54 +20,40 @@ import {
   Tv2,
   X
 } from "lucide-react";
-import { fetchLiveTvCategories, fetchLiveTvChannels, reloadLiveTvChannels } from "../api";
+import {
+  fetchLiveTvCategories,
+  fetchLiveTvChannels,
+  reloadLiveTvChannels,
+  fetchLiveTvPreferences,
+  toggleLiveTvFavoriteApi,
+  hideLiveTvChannelApi,
+  setLiveTvChannelNameApi,
+  setLiveTvChannelCategoryApi
+} from "../api";
 import type { LiveTvCategoryItem, LiveTvChannelItem, ChannelGroup } from "../types";
 import { useHlsPlayer } from "../hooks/useHlsPlayer";
-import { getLiveTvFavoriteIds, toggleLiveTvFavorite } from "../lib/live-tv-favorites";
-import { getLiveTvHiddenIds, hideLiveTvChannel } from "../lib/live-tv-hidden";
-import { getChannelDisplayName, getLiveTvCustomNames, setLiveTvChannelName } from "../lib/live-tv-names";
 
 type PlayerState = "idle" | "loading" | "playing" | "buffering" | "error";
 
-const DESKTOP_QUERY = "(min-width: 1001px), (orientation: landscape) and (min-width: 1001px)";
 const ADULT_PASSWORD = "12345";
 
 function isAdultCategory(name: string): boolean {
   return name.trim().toLowerCase() === "adultos";
 }
 
-function isTvEnvironment(): boolean {
-  const ua = navigator.userAgent.toLowerCase();
-  return (
-    ua.includes("smart-tv") ||
-    ua.includes("smarttv") ||
-    ua.includes("tizen") ||
-    ua.includes("webos") ||
-    ua.includes("android tv") ||
-    ua.includes("fire tv") ||
-    ua.includes("crkey") ||
-    ua.includes("bravia") ||
-    window.matchMedia("(pointer: none)").matches ||
-    window.matchMedia("(hover: none) and (pointer: coarse)").matches
-  );
-}
-
 const SUFFIX_NUMERIC_REGEX = /^(.+?)\s+(\d+|HD|SD|FHD|Plus|\+)$/i;
 const SUFFIX_ALT_REGEX = /\s*\(Alt(?:\s*\d+)?\)\s*$/i;
 
 function getBaseName(name: string): string {
-  // First strip "(Alt N)" or "(Alt)" suffix
   let cleaned = name.trim().replace(SUFFIX_ALT_REGEX, "").trim();
-  // Then strip trailing numeric/quality suffixes like "2", "HD", "Plus"
   const match = cleaned.match(SUFFIX_NUMERIC_REGEX);
   if (match) cleaned = match[1].trim();
   return cleaned;
 }
 
-function groupChannelsByName(channels: LiveTvChannelItem[]): (ChannelGroup | LiveTvChannelItem)[] {
+function groupChannelsByName(channels: LiveTvChannelItem[], customNames: Record<string, string>): (ChannelGroup | LiveTvChannelItem)[] {
   const groupMap = new Map<string, LiveTvChannelItem[]>();
   const order: string[] = [];
-  const customNames = getLiveTvCustomNames();
 
   for (const ch of channels) {
     const displayName = customNames[ch.id] || ch.name;
@@ -101,17 +87,6 @@ function isChannelGroup(item: ChannelGroup | LiveTvChannelItem): item is Channel
   return "primary" in item && "subChannels" in item;
 }
 
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(() => !window.matchMedia(DESKTOP_QUERY).matches);
-  useEffect(() => {
-    const mql = window.matchMedia(DESKTOP_QUERY);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(!e.matches);
-    mql.addEventListener("change", handler);
-    return () => mql.removeEventListener("change", handler);
-  }, []);
-  return isMobile;
-}
-
 interface ChannelSidebarProps {
   categories: LiveTvCategoryItem[];
   activeCategory: string;
@@ -137,6 +112,8 @@ interface ChannelSidebarProps {
   onToggleFavorite: (channel: LiveTvChannelItem) => void;
   onHideChannel: (channel: LiveTvChannelItem, reason: "no_funciona" | "no_interesa") => void;
   onRenameChannel: (channel: LiveTvChannelItem) => void;
+  customNames: Record<string, string>;
+  tvMode?: boolean;
   showClose?: boolean;
   onClose?: () => void;
 }
@@ -166,10 +143,11 @@ function ChannelSidebar({
   onToggleFavorite,
   onHideChannel,
   onRenameChannel,
+  customNames,
+  tvMode,
   showClose,
   onClose
 }: ChannelSidebarProps) {
-  // Separate normal and adult categories; adult goes last
   const normalCategories = categories.filter((c) => !isAdultCategory(c.name));
   const adultCategories = categories.filter((c) => isAdultCategory(c.name));
   return (
@@ -279,7 +257,7 @@ function ChannelSidebar({
             if (isChannelGroup(item)) {
               const expanded = expandedGroups.has(item.baseName.toLowerCase());
               const primaryIsFav = favoriteIds.has(item.primary.id);
-              const primaryName = getChannelDisplayName(item.primary);
+              const primaryName = customNames[item.primary.id] || item.primary.name;
               return (
                 <div key={`group-${item.baseName}`} className={`live-tv-channel-group ${expanded ? "is-expanded" : ""}`}>
                   <div className="live-tv-channel-group-row">
@@ -297,32 +275,35 @@ function ChannelSidebar({
                       </div>
                       <div className="live-tv-channel-active-dot" />
                     </button>
-                    <div className="live-tv-channel-actions">
-                      <button
-                        type="button"
-                        className={`live-tv-action-btn ${primaryIsFav ? "is-fav" : ""}`}
-                        onClick={(e) => { e.stopPropagation(); onToggleFavorite(item.primary); }}
-                        title={primaryIsFav ? "Quitar de favoritos" : "Agregar a favoritos"}
-                      >
-                        <Heart size={13} />
-                      </button>
-                      <button
-                        type="button"
-                        className="live-tv-action-btn"
-                        onClick={(e) => { e.stopPropagation(); onRenameChannel(item.primary); }}
-                        title="Renombrar canal"
-                      >
-                        <Edit2 size={13} />
-                      </button>
-                      <button
-                        type="button"
-                        className="live-tv-action-btn live-tv-action-hide"
-                        onClick={(e) => { e.stopPropagation(); onHideChannel(item.primary, "no_funciona"); }}
-                        title="Ocultar canal"
-                      >
-                        <EyeOff size={13} />
-                      </button>
-                    </div>
+                    {!tvMode ? (
+                      <div className="live-tv-channel-actions">
+                        <button
+                          type="button"
+                          className={`live-tv-action-btn ${primaryIsFav ? "is-fav" : ""}`}
+                          onClick={(e) => { e.stopPropagation(); onToggleFavorite(item.primary); }}
+                          title={primaryIsFav ? "Quitar de favoritos" : "Agregar a favoritos"}
+                        >
+                          <Heart size={13} />
+                        </button>
+                        <button
+                          type="button"
+                          className="live-tv-action-btn"
+                          onClick={(e) => { e.stopPropagation(); onRenameChannel(item.primary); }}
+                          title="Renombrar canal"
+                        >
+                          <Edit2 size={13} />
+                        </button>
+                        <button
+                          type="button"
+                          className="live-tv-action-btn live-tv-action-hide"
+                          onClick={(e) => { e.stopPropagation(); onHideChannel(item.primary, "no_funciona"); }}
+                          title="Ocultar canal"
+                        >
+                          <EyeOff size={13} />
+                        </button>
+                      </div>
+                    ) : null}
+                    {!tvMode ? (
                     <button
                       type="button"
                       className="live-tv-group-badge"
@@ -331,10 +312,11 @@ function ChannelSidebar({
                     >
                       {expanded ? <ChevronDown size={14} /> : <span>+{item.subChannels.length}</span>}
                     </button>
+                    ) : null}
                   </div>
                   {expanded ? item.subChannels.map((sub) => {
                     const subIsFav = favoriteIds.has(sub.id);
-                    const subName = getChannelDisplayName(sub);
+                    const subName = customNames[sub.id] || sub.name;
                     return (
                       <div key={sub.id} className="live-tv-subchannel-row">
                         <button
@@ -351,32 +333,34 @@ function ChannelSidebar({
                           </div>
                           <div className="live-tv-channel-active-dot" />
                         </button>
-                        <div className="live-tv-channel-actions">
-                          <button
-                            type="button"
-                            className={`live-tv-action-btn ${subIsFav ? "is-fav" : ""}`}
-                            onClick={(e) => { e.stopPropagation(); onToggleFavorite(sub); }}
-                            title={subIsFav ? "Quitar de favoritos" : "Agregar a favoritos"}
-                          >
-                            <Heart size={13} />
-                          </button>
-                          <button
-                            type="button"
-                            className="live-tv-action-btn"
-                            onClick={(e) => { e.stopPropagation(); onRenameChannel(sub); }}
-                            title="Renombrar canal"
-                          >
-                            <Edit2 size={13} />
-                          </button>
-                          <button
-                            type="button"
-                            className="live-tv-action-btn live-tv-action-hide"
-                            onClick={(e) => { e.stopPropagation(); onHideChannel(sub, "no_funciona"); }}
-                            title="Ocultar canal"
-                          >
-                            <EyeOff size={13} />
-                          </button>
-                        </div>
+                        {!tvMode ? (
+                          <div className="live-tv-channel-actions">
+                            <button
+                              type="button"
+                              className={`live-tv-action-btn ${subIsFav ? "is-fav" : ""}`}
+                              onClick={(e) => { e.stopPropagation(); onToggleFavorite(sub); }}
+                              title={subIsFav ? "Quitar de favoritos" : "Agregar a favoritos"}
+                            >
+                              <Heart size={13} />
+                            </button>
+                            <button
+                              type="button"
+                              className="live-tv-action-btn"
+                              onClick={(e) => { e.stopPropagation(); onRenameChannel(sub); }}
+                              title="Renombrar canal"
+                            >
+                              <Edit2 size={13} />
+                            </button>
+                            <button
+                              type="button"
+                              className="live-tv-action-btn live-tv-action-hide"
+                              onClick={(e) => { e.stopPropagation(); onHideChannel(sub, "no_funciona"); }}
+                              title="Ocultar canal"
+                            >
+                              <EyeOff size={13} />
+                            </button>
+                          </div>
+                        ) : null}
                       </div>
                     );
                   }) : null}
@@ -386,7 +370,7 @@ function ChannelSidebar({
             // Single channel (no group)
             const channel = item;
             const chIsFav = favoriteIds.has(channel.id);
-            const chName = getChannelDisplayName(channel);
+            const chName = customNames[channel.id] || channel.name;
             return (
               <div key={channel.id} className="live-tv-channel-row">
                 <button
@@ -403,32 +387,34 @@ function ChannelSidebar({
                   </div>
                   <div className="live-tv-channel-active-dot" />
                 </button>
-                <div className="live-tv-channel-actions">
-                  <button
-                    type="button"
-                    className={`live-tv-action-btn ${chIsFav ? "is-fav" : ""}`}
-                    onClick={(e) => { e.stopPropagation(); onToggleFavorite(channel); }}
-                    title={chIsFav ? "Quitar de favoritos" : "Agregar a favoritos"}
-                  >
-                    <Heart size={13} />
-                  </button>
-                  <button
-                    type="button"
-                    className="live-tv-action-btn"
-                    onClick={(e) => { e.stopPropagation(); onRenameChannel(channel); }}
-                    title="Renombrar canal"
-                  >
-                    <Edit2 size={13} />
-                  </button>
-                  <button
-                    type="button"
-                    className="live-tv-action-btn live-tv-action-hide"
-                    onClick={(e) => { e.stopPropagation(); onHideChannel(channel, "no_funciona"); }}
-                    title="Ocultar canal"
-                  >
-                    <EyeOff size={13} />
-                  </button>
-                </div>
+                {!tvMode ? (
+                  <div className="live-tv-channel-actions">
+                    <button
+                      type="button"
+                      className={`live-tv-action-btn ${chIsFav ? "is-fav" : ""}`}
+                      onClick={(e) => { e.stopPropagation(); onToggleFavorite(channel); }}
+                      title={chIsFav ? "Quitar de favoritos" : "Agregar a favoritos"}
+                    >
+                      <Heart size={13} />
+                    </button>
+                    <button
+                      type="button"
+                      className="live-tv-action-btn"
+                      onClick={(e) => { e.stopPropagation(); onRenameChannel(channel); }}
+                      title="Renombrar canal"
+                    >
+                      <Edit2 size={13} />
+                    </button>
+                    <button
+                      type="button"
+                      className="live-tv-action-btn live-tv-action-hide"
+                      onClick={(e) => { e.stopPropagation(); onHideChannel(channel, "no_funciona"); }}
+                      title="Ocultar canal"
+                    >
+                      <EyeOff size={13} />
+                    </button>
+                  </div>
+                ) : null}
               </div>
             );
           })
@@ -443,6 +429,7 @@ function ChannelSidebar({
 }
 
 export function LiveTvPage() {
+  const navigate = useNavigate();
   const [categories, setCategories] = useState<LiveTvCategoryItem[]>([]);
   const [activeCategory, setActiveCategory] = useState("all");
   const [channels, setChannels] = useState<LiveTvChannelItem[]>([]);
@@ -463,16 +450,30 @@ export function LiveTvPage() {
   const [adultPasswordInput, setAdultPasswordInput] = useState("");
   const [adultPasswordError, setAdultPasswordError] = useState(false);
   const pendingAdultCategoryRef = useRef<string>("");
-  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(() => getLiveTvFavoriteIds());
-  const [hiddenIds, setHiddenIds] = useState<Set<string>>(() => getLiveTvHiddenIds());
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
+  const [customNames, setCustomNames] = useState<Record<string, string>>({});
+  const [customCategories, setCustomCategories] = useState<Record<string, string>>({});
   const [showHideModal, setShowHideModal] = useState(false);
   const hideModalChannelRef = useRef<LiveTvChannelItem | null>(null);
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [renameInput, setRenameInput] = useState("");
+  const [renameCategoryInput, setRenameCategoryInput] = useState("");
   const renameModalChannelRef = useRef<LiveTvChannelItem | null>(null);
 
-  const isMobile = useIsMobile();
-  const isTV = useMemo(() => isTvEnvironment(), []);
+  // OSD state
+  const [osdVisible, setOsdVisible] = useState(false);
+  const osdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Load preferences from server on mount
+  useEffect(() => {
+    fetchLiveTvPreferences().then((prefs) => {
+      setFavoriteIds(new Set(prefs.favorites));
+      setHiddenIds(new Set(prefs.hidden));
+      setCustomNames(prefs.customNames || {});
+      setCustomCategories(prefs.customCategories || {});
+    }).catch(() => {});
+  }, []);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const playerShellRef = useRef<HTMLDivElement | null>(null);
@@ -485,7 +486,6 @@ export function LiveTvPage() {
   const reconnectAttemptRef = useRef(0);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const MAX_RECONNECT_ATTEMPTS = 5;
-  // Canales que requieren transcode (proxy falló o codec no soportado)
   const [transcodeChannels, setTranscodeChannels] = useState<Set<string>>(new Set());
   const QUALITY_OPTIONS = ["360p", "480p", "720p", "1080p"] as const;
   const [transcodeQuality, setTranscodeQuality] = useState(() => localStorage.getItem("streams_live_tv_quality") || "480p");
@@ -555,9 +555,8 @@ export function LiveTvPage() {
     setLoading(true);
     setError(null);
     try {
-      const fetchCategory = (activeCategory === "all" || activeCategory === "__favorites__") ? "" : activeCategory;
       const payload = await fetchLiveTvChannels({
-        category: fetchCategory,
+        category: "",
         query: searchQuery,
         webOnly: true,
         limit: 1200
@@ -566,7 +565,7 @@ export function LiveTvPage() {
       const nextItems = payload.items || [];
       setChannels(nextItems);
       setSelectedChannelId((current) => {
-        if (current) return current; // Mantener el canal actual si ya existe uno
+        if (current) return current;
         if (!nextItems.length) return "";
         return nextItems[0].id;
       });
@@ -581,7 +580,7 @@ export function LiveTvPage() {
         setLoading(false);
       }
     }
-  }, [activeCategory, searchQuery]);
+  }, [searchQuery]);
 
   useEffect(() => {
     void loadCategories();
@@ -604,11 +603,11 @@ export function LiveTvPage() {
     () => channels.find((item) => item.id === selectedChannelId) || null,
     [channels, selectedChannelId]
   );
-  
+
   const currentDisplayName = useMemo(() => {
     if (!selectedChannel) return "TV en vivo";
-    return getChannelDisplayName(selectedChannel);
-  }, [selectedChannel]);
+    return customNames[selectedChannel.id] || selectedChannel.name;
+  }, [selectedChannel, customNames]);
 
   const playbackTarget = useMemo(() => {
     if (!selectedChannel) return null;
@@ -642,16 +641,23 @@ export function LiveTvPage() {
       forceHls
     };
   }, [selectedChannel, transcodeChannels, transcodeQuality, forceTranscode]);
+
   // Filter out hidden channels and handle favorites virtual category
   const visibleChannels = useMemo(() => {
+    const getEffectiveCategory = (ch: LiveTvChannelItem) => customCategories[ch.id] || ch.category?.id || "variado";
+
+    let pool = channels;
     if (activeCategory === "__favorites__") {
-      return channels.filter((ch) => favoriteIds.has(ch.id) && !hiddenIds.has(ch.id));
+      return pool.filter((ch) => favoriteIds.has(ch.id) && !hiddenIds.has(ch.id));
     }
-    return channels.filter((ch) => !hiddenIds.has(ch.id));
-  }, [channels, hiddenIds, favoriteIds, activeCategory]);
+    if (activeCategory && activeCategory !== "all") {
+      pool = pool.filter((ch) => getEffectiveCategory(ch) === activeCategory);
+    }
+    return pool.filter((ch) => !hiddenIds.has(ch.id));
+  }, [channels, hiddenIds, favoriteIds, activeCategory, customCategories]);
 
   const channelCount = visibleChannels.length;
-  const groupedChannels = useMemo(() => groupChannelsByName(visibleChannels), [visibleChannels]);
+  const groupedChannels = useMemo(() => groupChannelsByName(visibleChannels, customNames), [visibleChannels, customNames]);
 
   const handleToggleGroup = useCallback((baseName: string) => {
     const key = baseName.toLowerCase();
@@ -664,8 +670,15 @@ export function LiveTvPage() {
   }, []);
 
   const handleToggleFavorite = useCallback((channel: LiveTvChannelItem) => {
-    toggleLiveTvFavorite(channel);
-    setFavoriteIds(getLiveTvFavoriteIds());
+    setFavoriteIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(channel.id)) next.delete(channel.id);
+      else next.add(channel.id);
+      return next;
+    });
+    toggleLiveTvFavoriteApi(channel.id).then((prefs) => {
+      setFavoriteIds(new Set(prefs.favorites));
+    }).catch(() => {});
   }, []);
 
   const handleRequestHideChannel = useCallback((channel: LiveTvChannelItem) => {
@@ -673,11 +686,17 @@ export function LiveTvPage() {
     setShowHideModal(true);
   }, []);
 
-  const handleConfirmHide = useCallback((reason: "no_funciona" | "no_interesa") => {
+  const handleConfirmHide = useCallback((_reason: "no_funciona" | "no_interesa") => {
     const ch = hideModalChannelRef.current;
     if (ch) {
-      hideLiveTvChannel(ch, reason);
-      setHiddenIds(getLiveTvHiddenIds());
+      setHiddenIds((prev) => {
+        const next = new Set(prev);
+        next.add(ch.id);
+        return next;
+      });
+      hideLiveTvChannelApi(ch.id).then((prefs) => {
+        setHiddenIds(new Set(prefs.hidden));
+      }).catch(() => {});
     }
     setShowHideModal(false);
     hideModalChannelRef.current = null;
@@ -685,20 +704,42 @@ export function LiveTvPage() {
 
   const handleRequestRenameChannel = useCallback((channel: LiveTvChannelItem) => {
     renameModalChannelRef.current = channel;
-    setRenameInput(getChannelDisplayName(channel));
+    setRenameInput(customNames[channel.id] || channel.name);
+    setRenameCategoryInput(customCategories[channel.id] || channel.category?.id || "");
     setShowRenameModal(true);
-  }, []);
+  }, [customNames, customCategories]);
 
   const handleRenameSubmit = useCallback(() => {
     const ch = renameModalChannelRef.current;
     if (ch) {
-      setLiveTvChannelName(ch.id, renameInput);
-      // Force refresh of names in UI
-      setChannels([...channels]);
+      setCustomNames((prev) => {
+        const next = { ...prev };
+        const trimmed = renameInput.trim();
+        if (trimmed) next[ch.id] = trimmed;
+        else delete next[ch.id];
+        return next;
+      });
+      setLiveTvChannelNameApi(ch.id, renameInput).then((prefs) => {
+        setCustomNames(prefs.customNames || {});
+      }).catch(() => {});
+
+      const catTrimmed = renameCategoryInput.trim();
+      const originalCat = ch.category?.id || "";
+      if (catTrimmed !== originalCat) {
+        setCustomCategories((prev) => {
+          const next = { ...prev };
+          if (catTrimmed && catTrimmed !== originalCat) next[ch.id] = catTrimmed;
+          else delete next[ch.id];
+          return next;
+        });
+        setLiveTvChannelCategoryApi(ch.id, catTrimmed !== originalCat ? catTrimmed : "").then((prefs) => {
+          setCustomCategories(prefs.customCategories || {});
+        }).catch(() => {});
+      }
     }
     setShowRenameModal(false);
     renameModalChannelRef.current = null;
-  }, [renameInput, channels]);
+  }, [renameInput, renameCategoryInput]);
 
   const handleRequestAdultAccess = useCallback((categoryId: string) => {
     pendingAdultCategoryRef.current = categoryId;
@@ -753,7 +794,6 @@ export function LiveTvPage() {
         video.removeAttribute("src");
         video.load();
 
-        // Para transcode HLS, esperar a que ffmpeg tenga el manifest listo (503 = en preparación)
         if (playbackTarget.sourceUrl.includes("/hls/")) {
           const pollStart = Date.now();
           let manifestReady = false;
@@ -777,27 +817,22 @@ export function LiveTvPage() {
           if (!manifestReady) throw new Error("Timeout esperando transcode.");
         }
 
-        await attachVideoSource(video, playbackTarget.sourceUrl, { 
+        await attachVideoSource(video, playbackTarget.sourceUrl, {
           forceHls: playbackTarget.forceHls,
-          mode: "live" 
+          mode: "live"
         });
         if (cancelled || attemptId !== playbackAttemptSeqRef.current) return;
         await video.play().then(() => {
           if (!cancelled && attemptId === playbackAttemptSeqRef.current) {
             setPlayerState("playing");
           }
-        }).catch(() => {
-          // autoplay can be blocked by browser policy
-        });
+        }).catch(() => {});
 
-        // Detectar streams sin video renderizable (ej: H.265/HEVC que el browser no decodifica)
-        // El tiempo avanza y los segmentos bajan, pero videoWidth queda en 0.
         if (!cancelled && attemptId === playbackAttemptSeqRef.current && !transcodeChannels.has(playbackTarget.channelId)) {
           const videoCheckDelay = 2000;
           await new Promise((r) => setTimeout(r, videoCheckDelay));
           if (cancelled || attemptId !== playbackAttemptSeqRef.current) return;
           if (video.videoWidth === 0 && video.currentTime > 0) {
-            // Pre-calentar transcode: disparar la petición para que ffmpeg arranque YA
             const hlsUrl = `/api/live-tv/channels/${encodeURIComponent(playbackTarget.channelId)}/hls/index.m3u8`;
             fetch(hlsUrl).catch(() => {});
             markChannelFailure();
@@ -842,7 +877,6 @@ export function LiveTvPage() {
       }
     }
     function scheduleBufferingOverlay() {
-      // Solo mostrar overlay de buffering si el stall dura más de 3 segundos
       if (bufferingOverlayTimerRef.current) return;
       bufferingOverlayTimerRef.current = setTimeout(() => {
         bufferingOverlayTimerRef.current = null;
@@ -913,7 +947,6 @@ export function LiveTvPage() {
     const attempt = reconnectAttemptRef.current;
     if (attempt >= MAX_RECONNECT_ATTEMPTS) return;
 
-    // Si ya estamos en transcode (último recurso) y el canal ya falló varias veces, no insistir
     const channelId = selectedChannel.id;
     const isTranscoding = transcodeChannels.has(channelId);
     const failCount = channelFailureCountRef.current.get(channelId) || 0;
@@ -924,7 +957,6 @@ export function LiveTvPage() {
       reconnectTimerRef.current = null;
       if (reconnectAttemptRef.current >= MAX_RECONNECT_ATTEMPTS) return;
       reconnectAttemptRef.current += 1;
-      // Force re-attach by clearing the last key so the playback effect re-runs
       lastPlaybackKeyRef.current = "";
       setPlayerState("loading");
       setError(null);
@@ -971,15 +1003,17 @@ export function LiveTvPage() {
     };
   }, [showControlsTemporarily]);
 
-  // Auto-fullscreen on TV when playback starts
-  useEffect(() => {
-    if (isTV && selectedChannel && playerState === "playing" && !document.fullscreenElement) {
-      playerShellRef.current?.requestFullscreen?.().catch(() => {});
-    }
-  }, [isTV, selectedChannel, playerState]);
+  // OSD: show channel info temporarily
+  const showOsd = useCallback(() => {
+    setOsdVisible(true);
+    if (osdTimerRef.current) clearTimeout(osdTimerRef.current);
+    osdTimerRef.current = setTimeout(() => {
+      setOsdVisible(false);
+      osdTimerRef.current = null;
+    }, 3000);
+  }, []);
 
-  // isBuffering de hls.js ya no fuerza el overlay directamente.
-  // El overlay de buffering se maneja con el debounce de 3s en los eventos del video.
+  // No necesitamos auto-fullscreen — el CSS ya hace 100dvh
 
   async function handleReload() {
     setReloading(true);
@@ -1011,15 +1045,10 @@ export function LiveTvPage() {
 
   function handleSelectChannel(channel: LiveTvChannelItem) {
     setSelectedChannelId(channel.id);
-    if (isMobile) setShowChannelPanel(false);
-    // Auto-fullscreen en TV al seleccionar canal
-    if (isTV || document.fullscreenElement) {
-      requestAnimationFrame(() => {
-        playerShellRef.current?.requestFullscreen?.().catch(() => {});
-      });
-    }
+    setShowChannelPanel(false);
+    tvStateRef.current = "player";
+    showOsd();
   }
-
 
   // Keyboard / D-pad navigation
   const navigateChannel = useCallback((direction: -1 | 1) => {
@@ -1030,18 +1059,54 @@ export function LiveTvPage() {
       keyboardNavigatedRef.current = true;
       return visibleChannels[nextIdx].id;
     });
-  }, [visibleChannels]);
+    showOsd();
+  }, [visibleChannels, showOsd]);
 
-  // Zone-based D-pad navigation: player / overlay / drawer (with sub-zones: search, top-actions, categories, channels)
-  const tvZoneRef = useRef<"player" | "overlay" | "drawer">("player");
-  const overlayFocusIndexRef = useRef(2); // Default to List button
-  const drawerSubZoneRef = useRef<"search" | "top-actions" | "categories" | "channels">("channels");
+  // Navigation: 3 states — "player", "overlay", "drawer"
+  const tvStateRef = useRef<"player" | "overlay" | "drawer">("player");
+  const overlayFocusIndexRef = useRef(0);
   const drawerFocusIndexRef = useRef(0);
+  // Sub-zone within drawer: "categories", "channels", "actions"
+  const drawerSubZoneRef = useRef<"categories" | "channels" | "actions">("channels");
   const categoryFocusIndexRef = useRef(0);
+  // Track which channel row we're on when navigating actions
+  const drawerActionIndexRef = useRef(0);
 
-  const getDrawerChannels = useCallback((): HTMLElement[] => {
+  const clearAllFocus = useCallback(() => {
+    document.querySelectorAll(".tv-focused").forEach((el) => el.classList.remove("tv-focused"));
+    const search = document.querySelector<HTMLInputElement>(".live-tv-drawer .live-tv-search input");
+    if (search && document.activeElement === search) search.blur();
+  }, []);
+
+  // --- Overlay helpers ---
+  const getOverlayButtons = useCallback((): HTMLElement[] => {
     return Array.from(
-      document.querySelectorAll<HTMLElement>(".live-tv-drawer.is-open .live-tv-channel, .live-tv-drawer.is-open .live-tv-action-btn, .live-tv-drawer.is-open .live-tv-group-badge")
+      document.querySelectorAll<HTMLElement>(".live-tv-overlay-actions .live-tv-overlay-btn, .live-tv-overlay-actions .live-tv-quality-wrapper .live-tv-overlay-btn")
+    );
+  }, []);
+
+  const applyOverlayFocus = useCallback((index: number) => {
+    clearAllFocus();
+    const items = getOverlayButtons();
+    if (!items.length) return;
+    const clamped = Math.max(0, Math.min(items.length - 1, index));
+    overlayFocusIndexRef.current = clamped;
+    items[clamped].classList.add("tv-focused");
+    setControlsVisible(true);
+  }, [clearAllFocus, getOverlayButtons]);
+
+  const enterOverlay = useCallback(() => {
+    tvStateRef.current = "overlay";
+    showControlsTemporarily();
+    requestAnimationFrame(() => {
+      applyOverlayFocus(overlayFocusIndexRef.current);
+    });
+  }, [applyOverlayFocus, showControlsTemporarily]);
+
+  // --- Drawer helpers ---
+  const getDrawerChannelButtons = useCallback((): HTMLElement[] => {
+    return Array.from(
+      document.querySelectorAll<HTMLElement>(".live-tv-drawer.is-open .live-tv-channel")
     );
   }, []);
 
@@ -1051,131 +1116,97 @@ export function LiveTvPage() {
     );
   }, []);
 
-  const getDrawerSearchInput = useCallback((): HTMLInputElement | null => {
-    return document.querySelector<HTMLInputElement>(".live-tv-drawer.is-open .live-tv-search input");
+  // Get action buttons for the channel row at the given channel index
+  const getChannelRowActions = useCallback((channelEl: HTMLElement): HTMLElement[] => {
+    // The channel's row container is the parent (.live-tv-channel-row, .live-tv-channel-group-row, or .live-tv-subchannel-row)
+    const row = channelEl.closest(".live-tv-channel-row, .live-tv-channel-group-row, .live-tv-subchannel-row");
+    if (!row) return [];
+    return Array.from(row.querySelectorAll<HTMLElement>(".live-tv-action-btn, .live-tv-group-badge"));
   }, []);
 
-  const getDrawerTopActions = useCallback((): HTMLElement[] => {
-    return Array.from(
-      document.querySelectorAll<HTMLElement>(".live-tv-drawer.is-open .live-tv-reload-btn, .live-tv-drawer.is-open .live-tv-close-btn")
-    );
+  const applyDrawerFocus = useCallback((el: HTMLElement) => {
+    document.querySelectorAll(".live-tv-drawer .tv-focused").forEach((e) => e.classList.remove("tv-focused"));
+    el.classList.add("tv-focused");
+    el.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }, []);
 
-  const applyDrawerFocus = useCallback((subZone: "search" | "top-actions" | "categories" | "channels", index: number) => {
-    const clearAllDrawerFocus = () => {
-      document.querySelectorAll(".live-tv-drawer .tv-focused").forEach((el) => el.classList.remove("tv-focused"));
-      const search = getDrawerSearchInput();
-      if (search && document.activeElement === search) search.blur();
-    };
-
-    clearAllDrawerFocus();
-    drawerSubZoneRef.current = subZone;
-    
-    if (subZone === "search") {
-      const input = getDrawerSearchInput();
-      if (input) { input.focus(); input.classList.add("tv-focused"); }
-    } else if (subZone === "top-actions") {
-      const items = getDrawerTopActions();
-      if (!items.length) return;
-      const clamped = Math.max(0, Math.min(items.length - 1, index));
-      items[clamped].classList.add("tv-focused");
-    } else if (subZone === "categories") {
-      const items = getDrawerCategories();
-      if (!items.length) return;
-      const clamped = Math.max(0, Math.min(items.length - 1, index));
-      categoryFocusIndexRef.current = clamped;
-      items[clamped].classList.add("tv-focused");
-      items[clamped].scrollIntoView({ block: "nearest", behavior: "smooth" });
-    } else {
-      const items = getDrawerChannels();
-      if (!items.length) return;
-      const clamped = Math.max(0, Math.min(items.length - 1, index));
-      drawerFocusIndexRef.current = clamped;
-      items[clamped].classList.add("tv-focused");
-      items[clamped].scrollIntoView({ block: "nearest", behavior: "smooth" });
-    }
-  }, [getDrawerSearchInput, getDrawerCategories, getDrawerChannels, getDrawerTopActions]);
-
-  const getOverlayFocusables = useCallback((): HTMLElement[] => {
-    return Array.from(
-      document.querySelectorAll<HTMLElement>(".live-tv-overlay-actions .live-tv-overlay-btn")
-    );
-  }, []);
-
-  const clearAllFocus = useCallback(() => {
-    document.querySelectorAll(".tv-focused").forEach((el) => el.classList.remove("tv-focused"));
-    document.querySelectorAll(".live-tv-drawer .tv-focused").forEach((el) => el.classList.remove("tv-focused"));
-    // Blur search if it was focused
-    const search = getDrawerSearchInput();
-    if (search && document.activeElement === search) search.blur();
-  }, [getDrawerSearchInput]);
-
-  const applyOverlayFocus = useCallback((index: number) => {
-    clearAllFocus();
-    const items = getOverlayFocusables();
+  const applyDrawerChannelFocus = useCallback((index: number) => {
+    const items = getDrawerChannelButtons();
     if (!items.length) return;
     const clamped = Math.max(0, Math.min(items.length - 1, index));
-    overlayFocusIndexRef.current = clamped;
-    items[clamped].classList.add("tv-focused");
-    setControlsVisible(true);
-  }, [clearAllFocus, getOverlayFocusables]);
+    drawerFocusIndexRef.current = clamped;
+    drawerSubZoneRef.current = "channels";
+    applyDrawerFocus(items[clamped]);
+  }, [getDrawerChannelButtons, applyDrawerFocus]);
 
-  const enterDrawerZone = useCallback(() => {
-    tvZoneRef.current = "drawer";
+  const applyDrawerCategoryFocus = useCallback((index: number) => {
+    const items = getDrawerCategories();
+    if (!items.length) return;
+    const clamped = Math.max(0, Math.min(items.length - 1, index));
+    categoryFocusIndexRef.current = clamped;
+    drawerSubZoneRef.current = "categories";
+    applyDrawerFocus(items[clamped]);
+  }, [getDrawerCategories, applyDrawerFocus]);
+
+  const openDrawer = useCallback(() => {
+    tvStateRef.current = "drawer";
+    drawerSubZoneRef.current = "channels";
     setShowChannelPanel(true);
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        // Focus on the active channel in the list
-        const items = getDrawerChannels();
-        const activeIdx = items.findIndex((el: HTMLElement) => el.classList.contains("is-active"));
-        const startIdx = activeIdx >= 0 ? activeIdx : 0;
-        applyDrawerFocus("channels", startIdx);
+        const items = getDrawerChannelButtons();
+        const activeIdx = items.findIndex((el) => el.classList.contains("is-active"));
+        applyDrawerChannelFocus(activeIdx >= 0 ? activeIdx : 0);
       });
     });
-  }, [getDrawerChannels, applyDrawerFocus]);
+  }, [getDrawerChannelButtons, applyDrawerChannelFocus]);
 
-  const exitToPlayerZone = useCallback(() => {
-    tvZoneRef.current = "player";
+  const closeDrawer = useCallback(() => {
+    tvStateRef.current = "player";
+    setShowChannelPanel(false);
     clearAllFocus();
-    if (isMobile) setShowChannelPanel(false);
-  }, [clearAllFocus, isMobile]);
+  }, [clearAllFocus]);
 
+  // Prevent native context menu (Fire TV Menu button triggers this)
+  useEffect(() => {
+    function onContextMenu(e: Event) {
+      e.preventDefault();
+    }
+    window.addEventListener("contextmenu", onContextMenu);
+    return () => window.removeEventListener("contextmenu", onContextMenu);
+  }, []);
+
+  // Main keyboard handler — 3-state system: player / overlay / drawer
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       const target = e.target as HTMLElement;
       const tag = target?.tagName;
 
-      // If search input is focused, let most keys through for typing
-      const searchInput = getDrawerSearchInput();
-      const isInSearch = searchInput && document.activeElement === searchInput;
+      // If search input is focused in drawer, handle special keys only
+      const searchEl = document.querySelector<HTMLInputElement>(".live-tv-drawer.is-open .live-tv-search input");
+      const isInSearch = searchEl && document.activeElement === searchEl;
       if (isInSearch) {
         if (e.key === "ArrowDown") {
           e.preventDefault();
-          applyDrawerFocus("categories", 0);
+          searchEl.blur();
+          applyDrawerCategoryFocus(0);
           return;
         }
-        if (e.key === "Escape") {
+        if (e.key === "Escape" || (e.key === "Backspace" && !searchEl.value)) {
           e.preventDefault();
-          exitToPlayerZone();
+          closeDrawer();
           return;
         }
-        // Backspace on empty search → exit to player
-        if (e.key === "Backspace" && !searchInput.value) {
-          e.preventDefault();
-          exitToPlayerZone();
-          return;
-        }
-        // Let all other keys pass to the input for typing
         return;
       }
 
-      // Don't intercept other inputs
+      // Don't intercept other input elements
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
 
-      const zone = tvZoneRef.current;
+      const state = tvStateRef.current;
 
-      // --- PLAYER zone ---
-      if (zone === "player") {
+      // ===== PLAYER state (default) =====
+      if (state === "player") {
         switch (e.key) {
           case "ArrowUp":
           case "ChannelUp":
@@ -1187,21 +1218,22 @@ export function LiveTvPage() {
             e.preventDefault();
             navigateChannel(1);
             break;
-          case "ArrowRight":
+          case "Enter":
+          case " ":
             e.preventDefault();
-            enterDrawerZone();
+            // Enter abre el overlay de controles
+            enterOverlay();
+            break;
+          case "ArrowRight":
+          case "ContextMenu":
+            e.preventDefault();
+            openDrawer();
             break;
           case "ArrowLeft":
             e.preventDefault();
-            navigateChannel(-1);
+            // En player, izquierda abre overlay (alternativa)
+            enterOverlay();
             break;
-          case "Enter":
-          case " ": {
-            e.preventDefault();
-            tvZoneRef.current = "overlay";
-            applyOverlayFocus(overlayFocusIndexRef.current);
-            break;
-          }
           case "f":
           case "F":
             e.preventDefault();
@@ -1211,18 +1243,20 @@ export function LiveTvPage() {
           case "Backspace":
             e.preventDefault();
             if (showChannelPanel) {
-              setShowChannelPanel(false);
+              closeDrawer();
             } else if (document.fullscreenElement) {
               void document.exitFullscreen().catch(() => {});
+            } else {
+              navigate("/");
             }
             break;
         }
         return;
       }
 
-      // --- OVERLAY zone ---
-      if (zone === "overlay") {
-        const items = getOverlayFocusables();
+      // ===== OVERLAY state (botones de acción del player) =====
+      if (state === "overlay") {
+        const items = getOverlayButtons();
         const idx = overlayFocusIndexRef.current;
         switch (e.key) {
           case "ArrowLeft":
@@ -1232,13 +1266,16 @@ export function LiveTvPage() {
           case "ArrowRight":
             e.preventDefault();
             if (idx < items.length - 1) applyOverlayFocus(idx + 1);
-            else enterDrawerZone();
+            else openDrawer(); // último botón → abre drawer
             break;
           case "ArrowUp":
           case "ArrowDown":
             e.preventDefault();
-            tvZoneRef.current = "player";
+            // Volver al player
+            tvStateRef.current = "player";
             clearAllFocus();
+            if (e.key === "ArrowUp") navigateChannel(-1);
+            else navigateChannel(1);
             break;
           case "Enter":
           case " ":
@@ -1248,98 +1285,47 @@ export function LiveTvPage() {
           case "Escape":
           case "Backspace":
             e.preventDefault();
-            tvZoneRef.current = "player";
+            tvStateRef.current = "player";
             clearAllFocus();
             break;
+          case "ContextMenu":
+            e.preventDefault();
+            openDrawer();
+            break;
         }
         return;
       }
 
-      // --- DRAWER zone ---
+      // ===== DRAWER state =====
       const subZone = drawerSubZoneRef.current;
 
-      if (subZone === "top-actions") {
-        const actions = getDrawerTopActions();
-        const idx = document.querySelector(".live-tv-reload-btn.tv-focused") ? 0 : 1;
-        switch (e.key) {
-          case "ArrowRight":
-            e.preventDefault();
-            if (idx === 0) applyDrawerFocus("top-actions", 1);
-            break;
-          case "ArrowLeft":
-            e.preventDefault();
-            if (idx === 1) applyDrawerFocus("top-actions", 0);
-            else exitToPlayerZone();
-            break;
-          case "ArrowDown":
-            e.preventDefault();
-            applyDrawerFocus("search", 0);
-            break;
-          case "Enter":
-          case " ":
-            e.preventDefault();
-            actions[idx]?.click();
-            break;
-          case "Escape":
-          case "Backspace":
-            e.preventDefault();
-            exitToPlayerZone();
-            break;
-        }
-        return;
-      }
-
-      if (subZone === "search") {
-        const searchInput = getDrawerSearchInput();
-        const isInSearch = searchInput && document.activeElement === searchInput;
-        if (isInSearch) {
-          if (e.key === "ArrowDown") {
-            e.preventDefault();
-            applyDrawerFocus("categories", 0);
-            return;
-          }
-          if (e.key === "ArrowUp") {
-            e.preventDefault();
-            applyDrawerFocus("top-actions", 0);
-            return;
-          }
-          if (e.key === "Escape") {
-            e.preventDefault();
-            exitToPlayerZone();
-            return;
-          }
-          if (e.key === "Backspace" && !searchInput.value) {
-            e.preventDefault();
-            exitToPlayerZone();
-            return;
-          }
-          return;
-        }
-      }
-
+      // --- Sub-zone: categories ---
       if (subZone === "categories") {
         const cats = getDrawerCategories();
         const idx = categoryFocusIndexRef.current;
         switch (e.key) {
           case "ArrowRight":
             e.preventDefault();
-            if (idx < cats.length - 1) applyDrawerFocus("categories", idx + 1);
+            if (idx < cats.length - 1) applyDrawerCategoryFocus(idx + 1);
             break;
           case "ArrowLeft":
             e.preventDefault();
-            if (idx > 0) {
-              applyDrawerFocus("categories", idx - 1);
-            } else {
-              exitToPlayerZone();
-            }
+            if (idx > 0) applyDrawerCategoryFocus(idx - 1);
+            else closeDrawer();
             break;
           case "ArrowUp":
             e.preventDefault();
-            applyDrawerFocus("search", 0);
+            // Ir a búsqueda
+            clearAllFocus();
+            drawerSubZoneRef.current = "channels"; // temporalmente para no quedar en limbo
+            {
+              const searchInput = document.querySelector<HTMLInputElement>(".live-tv-drawer.is-open .live-tv-search input");
+              if (searchInput) { searchInput.focus(); searchInput.classList.add("tv-focused"); }
+            }
             break;
           case "ArrowDown":
             e.preventDefault();
-            applyDrawerFocus("channels", 0);
+            applyDrawerChannelFocus(0);
             break;
           case "Enter":
           case " ":
@@ -1348,92 +1334,137 @@ export function LiveTvPage() {
             break;
           case "Escape":
           case "Backspace":
+          case "ContextMenu":
             e.preventDefault();
-            exitToPlayerZone();
+            closeDrawer();
             break;
         }
         return;
       }
 
-      // subZone === "channels"
-      const channels = getDrawerChannels();
-      const idx = drawerFocusIndexRef.current;
-      switch (e.key) {
-        case "ArrowDown":
-        case "ChannelDown":
-          e.preventDefault();
-          // Intentar bajar a la siguiente fila (asumiendo que hay ~3 elementos por fila en promedio si hay acciones)
-          // Pero es mejor ir al siguiente elemento enfocable directamente
-          if (idx < channels.length - 1) {
-            // Si el actual es un canal principal y el siguiente es una acción del mismo,
-            // y el usuario pulsó abajo, quizás quiera ir al siguiente canal principal.
-            let nextIdx = idx + 1;
-            if (channels[idx].classList.contains("live-tv-channel") && !e.shiftKey) {
-              // Buscar el siguiente elemento que sea "live-tv-channel" para un scroll más rápido
-              for (let i = idx + 1; i < channels.length; i++) {
-                if (channels[i].classList.contains("live-tv-channel")) {
-                  nextIdx = i;
-                  break;
-                }
-              }
+      // --- Sub-zone: actions (fav, edit, hide, group badge) ---
+      if (subZone === "actions") {
+        const channels = getDrawerChannelButtons();
+        const chEl = channels[drawerFocusIndexRef.current];
+        const actions = chEl ? getChannelRowActions(chEl) : [];
+        const aIdx = drawerActionIndexRef.current;
+        switch (e.key) {
+          case "ArrowRight":
+            e.preventDefault();
+            if (aIdx < actions.length - 1) {
+              drawerActionIndexRef.current = aIdx + 1;
+              clearAllFocus();
+              actions[aIdx + 1].classList.add("tv-focused");
             }
-            applyDrawerFocus("channels", nextIdx);
-          }
-          break;
-        case "ArrowUp":
-        case "ChannelUp":
-          e.preventDefault();
-          if (idx > 0) {
-            let prevIdx = idx - 1;
-            if (channels[idx].classList.contains("live-tv-channel") && !e.shiftKey) {
-              for (let i = idx - 1; i >= 0; i--) {
-                if (channels[i].classList.contains("live-tv-channel")) {
-                  prevIdx = i;
-                  break;
-                }
-              }
+            break;
+          case "ArrowLeft":
+            e.preventDefault();
+            if (aIdx > 0) {
+              drawerActionIndexRef.current = aIdx - 1;
+              clearAllFocus();
+              actions[aIdx - 1].classList.add("tv-focused");
+            } else {
+              // Volver al canal
+              applyDrawerChannelFocus(drawerFocusIndexRef.current);
             }
-            applyDrawerFocus("channels", prevIdx);
-          } else {
-            applyDrawerFocus("categories", categoryFocusIndexRef.current);
+            break;
+          case "ArrowDown":
+            e.preventDefault();
+            // Ir al siguiente canal
+            if (drawerFocusIndexRef.current < channels.length - 1) {
+              applyDrawerChannelFocus(drawerFocusIndexRef.current + 1);
+            }
+            break;
+          case "ArrowUp":
+            e.preventDefault();
+            // Ir al canal anterior
+            if (drawerFocusIndexRef.current > 0) {
+              applyDrawerChannelFocus(drawerFocusIndexRef.current - 1);
+            } else {
+              applyDrawerCategoryFocus(categoryFocusIndexRef.current);
+            }
+            break;
+          case "Enter":
+          case " ":
+            e.preventDefault();
+            if (actions[aIdx]) actions[aIdx].click();
+            break;
+          case "Escape":
+          case "Backspace":
+            e.preventDefault();
+            // Volver al canal
+            applyDrawerChannelFocus(drawerFocusIndexRef.current);
+            break;
+          case "ContextMenu":
+            e.preventDefault();
+            closeDrawer();
+            break;
+        }
+        return;
+      }
+
+      // --- Sub-zone: channels (default drawer sub-zone) ---
+      {
+        const channels = getDrawerChannelButtons();
+        const idx = drawerFocusIndexRef.current;
+        switch (e.key) {
+          case "ArrowDown":
+          case "ChannelDown":
+            e.preventDefault();
+            if (idx < channels.length - 1) {
+              applyDrawerChannelFocus(idx + 1);
+            }
+            break;
+          case "ArrowUp":
+          case "ChannelUp":
+            e.preventDefault();
+            if (idx > 0) {
+              applyDrawerChannelFocus(idx - 1);
+            } else {
+              applyDrawerCategoryFocus(categoryFocusIndexRef.current);
+            }
+            break;
+          case "ArrowRight": {
+            e.preventDefault();
+            // Ir a las acciones de este canal (fav, edit, hide, expand)
+            const chEl = channels[idx];
+            const actions = chEl ? getChannelRowActions(chEl) : [];
+            if (actions.length > 0) {
+              drawerSubZoneRef.current = "actions";
+              drawerActionIndexRef.current = 0;
+              clearAllFocus();
+              actions[0].classList.add("tv-focused");
+            }
+            break;
           }
-          break;
-        case "ArrowRight":
-          e.preventDefault();
-          if (idx < channels.length - 1 && !channels[idx+1].classList.contains("live-tv-channel")) {
-            applyDrawerFocus("channels", idx + 1);
-          } else {
-            // Tal vez abrir info o algo, por ahora nada
-          }
-          break;
-        case "ArrowLeft":
-          e.preventDefault();
-          if (idx > 0 && !channels[idx].classList.contains("live-tv-channel")) {
-            applyDrawerFocus("channels", idx - 1);
-          } else {
-            exitToPlayerZone();
-          }
-          break;
-        case "Enter":
-        case " ":
-          e.preventDefault();
-          if (channels[idx]) channels[idx].click();
-          break;
-        case "Escape":
-        case "Backspace":
-          e.preventDefault();
-          exitToPlayerZone();
-          break;
-        case "f":
-        case "F":
-          e.preventDefault();
-          void handleToggleFullscreen();
-          break;
+          case "ArrowLeft":
+          case "Escape":
+          case "Backspace":
+            e.preventDefault();
+            closeDrawer();
+            break;
+          case "Enter":
+          case " ":
+            e.preventDefault();
+            if (channels[idx]) channels[idx].click();
+            break;
+          case "ContextMenu":
+            e.preventDefault();
+            closeDrawer();
+            break;
+          case "f":
+          case "F":
+            e.preventDefault();
+            void handleToggleFullscreen();
+            break;
+        }
       }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [navigateChannel, enterDrawerZone, exitToPlayerZone, getDrawerChannels, getDrawerCategories, getDrawerSearchInput, applyDrawerFocus, showChannelPanel]);
+  }, [navigateChannel, enterOverlay, openDrawer, closeDrawer, getOverlayButtons, applyOverlayFocus,
+      getDrawerChannelButtons, applyDrawerChannelFocus, getDrawerCategories, applyDrawerCategoryFocus,
+      getChannelRowActions, clearAllFocus, showChannelPanel, showOsd, navigate]);
 
   const sidebarProps: ChannelSidebarProps = {
     categories,
@@ -1459,55 +1490,19 @@ export function LiveTvPage() {
     favoriteIds,
     onToggleFavorite: handleToggleFavorite,
     onHideChannel: handleRequestHideChannel,
-    onRenameChannel: handleRequestRenameChannel
+    onRenameChannel: handleRequestRenameChannel,
+    customNames,
+    tvMode: false
   };
 
   return (
     <main className="home-shell live-tv-shell">
-      <header className="home-header is-scrolled">
-        <div className="home-header-inner">
-          <div className="home-header-left">
-            <Link to="/" className="brand-logo" style={{ textDecoration: "none" }}>
-              streams
-            </Link>
-            <nav className="home-nav">
-              <Link to="/" className="nav-link">Inicio</Link>
-              <Link to="/live-tv" className="nav-link is-active">TV en vivo</Link>
-            </nav>
-          </div>
-          <div className="home-header-right">
-            <button type="button" className="header-action-btn" onClick={() => void handleReload()} disabled={reloading} title="Recargar listas">
-              <RefreshCw size={20} className={reloading ? "spin" : ""} />
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <div className="live-tv-header-spacer" />
-
       <section className="live-tv-theater-layout">
         <div className="live-tv-player-shell" ref={playerShellRef}>
-          <video ref={videoRef} controls autoPlay playsInline className="video-player live-tv-video" />
+          <video ref={videoRef} autoPlay playsInline className="video-player live-tv-video" />
 
+          {/* Overlay inferior con botones de acción — visible al hover o actividad */}
           <div className={`live-tv-overlay-top ${controlsVisible ? "is-visible" : ""}`}>
-            <div className="live-tv-current">
-              {selectedChannel ? (
-                <>
-                  <h2>{currentDisplayName}</h2>
-                  <p className="muted">
-                    {selectedChannel.category.name}
-                    {selectedChannel.country ? ` | ${selectedChannel.country}` : ""}
-                    {selectedChannel.language ? ` | ${selectedChannel.language}` : ""}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <h2>TV en vivo</h2>
-                  <p className="muted">Selecciona un canal para comenzar.</p>
-                </>
-              )}
-            </div>
-
             <div className="live-tv-overlay-actions">
               <button
                 type="button"
@@ -1528,7 +1523,10 @@ export function LiveTvPage() {
               <button
                 type="button"
                 className="live-tv-overlay-btn has-label"
-                onClick={() => setShowChannelPanel((v) => !v)}
+                onClick={() => {
+                  if (showChannelPanel) closeDrawer();
+                  else openDrawer();
+                }}
                 title={showChannelPanel ? "Cerrar canales" : "Abrir canales"}
               >
                 <List size={16} />
@@ -1591,6 +1589,21 @@ export function LiveTvPage() {
             </div>
           </div>
 
+          {/* OSD tipo TV — se muestra al cambiar canal o presionar Enter */}
+          <div className={`live-tv-osd ${osdVisible && selectedChannel ? "is-visible" : ""}`}>
+            {selectedChannel ? (
+              <>
+                <h3>{currentDisplayName}</h3>
+                <p>
+                  {customCategories[selectedChannel.id]
+                    ? (categories.find((c) => c.id === customCategories[selectedChannel.id])?.name || customCategories[selectedChannel.id])
+                    : selectedChannel.category.name}
+                  {selectedChannel.country ? ` | ${selectedChannel.country}` : ""}
+                </p>
+              </>
+            ) : null}
+          </div>
+
           {selectedChannel ? (
             <div className={`live-tv-status-layer ${playerState === "playing" ? "is-hidden" : ""}`}>
               {playerState === "error" ? (
@@ -1626,7 +1639,7 @@ export function LiveTvPage() {
         <ChannelSidebar
           {...sidebarProps}
           showClose
-          onClose={() => setShowChannelPanel(false)}
+          onClose={closeDrawer}
         />
       </aside>
 
@@ -1634,7 +1647,7 @@ export function LiveTvPage() {
         <button
           type="button"
           className="live-tv-drawer-backdrop"
-          onClick={() => setShowChannelPanel(false)}
+          onClick={closeDrawer}
           aria-label="Cerrar panel de canales"
         />
       ) : null}
@@ -1730,11 +1743,12 @@ export function LiveTvPage() {
             <div className="modal-form">
               <h3 style={{ margin: "0 0 4px", fontSize: 18 }}>
                 <Edit2 size={16} style={{ marginRight: 8, verticalAlign: -2 }} />
-                Renombrar canal
+                Editar canal
               </h3>
               <p className="muted" style={{ marginBottom: 8 }}>
-                Introduce el nuevo nombre para <strong>{renameModalChannelRef.current.name}</strong>
+                Editando <strong>{renameModalChannelRef.current.name}</strong>
               </p>
+              <label style={{ fontSize: 13, color: "var(--muted)", marginBottom: 2, display: "block" }}>Nombre</label>
               <input
                 type="text"
                 placeholder="Nombre del canal"
@@ -1745,6 +1759,19 @@ export function LiveTvPage() {
                 }}
                 autoFocus
               />
+              <label style={{ fontSize: 13, color: "var(--muted)", marginTop: 10, marginBottom: 2, display: "block" }}>Categoría</label>
+              <select
+                value={renameCategoryInput}
+                onChange={(e) => setRenameCategoryInput(e.target.value)}
+                style={{ width: "100%", borderRadius: 8, fontSize: 14 }}
+              >
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+                {!categories.some((c) => c.id === "adultos") && (
+                  <option value="adultos">Adultos</option>
+                )}
+              </select>
               <div className="modal-actions">
                 <button type="button" className="secondary-btn" onClick={() => setShowRenameModal(false)}>
                   Cancelar

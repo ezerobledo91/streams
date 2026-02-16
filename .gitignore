@@ -31,3 +31,7 @@ Thumbs.db
 
 # Playback files
 playback-hls/
+config/playback-hls/
+
+# Prowlarr data (se regenera con Docker)
+config/prowlarr/

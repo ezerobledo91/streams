@@ -1,6 +1,6 @@
 {
   "loadedAt": "2026-02-12T15:27:36.8440834-03:00",
-  "updatedAt": "2026-02-16T16:00:08.944Z",
+  "updatedAt": "2026-02-16T18:40:34.195Z",
   "providers": {
     "torrentdb": {
       "successes": 47,
@@ -161,10 +161,10 @@
       }
     },
     "torrentio": {
-      "successes": 105,
+      "successes": 108,
       "failures": 4,
       "consecutiveFailures": 0,
-      "lastSuccessAt": 1771257608943,
+      "lastSuccessAt": 1771267234195,
       "lastFailureAt": 1771248533258,
       "lastFailureReason": "El torrent no contiene el episodio solicitado.",
       "breakerUntil": 0,
@@ -212,10 +212,10 @@
           "lastFailureAt": 0
         },
         "5357179583d6d0f2c3adae8d683ce26c4e620d73": {
-          "successes": 2,
+          "successes": 3,
           "failures": 0,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1771215978545,
+          "lastSuccessAt": 1771264745723,
           "lastFailureAt": 0
         },
         "33d235fe2a2e1867d99c0e306a21574688ef0f7f": {
@@ -492,10 +492,10 @@
           "lastFailureAt": 0
         },
         "701787ec135311941a534bb2a8c421b653b4d29f": {
-          "successes": 17,
+          "successes": 18,
           "failures": 0,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1771257608943,
+          "lastSuccessAt": 1771261863577,
           "lastFailureAt": 0
         },
         "5ec7d86e60054befdebf5774a290a972b12d2ed3": {
@@ -580,6 +580,13 @@
           "failures": 0,
           "consecutiveFailures": 0,
           "lastSuccessAt": 1771255767350,
+          "lastFailureAt": 0
+        },
+        "10c9824c86dc7716265c59cceeb106e01d5c3c7f": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771267234195,
           "lastFailureAt": 0
         }
       }

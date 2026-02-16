@@ -18,7 +18,8 @@
     "curate:m3u": "node scripts/curate_m3u.js",
     "curate:m3u:probe": "node scripts/curate_m3u.js --probe --probe-timeout 3000 --probe-concurrency 20",
     "curate:m3u:movies": "node scripts/curate_m3u.js --probe --probe-timeout 3000 --probe-concurrency 20 --channel hbo --channel tnt --channel cinemax --channel cinecanal --channel space",
-    "probe:m3u:alive": "node scripts/probe_m3u_alive.js"
+    "probe:m3u:alive": "node scripts/probe_m3u_alive.js",
+    "setup": "node -e \"require('child_process').execSync('npm install && npm install --prefix web && npm run build:web', {stdio:'inherit'})\""
   },
   "engines": {
     "node": ">=18"

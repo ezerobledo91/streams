@@ -13,7 +13,10 @@
       "Bash(du -sh:*)",
       "Bash(curl:*)",
       "Bash(python3:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(while read:*)",
+      "Bash(do rm \"$f\")",
+      "Bash(done)"
     ]
   }
 }

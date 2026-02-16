@@ -410,6 +410,54 @@ export function prefetchNextEpisode(payload: {
   });
 }
 
+// --- Live TV Preferences (server-side) ---
+
+export interface LiveTvPreferences {
+  favorites: string[];
+  hidden: string[];
+  customNames: Record<string, string>;
+  customCategories: Record<string, string>;
+}
+
+export function fetchLiveTvPreferences(): Promise<LiveTvPreferences> {
+  return apiFetch<LiveTvPreferences>("/api/live-tv/preferences");
+}
+
+export function toggleLiveTvFavoriteApi(channelId: string): Promise<LiveTvPreferences> {
+  return apiFetch<LiveTvPreferences>("/api/live-tv/preferences/favorites", {
+    method: "POST",
+    body: JSON.stringify({ channelId })
+  });
+}
+
+export function hideLiveTvChannelApi(channelId: string): Promise<LiveTvPreferences> {
+  return apiFetch<LiveTvPreferences>("/api/live-tv/preferences/hidden", {
+    method: "POST",
+    body: JSON.stringify({ channelId })
+  });
+}
+
+export function unhideLiveTvChannelApi(channelId: string): Promise<LiveTvPreferences> {
+  return apiFetch<LiveTvPreferences>("/api/live-tv/preferences/hidden", {
+    method: "DELETE",
+    body: JSON.stringify({ channelId })
+  });
+}
+
+export function setLiveTvChannelNameApi(channelId: string, name: string): Promise<LiveTvPreferences> {
+  return apiFetch<LiveTvPreferences>("/api/live-tv/preferences/names", {
+    method: "POST",
+    body: JSON.stringify({ channelId, name })
+  });
+}
+
+export function setLiveTvChannelCategoryApi(channelId: string, categoryId: string): Promise<LiveTvPreferences> {
+  return apiFetch<LiveTvPreferences>("/api/live-tv/preferences/categories", {
+    method: "POST",
+    body: JSON.stringify({ channelId, categoryId })
+  });
+}
+
 export async function fetchNetworkLogo(name: string): Promise<string | null> {
   try {
     const data = await apiFetch<any>(`/api/meta/search-network?query=${encodeURIComponent(name)}`);
