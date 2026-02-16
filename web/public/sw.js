@@ -1,4 +1,4 @@
-const CACHE_NAME = "streams-v1";
+const CACHE_NAME = "streams-v2";
 const PRECACHE = [
   "/",
   "/index.html",
@@ -28,18 +28,15 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+  // Skip non-GET (POST, DELETE, etc.) — dejar que el browser los maneje directamente
+  if (event.request.method !== "GET") return;
+
   const url = new URL(event.request.url);
 
-  // Network-first para API calls y streams
+  // No interceptar API calls ni HLS — siempre directo al servidor
   if (url.pathname.startsWith("/api/") || url.pathname.includes("/hls/")) {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match(event.request))
-    );
     return;
   }
-
-  // Skip non-GET
-  if (event.request.method !== "GET") return;
 
   // Cache-first para assets estáticos
   event.respondWith(

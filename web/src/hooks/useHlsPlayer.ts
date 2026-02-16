@@ -16,51 +16,57 @@ function buildHlsConfig(mode: "vod" | "live" = "vod"): Partial<ConstructorParame
   if (mode === "live") {
     return {
       enableWorker: true,
-      lowLatencyMode: true,
-      backBufferLength: 15,
-      startPosition: -1,
-      maxBufferLength: 20,
-      maxMaxBufferLength: 40,
-      maxBufferHole: 3,
-      liveSyncDurationCount: 3,
-      liveMaxLatencyDurationCount: 6,
+      lowLatencyMode: false,
+      backBufferLength: 30,
+      startPosition: 0,
+      maxBufferLength: 30,
+      maxMaxBufferLength: 60,
+      maxBufferHole: 2,
+      // Evitar que hls.js salte al "live edge": valores muy altos
+      liveSyncDuration: 999999,
+      liveMaxLatencyDuration: 9999999,
+      initialLiveManifestSize: 1,
       manifestLoadingRetryDelay: 500,
-      manifestLoadingMaxRetryTimeout: 20000,
-      manifestLoadingMaxRetry: 30,
+      manifestLoadingMaxRetryTimeout: 15000,
+      manifestLoadingMaxRetry: 40,
       levelLoadingRetryDelay: 500,
-      levelLoadingMaxRetryTimeout: 12000,
+      levelLoadingMaxRetryTimeout: 10000,
       levelLoadingMaxRetry: 20,
-      fragLoadingMaxRetry: 12,
+      fragLoadingMaxRetry: 20,
       fragLoadingRetryDelay: 500,
-      fragLoadingMaxRetryTimeout: 12000,
-      nudgeMaxRetry: 8
+      fragLoadingMaxRetryTimeout: 10000,
+      nudgeMaxRetry: 15
     };
   }
   return {
     enableWorker: true,
     lowLatencyMode: false,
-    backBufferLength: 30,
-    startPosition: -1,
-    maxBufferLength: 45,
-    maxMaxBufferLength: 90,
-    maxBufferHole: 2.5,
-    liveSyncDurationCount: 4,
-    liveMaxLatencyDurationCount: 8,
-    manifestLoadingRetryDelay: 1000,
-    manifestLoadingMaxRetryTimeout: 20000,
-    manifestLoadingMaxRetry: 15,
-    levelLoadingRetryDelay: 1000,
-    levelLoadingMaxRetryTimeout: 15000,
-    levelLoadingMaxRetry: 12,
-    fragLoadingMaxRetry: 6,
-    fragLoadingRetryDelay: 800,
-    fragLoadingMaxRetryTimeout: 12000,
-    nudgeMaxRetry: 8
+    backBufferLength: 60,
+    startPosition: 0,
+    maxBufferLength: 30,
+    maxMaxBufferLength: 60,
+    maxBufferHole: 0.5,
+    // Desactivar live sync: usar valores muy altos para que nunca salte al "live edge"
+    liveSyncDuration: 999999,
+    liveMaxLatencyDuration: 9999999,
+    manifestLoadingRetryDelay: 500,
+    manifestLoadingMaxRetryTimeout: 15000,
+    manifestLoadingMaxRetry: 30,
+    levelLoadingRetryDelay: 500,
+    levelLoadingMaxRetryTimeout: 10000,
+    levelLoadingMaxRetry: 20,
+    fragLoadingMaxRetry: 15,
+    fragLoadingRetryDelay: 500,
+    fragLoadingMaxRetryTimeout: 10000,
+    nudgeMaxRetry: 5,
+    nudgeOffset: 0.1
   };
 }
 
 export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPlayerOptions) {
   const [isBuffering, setIsBuffering] = useState(false);
+  const isBufferingRef = useRef(false);
+  const bufferingTimerRef = useRef<number | null>(null);
   const hlsRef = useRef<Hls | null>(null);
   const onRuntimeFailureRef = useRef(onRuntimeFailure);
 
@@ -69,6 +75,8 @@ export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPla
   }, [onRuntimeFailure]);
 
   const destroyHls = useCallback(() => {
+    if (bufferingTimerRef.current) { window.clearTimeout(bufferingTimerRef.current); bufferingTimerRef.current = null; }
+    isBufferingRef.current = false;
     if (!hlsRef.current) return;
     hlsRef.current.destroy();
     hlsRef.current = null;
@@ -90,7 +98,13 @@ export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPla
         return;
       }
 
-      if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      // Solo usar reproductor nativo en dispositivos Apple (Safari/iOS)
+      // En el resto (Android, TVs, Chrome), Hls.js es mucho más robusto para proxys.
+      const isApple = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+      if (video.canPlayType("application/vnd.apple.mpegurl") && (isApple || isSafari)) {
         video.src = url;
         video.load();
         return;
@@ -106,6 +120,7 @@ export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPla
         let startupSettled = false;
         let runtimeRecoveries = 0;
         let lastSourceReloadAt = 0;
+        let stallTimeout: number | null = null;
 
         const timeout = window.setTimeout(() => {
           if (startupSettled) return;
@@ -120,6 +135,7 @@ export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPla
 
         const cleanupStartup = () => {
           window.clearTimeout(timeout);
+          if (stallTimeout) { window.clearTimeout(stallTimeout); stallTimeout = null; }
           hls.off(Hls.Events.MANIFEST_PARSED, onManifestParsed);
           hls.off(Hls.Events.MEDIA_ATTACHED, onMediaAttached);
           hls.off(Hls.Events.FRAG_LOADING, onFragLoading);
@@ -135,6 +151,28 @@ export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPla
 
         const onError = (_event: string, data: { fatal?: boolean; details?: string; type?: string }) => {
           const responseCode = Number((data as { response?: { code?: number } })?.response?.code || 0);
+
+          // Error de llave AES: el proxy no puede obtener la key de encriptación.
+          // No tiene sentido reintentar, escalar a transcode inmediatamente.
+          if (data?.details === "keyLoadError") {
+            const reason = `Llave de cifrado bloqueada (${responseCode || "error"}). Cambiando a transcode...`;
+            if (!startupSettled) {
+              startupSettled = true;
+              cleanupStartup();
+            }
+            hls.off(Hls.Events.ERROR, onError);
+            hls.off(Hls.Events.FRAG_LOADING, onFragLoading);
+            hls.off(Hls.Events.FRAG_BUFFERED, onFragBuffered);
+            hls.destroy();
+            if (hlsRef.current === hls) hlsRef.current = null;
+            if (!startupSettled) {
+              reject(new Error(reason));
+            } else {
+              onRuntimeFailureRef.current(reason);
+            }
+            return;
+          }
+
           const shouldReloadSource =
             responseCode === 401 || responseCode === 403 || responseCode === 404 || responseCode === 503;
 
@@ -148,10 +186,20 @@ export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPla
 
           if (!data?.fatal) {
             if (data?.details === "bufferStalledError") {
-              setIsBuffering(true);
+              setBuffering(true);
+              // Si el buffer se estanca por más de 45 segundos, forzar error para recuperación
+              // (torrents lentos necesitan más tiempo para descargar segmentos)
+              if (!stallTimeout) {
+                stallTimeout = window.setTimeout(() => {
+                  if (hlsRef.current === hls) {
+                    onRuntimeFailureRef.current("La señal se estancó demasiado tiempo.");
+                  }
+                }, 45000);
+              }
             }
             if (data?.details === "bufferNudgeOnStall" || data?.details === "fragBufferedError") {
-              setIsBuffering(false);
+              setBuffering(false);
+              if (stallTimeout) { window.clearTimeout(stallTimeout); stallTimeout = null; }
             }
             return;
           }
@@ -212,18 +260,33 @@ export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPla
           hls.startLoad(0);
         };
 
+        const setBuffering = (value: boolean) => {
+          if (isBufferingRef.current === value) return;
+          isBufferingRef.current = value;
+          if (bufferingTimerRef.current) { window.clearTimeout(bufferingTimerRef.current); bufferingTimerRef.current = null; }
+          if (value) {
+            // Debounce buffering=true para evitar flicker en transiciones rápidas de segmentos
+            bufferingTimerRef.current = window.setTimeout(() => {
+              bufferingTimerRef.current = null;
+              if (isBufferingRef.current) setIsBuffering(true);
+            }, 300);
+          } else {
+            setIsBuffering(false);
+          }
+        };
         const onFragLoading = () => {
-          setIsBuffering(true);
+          // No marcar buffering en cada frag load - solo bufferStalledError indica buffering real
         };
         const onFragBuffered = () => {
-          setIsBuffering(false);
+          setBuffering(false);
         };
 
-        hls.on(Hls.Events.MANIFEST_PARSED, onManifestParsed);
         hls.on(Hls.Events.ERROR, onError);
         hls.on(Hls.Events.MEDIA_ATTACHED, onMediaAttached);
+        hls.on(Hls.Events.MANIFEST_PARSED, onManifestParsed);
         hls.on(Hls.Events.FRAG_LOADING, onFragLoading);
         hls.on(Hls.Events.FRAG_BUFFERED, onFragBuffered);
+
         hls.attachMedia(video);
       });
     },

@@ -9,7 +9,11 @@
       "Bash(npx vite build)",
       "Bash(ls:*)",
       "Bash(npx --no-install tsc:*)",
-      "Bash(bubblewrap:*)"
+      "Bash(bubblewrap:*)",
+      "Bash(du -sh:*)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(npm run build:*)"
     ]
   }
 }

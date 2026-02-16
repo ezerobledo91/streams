@@ -435,6 +435,7 @@ body {
 .video-player { width: 100% !important; height: 100% !important; object-fit: contain; }
 
 .player-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; }
+.player-overlay.is-buffering-only { pointer-events: none; background: rgba(0,0,0,0.4); }
 .player-start-cta { position: absolute; z-index: 110; background: #fff; color: #000; padding: 12px 30px; border-radius: 4px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; gap: 10px; }
 .player-start-cta:disabled { opacity: 0.6; cursor: not-allowed; }
 .player-start-cta-icon { display: inline-flex; align-items: center; justify-content: center; }
@@ -562,6 +563,39 @@ body {
 .live-tv-overlay-btn.has-label { width: auto; padding: 0 20px; border-radius: 999px; }
 .live-tv-overlay-btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4); }
 .live-tv-overlay-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.live-tv-quality-wrapper { position: relative; }
+.live-tv-quality-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 90px;
+  backdrop-filter: blur(12px);
+  z-index: 40;
+}
+.live-tv-quality-option {
+  background: none;
+  border: none;
+  color: #ccc;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+  white-space: nowrap;
+}
+.live-tv-quality-option:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.live-tv-quality-option.is-active { color: var(--brand, #4af); font-weight: 600; }
+.live-tv-quality-toggle { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.live-tv-quality-toggle.is-active { background: rgba(74,170,255,0.15); }
+.live-tv-quality-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 2px 8px; }
 .live-tv-status-layer {
   position: absolute;
   inset: 0;

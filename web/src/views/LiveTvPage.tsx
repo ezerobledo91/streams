@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import {
   AlertTriangle,
   ChevronDown,
+  Edit2,
   EyeOff,
   Heart,
   List,
@@ -12,6 +13,7 @@ import {
   Minimize,
   RefreshCw,
   Search,
+  Settings,
   SkipBack,
   SkipForward,
   Star,
@@ -23,6 +25,7 @@ import type { LiveTvCategoryItem, LiveTvChannelItem, ChannelGroup } from "../typ
 import { useHlsPlayer } from "../hooks/useHlsPlayer";
 import { getLiveTvFavoriteIds, toggleLiveTvFavorite } from "../lib/live-tv-favorites";
 import { getLiveTvHiddenIds, hideLiveTvChannel } from "../lib/live-tv-hidden";
+import { getChannelDisplayName, getLiveTvCustomNames, setLiveTvChannelName } from "../lib/live-tv-names";
 
 type PlayerState = "idle" | "loading" | "playing" | "buffering" | "error";
 
@@ -64,9 +67,11 @@ function getBaseName(name: string): string {
 function groupChannelsByName(channels: LiveTvChannelItem[]): (ChannelGroup | LiveTvChannelItem)[] {
   const groupMap = new Map<string, LiveTvChannelItem[]>();
   const order: string[] = [];
+  const customNames = getLiveTvCustomNames();
 
   for (const ch of channels) {
-    const base = getBaseName(ch.name);
+    const displayName = customNames[ch.id] || ch.name;
+    const base = getBaseName(displayName);
     const key = base.toLowerCase();
     if (!groupMap.has(key)) {
       groupMap.set(key, []);
@@ -79,8 +84,9 @@ function groupChannelsByName(channels: LiveTvChannelItem[]): (ChannelGroup | Liv
   for (const key of order) {
     const items = groupMap.get(key)!;
     if (items.length >= 2) {
+      const displayName = customNames[items[0].id] || items[0].name;
       result.push({
-        baseName: getBaseName(items[0].name),
+        baseName: getBaseName(displayName),
         primary: items[0],
         subChannels: items.slice(1)
       });
@@ -121,10 +127,8 @@ interface ChannelSidebarProps {
   error: string | null;
   channelCount: number;
   activeCategoryLabel: string;
-  brokenLogoUrls: Set<string>;
   onSelectChannel: (channel: LiveTvChannelItem) => void;
   onReload: () => void;
-  markLogoAsBroken: (url: string | null) => void;
   expandedGroups: Set<string>;
   onToggleGroup: (baseName: string) => void;
   adultUnlocked: boolean;
@@ -132,6 +136,7 @@ interface ChannelSidebarProps {
   favoriteIds: Set<string>;
   onToggleFavorite: (channel: LiveTvChannelItem) => void;
   onHideChannel: (channel: LiveTvChannelItem, reason: "no_funciona" | "no_interesa") => void;
+  onRenameChannel: (channel: LiveTvChannelItem) => void;
   showClose?: boolean;
   onClose?: () => void;
 }
@@ -151,10 +156,8 @@ function ChannelSidebar({
   error,
   channelCount,
   activeCategoryLabel,
-  brokenLogoUrls,
   onSelectChannel,
   onReload,
-  markLogoAsBroken,
   expandedGroups,
   onToggleGroup,
   adultUnlocked,
@@ -162,6 +165,7 @@ function ChannelSidebar({
   favoriteIds,
   onToggleFavorite,
   onHideChannel,
+  onRenameChannel,
   showClose,
   onClose
 }: ChannelSidebarProps) {
@@ -275,6 +279,7 @@ function ChannelSidebar({
             if (isChannelGroup(item)) {
               const expanded = expandedGroups.has(item.baseName.toLowerCase());
               const primaryIsFav = favoriteIds.has(item.primary.id);
+              const primaryName = getChannelDisplayName(item.primary);
               return (
                 <div key={`group-${item.baseName}`} className={`live-tv-channel-group ${expanded ? "is-expanded" : ""}`}>
                   <div className="live-tv-channel-group-row">
@@ -284,20 +289,10 @@ function ChannelSidebar({
                       onClick={() => onSelectChannel(item.primary)}
                     >
                       <div className="live-tv-channel-logo">
-                        {item.primary.logo && !brokenLogoUrls.has(item.primary.logo) ? (
-                          <img
-                            src={item.primary.logo}
-                            alt={item.primary.name}
-                            loading="lazy"
-                            referrerPolicy="no-referrer"
-                            onError={() => markLogoAsBroken(item.primary.logo)}
-                          />
-                        ) : (
-                          <Tv2 size={16} />
-                        )}
+                        <Tv2 size={16} />
                       </div>
                       <div className="live-tv-channel-meta">
-                        <strong title={item.primary.name}>{item.primary.name}</strong>
+                        <strong title={primaryName}>{primaryName}</strong>
                         <span>{item.primary.category.name}</span>
                       </div>
                       <div className="live-tv-channel-active-dot" />
@@ -310,6 +305,14 @@ function ChannelSidebar({
                         title={primaryIsFav ? "Quitar de favoritos" : "Agregar a favoritos"}
                       >
                         <Heart size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        className="live-tv-action-btn"
+                        onClick={(e) => { e.stopPropagation(); onRenameChannel(item.primary); }}
+                        title="Renombrar canal"
+                      >
+                        <Edit2 size={13} />
                       </button>
                       <button
                         type="button"
@@ -331,6 +334,7 @@ function ChannelSidebar({
                   </div>
                   {expanded ? item.subChannels.map((sub) => {
                     const subIsFav = favoriteIds.has(sub.id);
+                    const subName = getChannelDisplayName(sub);
                     return (
                       <div key={sub.id} className="live-tv-subchannel-row">
                         <button
@@ -338,8 +342,11 @@ function ChannelSidebar({
                           className={`live-tv-channel live-tv-subchannel ${sub.id === selectedChannelId ? "is-active" : ""}`}
                           onClick={() => onSelectChannel(sub)}
                         >
+                          <div className="live-tv-channel-logo">
+                            <Tv2 size={16} />
+                          </div>
                           <div className="live-tv-channel-meta">
-                            <strong title={sub.name}>{sub.name}</strong>
+                            <strong title={subName}>{subName}</strong>
                             <span>{sub.category.name}</span>
                           </div>
                           <div className="live-tv-channel-active-dot" />
@@ -352,6 +359,14 @@ function ChannelSidebar({
                             title={subIsFav ? "Quitar de favoritos" : "Agregar a favoritos"}
                           >
                             <Heart size={13} />
+                          </button>
+                          <button
+                            type="button"
+                            className="live-tv-action-btn"
+                            onClick={(e) => { e.stopPropagation(); onRenameChannel(sub); }}
+                            title="Renombrar canal"
+                          >
+                            <Edit2 size={13} />
                           </button>
                           <button
                             type="button"
@@ -371,6 +386,7 @@ function ChannelSidebar({
             // Single channel (no group)
             const channel = item;
             const chIsFav = favoriteIds.has(channel.id);
+            const chName = getChannelDisplayName(channel);
             return (
               <div key={channel.id} className="live-tv-channel-row">
                 <button
@@ -379,20 +395,10 @@ function ChannelSidebar({
                   onClick={() => onSelectChannel(channel)}
                 >
                   <div className="live-tv-channel-logo">
-                    {channel.logo && !brokenLogoUrls.has(channel.logo) ? (
-                      <img
-                        src={channel.logo}
-                        alt={channel.name}
-                        loading="lazy"
-                        referrerPolicy="no-referrer"
-                        onError={() => markLogoAsBroken(channel.logo)}
-                      />
-                    ) : (
-                      <Tv2 size={16} />
-                    )}
+                    <Tv2 size={16} />
                   </div>
                   <div className="live-tv-channel-meta">
-                    <strong title={channel.name}>{channel.name}</strong>
+                    <strong title={chName}>{chName}</strong>
                     <span>{channel.category.name}</span>
                   </div>
                   <div className="live-tv-channel-active-dot" />
@@ -405,6 +411,14 @@ function ChannelSidebar({
                     title={chIsFav ? "Quitar de favoritos" : "Agregar a favoritos"}
                   >
                     <Heart size={13} />
+                  </button>
+                  <button
+                    type="button"
+                    className="live-tv-action-btn"
+                    onClick={(e) => { e.stopPropagation(); onRenameChannel(channel); }}
+                    title="Renombrar canal"
+                  >
+                    <Edit2 size={13} />
                   </button>
                   <button
                     type="button"
@@ -439,7 +453,6 @@ export function LiveTvPage() {
   const [reloading, setReloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showChannelPanel, setShowChannelPanel] = useState(false);
-  const [brokenLogoUrls, setBrokenLogoUrls] = useState<Set<string>>(new Set());
   const [playerState, setPlayerState] = useState<PlayerState>("idle");
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
@@ -454,6 +467,9 @@ export function LiveTvPage() {
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(() => getLiveTvHiddenIds());
   const [showHideModal, setShowHideModal] = useState(false);
   const hideModalChannelRef = useRef<LiveTvChannelItem | null>(null);
+  const [showRenameModal, setShowRenameModal] = useState(false);
+  const [renameInput, setRenameInput] = useState("");
+  const renameModalChannelRef = useRef<LiveTvChannelItem | null>(null);
 
   const isMobile = useIsMobile();
   const isTV = useMemo(() => isTvEnvironment(), []);
@@ -469,7 +485,12 @@ export function LiveTvPage() {
   const reconnectAttemptRef = useRef(0);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const MAX_RECONNECT_ATTEMPTS = 5;
-  const [transcodeOverrides, setTranscodeOverrides] = useState<Set<string>>(new Set());
+  // Canales que requieren transcode (proxy falló o codec no soportado)
+  const [transcodeChannels, setTranscodeChannels] = useState<Set<string>>(new Set());
+  const QUALITY_OPTIONS = ["360p", "480p", "720p", "1080p"] as const;
+  const [transcodeQuality, setTranscodeQuality] = useState(() => localStorage.getItem("streams_live_tv_quality") || "480p");
+  const [forceTranscode, setForceTranscode] = useState(() => localStorage.getItem("streams_live_tv_force_transcode") === "true");
+  const [showQualityMenu, setShowQualityMenu] = useState(false);
   const channelsById = useMemo(() => new Map(channels.map((channel) => [channel.id, channel])), [channels]);
   useEffect(() => {
     selectedChannelIdRef.current = selectedChannelId;
@@ -498,14 +519,11 @@ export function LiveTvPage() {
       return;
     }
     const canTranscode = /^https?:\/\//i.test(String(failedChannel.streamUrl || ""));
-    if (!failedChannel.webPlayable || !canTranscode) {
-      return;
-    }
-    if (nextCount < 1) {
+    if (!canTranscode) {
       return;
     }
 
-    setTranscodeOverrides((prev) => {
+    setTranscodeChannels((prev) => {
       if (prev.has(channelId)) return prev;
       const next = new Set(prev);
       next.add(channelId);
@@ -518,7 +536,7 @@ export function LiveTvPage() {
     setPlayerState("error");
     setError(reason || "No se pudo recuperar la reproduccion en vivo.");
   }, [markChannelFailure]);
-  const { attachVideoSource, isBuffering, destroyHls } = useHlsPlayer({
+  const { attachVideoSource, destroyHls } = useHlsPlayer({
     activeSessionIdRef,
     onRuntimeFailure
   });
@@ -537,8 +555,9 @@ export function LiveTvPage() {
     setLoading(true);
     setError(null);
     try {
+      const fetchCategory = (activeCategory === "all" || activeCategory === "__favorites__") ? "" : activeCategory;
       const payload = await fetchLiveTvChannels({
-        category: activeCategory === "all" ? "" : activeCategory,
+        category: fetchCategory,
         query: searchQuery,
         webOnly: true,
         limit: 1200
@@ -585,24 +604,44 @@ export function LiveTvPage() {
     () => channels.find((item) => item.id === selectedChannelId) || null,
     [channels, selectedChannelId]
   );
+  
+  const currentDisplayName = useMemo(() => {
+    if (!selectedChannel) return "TV en vivo";
+    return getChannelDisplayName(selectedChannel);
+  }, [selectedChannel]);
+
   const playbackTarget = useMemo(() => {
     if (!selectedChannel) return null;
+    const channelId = selectedChannel.id;
     const streamUrl = String(selectedChannel.streamUrl || "");
     const looksLikeHls = /\.m3u8(?:$|\?)/i.test(streamUrl) || streamUrl.toLowerCase().includes("/hls");
-    const requiresBackendTranscode = !selectedChannel.webPlayable || transcodeOverrides.has(selectedChannel.id);
-    const forceHls = requiresBackendTranscode || looksLikeHls;
-    const sourceUrl = requiresBackendTranscode
-      ? `/api/live-tv/channels/${encodeURIComponent(selectedChannel.id)}/hls/index.m3u8`
-      : looksLikeHls
-        ? `/api/live-tv/channels/${encodeURIComponent(selectedChannel.id)}/proxy`
-        : `/api/live-tv/channels/${encodeURIComponent(selectedChannel.id)}/stream`;
+    const canTranscode = /^https?:\/\//i.test(streamUrl);
+    const needsTranscode = forceTranscode
+      ? canTranscode
+      : (transcodeChannels.has(channelId) || !selectedChannel.webPlayable);
+    const encodedId = encodeURIComponent(channelId);
+
+    let sourceUrl: string;
+    let forceHls: boolean;
+
+    if (needsTranscode) {
+      sourceUrl = `/api/live-tv/channels/${encodedId}/hls/index.m3u8?quality=${transcodeQuality}`;
+      forceHls = true;
+    } else if (looksLikeHls) {
+      sourceUrl = `/api/live-tv/channels/${encodedId}/proxy`;
+      forceHls = true;
+    } else {
+      sourceUrl = `/api/live-tv/channels/${encodedId}/stream`;
+      forceHls = false;
+    }
+
     return {
-      channelId: selectedChannel.id,
-      key: `${selectedChannel.id}|${sourceUrl}|${forceHls ? "hls" : "auto"}`,
+      channelId,
+      key: `${channelId}|${sourceUrl}`,
       sourceUrl,
       forceHls
     };
-  }, [selectedChannel, transcodeOverrides]);
+  }, [selectedChannel, transcodeChannels, transcodeQuality, forceTranscode]);
   // Filter out hidden channels and handle favorites virtual category
   const visibleChannels = useMemo(() => {
     if (activeCategory === "__favorites__") {
@@ -643,6 +682,23 @@ export function LiveTvPage() {
     setShowHideModal(false);
     hideModalChannelRef.current = null;
   }, []);
+
+  const handleRequestRenameChannel = useCallback((channel: LiveTvChannelItem) => {
+    renameModalChannelRef.current = channel;
+    setRenameInput(getChannelDisplayName(channel));
+    setShowRenameModal(true);
+  }, []);
+
+  const handleRenameSubmit = useCallback(() => {
+    const ch = renameModalChannelRef.current;
+    if (ch) {
+      setLiveTvChannelName(ch.id, renameInput);
+      // Force refresh of names in UI
+      setChannels([...channels]);
+    }
+    setShowRenameModal(false);
+    renameModalChannelRef.current = null;
+  }, [renameInput, channels]);
 
   const handleRequestAdultAccess = useCallback((categoryId: string) => {
     pendingAdultCategoryRef.current = categoryId;
@@ -697,28 +753,34 @@ export function LiveTvPage() {
         video.removeAttribute("src");
         video.load();
 
-        // Para URLs de transcode HLS, esperar a que el manifest esté listo
-        // antes de pasárselo a HLS.js (el backend devuelve 503 mientras ffmpeg arranca)
+        // Para transcode HLS, esperar a que ffmpeg tenga el manifest listo (503 = en preparación)
         if (playbackTarget.sourceUrl.includes("/hls/")) {
           const pollStart = Date.now();
           let manifestReady = false;
           while (Date.now() - pollStart < 60000) {
             if (cancelled || attemptId !== playbackAttemptSeqRef.current) return;
             try {
-              const probe = await fetch(playbackTarget.sourceUrl);
-              if (probe.ok) { manifestReady = true; break; }
+              const probe = await fetch(playbackTarget.sourceUrl, { method: "HEAD" });
+              if (probe.ok) {
+                manifestReady = true;
+                break;
+              }
               if (probe.status !== 503) throw new Error("No se pudo preparar el transcode.");
             } catch (fetchErr) {
               if (cancelled || attemptId !== playbackAttemptSeqRef.current) return;
+              markChannelFailure();
               throw fetchErr;
             }
             await new Promise((r) => setTimeout(r, 2000));
           }
           if (cancelled || attemptId !== playbackAttemptSeqRef.current) return;
-          if (!manifestReady) throw new Error("Timeout esperando transcode del canal.");
+          if (!manifestReady) throw new Error("Timeout esperando transcode.");
         }
 
-        await attachVideoSource(video, playbackTarget.sourceUrl, { forceHls: playbackTarget.forceHls });
+        await attachVideoSource(video, playbackTarget.sourceUrl, { 
+          forceHls: playbackTarget.forceHls,
+          mode: "live" 
+        });
         if (cancelled || attemptId !== playbackAttemptSeqRef.current) return;
         await video.play().then(() => {
           if (!cancelled && attemptId === playbackAttemptSeqRef.current) {
@@ -727,6 +789,29 @@ export function LiveTvPage() {
         }).catch(() => {
           // autoplay can be blocked by browser policy
         });
+
+        // Detectar streams sin video renderizable (ej: H.265/HEVC que el browser no decodifica)
+        // El tiempo avanza y los segmentos bajan, pero videoWidth queda en 0.
+        if (!cancelled && attemptId === playbackAttemptSeqRef.current && !transcodeChannels.has(playbackTarget.channelId)) {
+          const videoCheckDelay = 2000;
+          await new Promise((r) => setTimeout(r, videoCheckDelay));
+          if (cancelled || attemptId !== playbackAttemptSeqRef.current) return;
+          if (video.videoWidth === 0 && video.currentTime > 0) {
+            // Pre-calentar transcode: disparar la petición para que ffmpeg arranque YA
+            const hlsUrl = `/api/live-tv/channels/${encodeURIComponent(playbackTarget.channelId)}/hls/index.m3u8`;
+            fetch(hlsUrl).catch(() => {});
+            markChannelFailure();
+            destroyHls();
+            video.pause();
+            video.removeAttribute("src");
+            video.load();
+            lastPlaybackKeyRef.current = "";
+            setPlayerState("loading");
+            setError("Codec no soportado, cambiando a transcode...");
+            return;
+          }
+        }
+
         channelFailureCountRef.current.delete(playbackTarget.channelId);
       } catch (runtimeError) {
         if (cancelled || attemptId !== playbackAttemptSeqRef.current) return;
@@ -740,28 +825,50 @@ export function LiveTvPage() {
       cancelled = true;
       destroyHls();
     };
-  }, [attachVideoSource, destroyHls, markChannelFailure, playbackTarget]);
+  }, [attachVideoSource, destroyHls, markChannelFailure, playbackTarget, transcodeChannels]);
+
+  const bufferingOverlayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
+    const BUFFERING_OVERLAY_DELAY_MS = 3000;
+
+    function clearBufferingTimer() {
+      if (bufferingOverlayTimerRef.current) {
+        clearTimeout(bufferingOverlayTimerRef.current);
+        bufferingOverlayTimerRef.current = null;
+      }
+    }
+    function scheduleBufferingOverlay() {
+      // Solo mostrar overlay de buffering si el stall dura más de 3 segundos
+      if (bufferingOverlayTimerRef.current) return;
+      bufferingOverlayTimerRef.current = setTimeout(() => {
+        bufferingOverlayTimerRef.current = null;
+        setPlayerState("buffering");
+      }, BUFFERING_OVERLAY_DELAY_MS);
+    }
     function onLoadStart() {
+      clearBufferingTimer();
       setPlayerState("loading");
     }
     function onWaiting() {
-      setPlayerState("buffering");
+      scheduleBufferingOverlay();
     }
     function onCanPlay() {
+      clearBufferingTimer();
       setPlayerState("playing");
     }
     function onPlaying() {
+      clearBufferingTimer();
       setPlayerState("playing");
     }
     function onStalled() {
-      setPlayerState("buffering");
+      scheduleBufferingOverlay();
     }
     function onError() {
+      clearBufferingTimer();
       if (!video || !video.src || video.src === window.location.href) return;
       setPlayerState("error");
     }
@@ -774,6 +881,7 @@ export function LiveTvPage() {
     video.addEventListener("error", onError);
 
     return () => {
+      clearBufferingTimer();
       video.removeEventListener("loadstart", onLoadStart);
       video.removeEventListener("waiting", onWaiting);
       video.removeEventListener("canplay", onCanPlay);
@@ -805,6 +913,12 @@ export function LiveTvPage() {
     const attempt = reconnectAttemptRef.current;
     if (attempt >= MAX_RECONNECT_ATTEMPTS) return;
 
+    // Si ya estamos en transcode (último recurso) y el canal ya falló varias veces, no insistir
+    const channelId = selectedChannel.id;
+    const isTranscoding = transcodeChannels.has(channelId);
+    const failCount = channelFailureCountRef.current.get(channelId) || 0;
+    if (isTranscoding && failCount >= 3) return;
+
     const delayMs = Math.min(2000 * Math.pow(1.5, attempt), 15000);
     reconnectTimerRef.current = setTimeout(() => {
       reconnectTimerRef.current = null;
@@ -822,7 +936,7 @@ export function LiveTvPage() {
         reconnectTimerRef.current = null;
       }
     };
-  }, [playerState, selectedChannel, playbackTarget]);
+  }, [playerState, selectedChannel, playbackTarget, transcodeChannels]);
 
   useEffect(() => {
     function onFullscreenChange() {
@@ -864,11 +978,8 @@ export function LiveTvPage() {
     }
   }, [isTV, selectedChannel, playerState]);
 
-  useEffect(() => {
-    if (isBuffering && selectedChannel) {
-      setPlayerState("buffering");
-    }
-  }, [isBuffering, selectedChannel]);
+  // isBuffering de hls.js ya no fuerza el overlay directamente.
+  // El overlay de buffering se maneja con el debounce de 3s en los eventos del video.
 
   async function handleReload() {
     setReloading(true);
@@ -909,16 +1020,6 @@ export function LiveTvPage() {
     }
   }
 
-  function markLogoAsBroken(logoUrl: string | null) {
-    const clean = String(logoUrl || "").trim();
-    if (!clean) return;
-    setBrokenLogoUrls((prev) => {
-      if (prev.has(clean)) return prev;
-      const next = new Set(prev);
-      next.add(clean);
-      return next;
-    });
-  }
 
   // Keyboard / D-pad navigation
   const navigateChannel = useCallback((direction: -1 | 1) => {
@@ -1349,17 +1450,16 @@ export function LiveTvPage() {
     error,
     channelCount,
     activeCategoryLabel,
-    brokenLogoUrls,
     onSelectChannel: handleSelectChannel,
     onReload: () => void handleReload(),
-    markLogoAsBroken,
     expandedGroups,
     onToggleGroup: handleToggleGroup,
     adultUnlocked,
     onRequestAdultAccess: handleRequestAdultAccess,
     favoriteIds,
     onToggleFavorite: handleToggleFavorite,
-    onHideChannel: handleRequestHideChannel
+    onHideChannel: handleRequestHideChannel,
+    onRenameChannel: handleRequestRenameChannel
   };
 
   return (
@@ -1393,7 +1493,7 @@ export function LiveTvPage() {
             <div className="live-tv-current">
               {selectedChannel ? (
                 <>
-                  <h2>{selectedChannel.name}</h2>
+                  <h2>{currentDisplayName}</h2>
                   <p className="muted">
                     {selectedChannel.category.name}
                     {selectedChannel.country ? ` | ${selectedChannel.country}` : ""}
@@ -1434,6 +1534,52 @@ export function LiveTvPage() {
                 <List size={16} />
                 <span>Canales</span>
               </button>
+              <div className="live-tv-quality-wrapper">
+                <button
+                  type="button"
+                  className="live-tv-overlay-btn has-label"
+                  onClick={() => setShowQualityMenu((v) => !v)}
+                  title="Calidad de video"
+                >
+                  <Settings size={16} />
+                  <span>{(forceTranscode || transcodeChannels.has(selectedChannelId)) ? transcodeQuality : "Auto"}</span>
+                </button>
+                {showQualityMenu ? (
+                  <div className="live-tv-quality-menu">
+                    <button
+                      type="button"
+                      className={`live-tv-quality-option live-tv-quality-toggle ${forceTranscode ? "is-active" : ""}`}
+                      onClick={() => {
+                        const next = !forceTranscode;
+                        setForceTranscode(next);
+                        localStorage.setItem("streams_live_tv_force_transcode", String(next));
+                        lastPlaybackKeyRef.current = "";
+                        setShowQualityMenu(false);
+                      }}
+                    >
+                      {forceTranscode ? "Transcode: ON" : "Transcode: OFF"}
+                    </button>
+                    <div className="live-tv-quality-divider" />
+                    {QUALITY_OPTIONS.map((q) => (
+                      <button
+                        key={q}
+                        type="button"
+                        className={`live-tv-quality-option ${q === transcodeQuality ? "is-active" : ""}`}
+                        onClick={() => {
+                          if (q !== transcodeQuality) {
+                            setTranscodeQuality(q);
+                            localStorage.setItem("streams_live_tv_quality", q);
+                            lastPlaybackKeyRef.current = "";
+                          }
+                          setShowQualityMenu(false);
+                        }}
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
               <button
                 type="button"
                 className="live-tv-overlay-btn"
@@ -1571,6 +1717,45 @@ export function LiveTvPage() {
               <div className="modal-actions">
                 <button type="button" className="secondary-btn" onClick={() => setShowHideModal(false)}>
                   Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {showRenameModal && renameModalChannelRef.current ? (
+        <div className="modal-backdrop" onClick={() => setShowRenameModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-form">
+              <h3 style={{ margin: "0 0 4px", fontSize: 18 }}>
+                <Edit2 size={16} style={{ marginRight: 8, verticalAlign: -2 }} />
+                Renombrar canal
+              </h3>
+              <p className="muted" style={{ marginBottom: 8 }}>
+                Introduce el nuevo nombre para <strong>{renameModalChannelRef.current.name}</strong>
+              </p>
+              <input
+                type="text"
+                placeholder="Nombre del canal"
+                value={renameInput}
+                onChange={(e) => setRenameInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleRenameSubmit();
+                }}
+                autoFocus
+              />
+              <div className="modal-actions">
+                <button type="button" className="secondary-btn" onClick={() => setShowRenameModal(false)}>
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  className="secondary-btn"
+                  style={{ borderColor: "var(--brand)", color: "var(--brand)" }}
+                  onClick={handleRenameSubmit}
+                >
+                  Guardar
                 </button>
               </div>
             </div>

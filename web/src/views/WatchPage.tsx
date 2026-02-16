@@ -14,10 +14,9 @@ import {
   reportPlaybackMetric,
   destroyPlaybackSession,
   startAutoPlayback,
-  reportUserUnavailable,
   saveWatchProgress,
-  reportGlobalUnavailable,
-  prefetchNextEpisode
+  prefetchNextEpisode,
+  clearUserUnavailable
 } from "../api";
 import { invalidateAvailability } from "../lib/availability-cache";
 import { useAppStore } from "../store/AppStore";
@@ -125,7 +124,6 @@ export function WatchPage() {
   const lastSaveTimeRef = useRef(0);
   const hasResumedRef = useRef(false);
   const runtimeFailureHandlerRef = useRef<(reason: string) => void>(() => {});
-  const runtimeRecoveryInProgressRef = useRef(false);
   const handleRuntimeFailure = useCallback((reason: string) => {
     runtimeFailureHandlerRef.current(reason);
   }, []);
@@ -307,28 +305,49 @@ export function WatchPage() {
 
       const ttffStartedAt = performance.now();
       applyAutoPlaybackPayload(payload, setSessionSubtitles);
-      await attachVideoSource(videoRef.current, payload.streamUrl);
-      await waitForVideoReady(videoRef.current);
+      const isHlsSession = payload.streamUrl.includes("/hls/") && payload.sessionId;
+      console.log(`[PLAY-DEBUG] attachVideoSource: url=${payload.streamUrl} mode=${isHlsSession ? "live" : "vod"}`);
+      try {
+        await attachVideoSource(videoRef.current, payload.streamUrl, {
+          mode: isHlsSession ? "live" : "vod"
+        });
+        console.log("[PLAY-DEBUG] attachVideoSource OK, waiting for video ready...");
+      } catch (err) {
+        console.error("[PLAY-DEBUG] attachVideoSource FAILED:", err);
+        throw err;
+      }
+      try {
+        await waitForVideoReady(videoRef.current);
+        console.log("[PLAY-DEBUG] waitForVideoReady OK");
+      } catch (err) {
+        console.error("[PLAY-DEBUG] waitForVideoReady FAILED:", err);
+        throw err;
+      }
       assertPlaybackAttemptActive(playbackAttemptId);
       setPlayerReady(true);
       hasEverPlayedRef.current = true;
 
       if (!hasResumedRef.current && videoRef.current) {
         hasResumedRef.current = true;
-        const history = getWatchHistory();
-        const matchKey = isSeries
-          ? `series:${decodedItemId}:${season}:${episode}`
-          : `movie:${decodedItemId}`;
-        const found = history.find((e) => {
-          const k = e.type === "series" && e.season != null && e.episode != null
-            ? `${e.type}:${e.itemId}:${e.season}:${e.episode}`
-            : `${e.type}:${e.itemId}`;
-          return k === matchKey;
-        });
-        if (found && found.duration > 0) {
-          const pct = found.position / found.duration;
-          if (pct > 0.02 && pct < 0.95) {
-            videoRef.current.currentTime = Math.max(0, found.position - 5);
+        // Solo hacer resume en streams directos, no en HLS de torrent
+        // (el HLS de torrent se genera en tiempo real y no permite seekear a posiciones futuras)
+        const isHlsSession = payload.streamUrl.includes("/hls/") && payload.sessionId;
+        if (!isHlsSession) {
+          const history = getWatchHistory();
+          const matchKey = isSeries
+            ? `series:${decodedItemId}:${season}:${episode}`
+            : `movie:${decodedItemId}`;
+          const found = history.find((e) => {
+            const k = e.type === "series" && e.season != null && e.episode != null
+              ? `${e.type}:${e.itemId}:${e.season}:${e.episode}`
+              : `${e.type}:${e.itemId}`;
+            return k === matchKey;
+          });
+          if (found && found.duration > 0) {
+            const pct = found.position / found.duration;
+            if (pct > 0.02 && pct < 0.95) {
+              videoRef.current.currentTime = Math.max(0, found.position - 5);
+            }
           }
         }
       }
@@ -391,10 +410,10 @@ export function WatchPage() {
           quality,
           audioPreference,
           originalLanguage: originalLanguageCode || undefined,
-          waitReadyMs: 20000,
-          validationBudgetMs: 18000,
+          waitReadyMs: 40000,
+          validationBudgetMs: 75000,
           probeTimeoutMs: 3500,
-          maxCandidates: 14,
+          maxCandidates: 25,
           preferredSourceKey: preferredSourceKeyRef.current || undefined
         });
         assertPlaybackAttemptActive(playbackAttemptId);
@@ -436,21 +455,13 @@ export function WatchPage() {
 
   const handleRuntimePlaybackFailure = useCallback(
     async (reason: string) => {
-      if (runtimeRecoveryInProgressRef.current) return;
-      runtimeRecoveryInProgressRef.current = true;
-      try {
-        const playbackAttemptId = beginPlaybackAttempt();
-        await playWithBackendAuto("auto", true, playbackAttemptId);
-        setActionError("La reproduccion se recupero automaticamente.");
-      } catch {
-        setActionError(reason || "No hay video disponible por el momento.");
-        void reportGlobalUnavailable(type, decodedItemId).catch(() => {});
-        invalidateAvailability(type, decodedItemId);
-      } finally {
-        runtimeRecoveryInProgressRef.current = false;
-      }
+      // No auto-recuperar con un nuevo auto-playback: puede encontrar contenido
+      // incorrecto y reemplazar un stream que estaba funcionando.
+      // Solo mostrar el error — el usuario puede reintentar manualmente.
+      console.warn("[PLAY-DEBUG] Runtime failure:", reason);
+      setActionError(reason || "La reproduccion se detuvo. Presiona Reproducir para reintentar.");
     },
-    [beginPlaybackAttempt, decodedItemId, playWithBackendAuto, type]
+    []
   );
 
   useEffect(() => {
@@ -462,28 +473,19 @@ export function WatchPage() {
     };
   }, [handleRuntimePlaybackFailure]);
 
-  const reportUnavailable = useCallback(() => {
-    if (!state.user) return;
-    void reportUserUnavailable({
-      username: state.user.username,
-      type,
-      itemId: decodedItemId
-    }).catch(() => {
-      // no-op
-    });
-  }, [decodedItemId, state.user, type]);
-
   async function handleStartPlayback() {
     setActionError(null);
+    // Limpiar unavailable al intentar reproducir (permite reintentar sin bloqueos)
+    if (state.user) {
+      void clearUserUnavailable({ username: state.user.username, type, itemId: decodedItemId }).catch(() => {});
+    }
+    invalidateAvailability(type, decodedItemId);
     try {
       const autoAttemptId = beginPlaybackAttempt();
       await playWithBackendAuto(selectedQuality || "auto", true, autoAttemptId);
     } catch (error) {
       const message = error instanceof Error ? error.message : "No hay video disponible por el momento.";
       setActionError(message);
-      reportUnavailable();
-      void reportGlobalUnavailable(type, decodedItemId).catch(() => {});
-      invalidateAvailability(type, decodedItemId);
     }
   }
 
@@ -498,7 +500,6 @@ export function WatchPage() {
     } catch (error) {
       const message = error instanceof Error ? error.message : "No se pudo cambiar la calidad.";
       setActionError(message);
-      reportUnavailable();
     }
   }
 
@@ -928,7 +929,7 @@ export function WatchPage() {
             ) : null}
 
             {showLoaderOverlay ? (
-              <div className="player-overlay" aria-live="polite">
+              <div className={`player-overlay${hasPlaybackStarted ? " is-buffering-only" : ""}`} aria-live="polite">
                 <div className="player-overlay-icon">
                   <LoaderCircle size={22} className="player-spinner" />
                 </div>

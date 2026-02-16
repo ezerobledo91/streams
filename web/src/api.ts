@@ -190,7 +190,7 @@ export function startAutoPlayback(payload: {
   return apiFetch<AutoPlaybackPayload>("/api/playback/auto", {
     method: "POST",
     body: JSON.stringify(payload),
-    timeoutMs: Math.max(30000, Math.round(Number(payload.waitReadyMs) || 0) + 15000)
+    timeoutMs: Math.max(30000, Math.round(Number(payload.validationBudgetMs) || Number(payload.waitReadyMs) || 0) + 15000)
   });
 }
 
@@ -350,6 +350,17 @@ export function reportUserUnavailable(params: {
   });
 }
 
+export function clearUserUnavailable(params: {
+  username: string;
+  type: string;
+  itemId: string;
+}): Promise<{ user: UserRecord }> {
+  return apiFetch<{ user: UserRecord }>(`/api/users/${encodeURIComponent(params.username)}/unavailable`, {
+    method: "DELETE",
+    body: JSON.stringify({ type: params.type, itemId: params.itemId })
+  });
+}
+
 export function fetchUserList(): Promise<{ users: UserRecord[] }> {
   return apiFetch<{ users: UserRecord[] }>("/api/users/list");
 }
@@ -397,4 +408,13 @@ export function prefetchNextEpisode(payload: {
     method: "POST",
     body: JSON.stringify(payload)
   });
+}
+
+export async function fetchNetworkLogo(name: string): Promise<string | null> {
+  try {
+    const data = await apiFetch<any>(`/api/meta/search-network?query=${encodeURIComponent(name)}`);
+    return data.logoUrl || null;
+  } catch {
+    return null;
+  }
 }
