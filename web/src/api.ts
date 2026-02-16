@@ -1,7 +1,9 @@
 import type {
   AutoPlaybackPayload,
   CatalogBrowsePayload,
+  CatalogItem,
   Category,
+  ContinueWatchingEntry,
   LiveTvCategoriesPayload,
   LiveTvChannelsPayload,
   MetaDetailsPayload,
@@ -9,7 +11,8 @@ import type {
   PlaybackSessionPayload,
   SourcesPayload,
   StreamsPayload,
-  SubtitlesPayload
+  SubtitlesPayload,
+  UserRecord
 } from "./types";
 
 interface ApiOptions extends RequestInit {
@@ -56,6 +59,7 @@ export function fetchCatalogByCategory(params: {
   category: Category;
   query?: string;
   genre?: string;
+  year?: string;
   limit?: number;
   page?: number;
 }): Promise<CatalogBrowsePayload> {
@@ -69,6 +73,9 @@ export function fetchCatalogByCategory(params: {
   }
   if (params.genre?.trim()) {
     searchParams.set("genre", params.genre.trim());
+  }
+  if (params.year?.trim()) {
+    searchParams.set("year", params.year.trim());
   }
 
   return apiFetch<CatalogBrowsePayload>(`/api/catalog/browse?${searchParams.toString()}`);
@@ -308,5 +315,86 @@ export function reloadLiveTvChannels(): Promise<{ ok: boolean }> {
     method: "POST",
     body: "{}",
     timeoutMs: 20000
+  });
+}
+
+export function loginUser(payload: {
+  username: string;
+  displayName?: string;
+}): Promise<{ user: UserRecord }> {
+  return apiFetch<{ user: UserRecord }>("/api/users/login", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function fetchUserData(username: string): Promise<{ user: UserRecord }> {
+  return apiFetch<{ user: UserRecord }>(`/api/users/${encodeURIComponent(username)}`);
+}
+
+export function toggleUserFavorite(username: string, item: CatalogItem): Promise<{ user: UserRecord }> {
+  return apiFetch<{ user: UserRecord }>(`/api/users/${encodeURIComponent(username)}/favorites`, {
+    method: "POST",
+    body: JSON.stringify({ item })
+  });
+}
+
+export function reportUserUnavailable(params: {
+  username: string;
+  type: Category;
+  itemId: string;
+}): Promise<{ user: UserRecord }> {
+  return apiFetch<{ user: UserRecord }>(`/api/users/${encodeURIComponent(params.username)}/unavailable`, {
+    method: "POST",
+    body: JSON.stringify({ type: params.type, itemId: params.itemId })
+  });
+}
+
+export function fetchUserList(): Promise<{ users: UserRecord[] }> {
+  return apiFetch<{ users: UserRecord[] }>("/api/users/list");
+}
+
+export function saveWatchProgress(
+  username: string,
+  entry: Omit<ContinueWatchingEntry, "lastWatched">
+): Promise<{ user: UserRecord }> {
+  return apiFetch<{ user: UserRecord }>(
+    `/api/users/${encodeURIComponent(username)}/continue-watching`,
+    {
+      method: "POST",
+      body: JSON.stringify(entry)
+    }
+  );
+}
+
+export function fetchContinueWatching(
+  username: string
+): Promise<{ items: ContinueWatchingEntry[] }> {
+  return apiFetch<{ items: ContinueWatchingEntry[] }>(
+    `/api/users/${encodeURIComponent(username)}/continue-watching`
+  );
+}
+
+export function reportGlobalUnavailable(
+  type: string,
+  itemId: string
+): Promise<{ ok: boolean }> {
+  return apiFetch<{ ok: boolean }>("/api/availability/report-unavailable", {
+    method: "POST",
+    body: JSON.stringify({ type, itemId })
+  });
+}
+
+export function prefetchNextEpisode(payload: {
+  type: string;
+  itemId: string;
+  season: number;
+  episode: number;
+  audioPreference?: string;
+  originalLanguage?: string;
+}): Promise<{ prefetched: boolean }> {
+  return apiFetch<{ prefetched: boolean }>("/api/playback/prefetch-next", {
+    method: "POST",
+    body: JSON.stringify(payload)
   });
 }

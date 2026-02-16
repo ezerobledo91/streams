@@ -260,7 +260,23 @@ export interface LiveTvChannelsPayload {
   items: LiveTvChannelItem[];
 }
 
-export interface AutoPlaybackPayload {
+export interface AutoPlaybackCandidateSummary {
+  providerId: string;
+  providerName: string;
+  displayName: string;
+  resolution: number;
+  score: number;
+  seeders: number;
+  peers: number;
+  webFriendly: boolean;
+  fileExtension: string;
+  likelyIncompatible: boolean;
+  hasMagnet: boolean;
+  hasDirectUrl: boolean;
+  fileIdx: number | null;
+}
+
+export interface AutoPlaybackAlternative {
   mode: "direct" | "session";
   status: "ready";
   streamUrl: string;
@@ -268,22 +284,12 @@ export interface AutoPlaybackPayload {
   sessionId: string | null;
   session: PlaybackSessionPayload | null;
   selectedQuality: "4k" | "1080p" | "720p" | "sd";
+  chosen: AutoPlaybackCandidateSummary;
+}
+
+export interface AutoPlaybackPayload extends AutoPlaybackAlternative {
   availableQualities: Array<"4k" | "1080p" | "720p" | "sd">;
-  chosen: {
-    providerId: string;
-    providerName: string;
-    displayName: string;
-    resolution: number;
-    score: number;
-    seeders: number;
-    peers: number;
-    webFriendly: boolean;
-    fileExtension: string;
-    likelyIncompatible: boolean;
-    hasMagnet: boolean;
-    hasDirectUrl: boolean;
-    fileIdx: number | null;
-  };
+  alternatives: AutoPlaybackAlternative[];
 }
 
 export interface PlaybackPreflightQualityOption {
@@ -322,4 +328,33 @@ export interface PlaybackPreflightPayload {
     ttlMs: number;
     ageMs?: number;
   };
+}
+
+export interface UserUnavailableEntry {
+  type: Category;
+  itemId: string;
+  reason: string;
+  notedAt: number;
+}
+
+export interface ContinueWatchingEntry {
+  type: "movie" | "series";
+  itemId: string;
+  name: string;
+  poster: string | null;
+  background: string | null;
+  season: number | null;
+  episode: number | null;
+  episodeTitle: string | null;
+  position: number;
+  duration: number;
+  lastWatched: number;
+}
+
+export interface UserRecord {
+  username: string;
+  displayName: string;
+  favorites: CatalogItem[];
+  unavailable: UserUnavailableEntry[];
+  continueWatching: ContinueWatchingEntry[];
 }

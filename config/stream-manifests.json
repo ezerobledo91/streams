@@ -39,6 +39,38 @@
       "active": true,
       "priority": 130,
       "categories": ["movie", "series"]
+    },
+    {
+      "id": "cyberflix",
+      "name": "Cyberflix",
+      "manifestUrl": "https://cyberflix.elfhosted.com/manifest.json",
+      "active": true,
+      "priority": 115,
+      "categories": ["movie", "series"]
+    },
+    {
+      "id": "jackett-community",
+      "name": "Jackett Community",
+      "manifestUrl": "https://jackett-community.elfhosted.com/manifest.json",
+      "active": true,
+      "priority": 108,
+      "categories": ["movie", "series"]
+    },
+    {
+      "id": "knightcrawler",
+      "name": "KnightCrawler",
+      "manifestUrl": "https://knightcrawler.elfhosted.com/manifest.json",
+      "active": true,
+      "priority": 112,
+      "categories": ["movie", "series"]
+    },
+    {
+      "id": "orion",
+      "name": "Orion",
+      "manifestUrl": "https://orion.elfhosted.com/manifest.json",
+      "active": true,
+      "priority": 102,
+      "categories": ["movie", "series"]
     }
   ]
 }

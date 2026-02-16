@@ -1,9 +1,36 @@
 import { checkAvailabilityBatch } from "../api";
 
+const STORAGE_KEY = "availability-cache";
+const STORAGE_TTL_MS = 30 * 60 * 1000; // 30 min
+
 const cache = new Map<string, boolean>();
 const pending = new Map<string, Array<(value: boolean) => void>>();
 let batchQueue: Array<{ type: string; itemId: string }> = [];
 let batchTimer: ReturnType<typeof setTimeout> | null = null;
+
+// Hydrate from sessionStorage on load
+try {
+  const raw = sessionStorage.getItem(STORAGE_KEY);
+  if (raw) {
+    const parsed = JSON.parse(raw) as { entries: [string, boolean][]; at: number };
+    if (parsed?.at && Date.now() - parsed.at < STORAGE_TTL_MS && Array.isArray(parsed.entries)) {
+      for (const [key, value] of parsed.entries) {
+        cache.set(key, value);
+      }
+    }
+  }
+} catch {
+  // ignore corrupt storage
+}
+
+function persistToStorage() {
+  try {
+    const entries = [...cache.entries()].slice(-500);
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ entries, at: Date.now() }));
+  } catch {
+    // storage full or unavailable
+  }
+}
 
 function flushBatch() {
   batchTimer = null;
@@ -27,6 +54,7 @@ function flushBatch() {
           for (const cb of callbacks) cb(value);
         }
       }
+      persistToStorage();
     })
     .catch(() => {
       for (const item of items) {
@@ -38,6 +66,12 @@ function flushBatch() {
         }
       }
     });
+}
+
+export function invalidateAvailability(type: string, itemId: string): void {
+  const key = `${type}:${itemId}`;
+  cache.delete(key);
+  persistToStorage();
 }
 
 export function checkAvailability(type: string, itemId: string): Promise<boolean> {

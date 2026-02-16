@@ -8,6 +8,8 @@ import {
   Minimize,
   RefreshCw,
   Search,
+  SkipBack,
+  SkipForward,
   Tv2,
   X
 } from "lucide-react";
@@ -19,6 +21,22 @@ import { useTvKeyboard } from "../hooks/useTvKeyboard";
 type PlayerState = "idle" | "loading" | "playing" | "buffering" | "error";
 
 const DESKTOP_QUERY = "(min-width: 1001px), (orientation: landscape) and (min-width: 1001px)";
+
+function isTvEnvironment(): boolean {
+  const ua = navigator.userAgent.toLowerCase();
+  return (
+    ua.includes("smart-tv") ||
+    ua.includes("smarttv") ||
+    ua.includes("tizen") ||
+    ua.includes("webos") ||
+    ua.includes("android tv") ||
+    ua.includes("fire tv") ||
+    ua.includes("crkey") ||
+    ua.includes("bravia") ||
+    window.matchMedia("(pointer: none)").matches ||
+    window.matchMedia("(hover: none) and (pointer: coarse)").matches
+  );
+}
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(() => !window.matchMedia(DESKTOP_QUERY).matches);
@@ -172,9 +190,10 @@ function ChannelSidebar({
                 )}
               </div>
               <div className="live-tv-channel-meta">
-                <strong>{channel.name}</strong>
+                <strong title={channel.name}>{channel.name}</strong>
                 <span>{channel.category.name}</span>
               </div>
+              <div className="live-tv-channel-active-dot" />
             </button>
           ))
         ) : (
@@ -201,8 +220,11 @@ export function LiveTvPage() {
   const [brokenLogoUrls, setBrokenLogoUrls] = useState<Set<string>>(new Set());
   const [playerState, setPlayerState] = useState<PlayerState>("idle");
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [controlsVisible, setControlsVisible] = useState(true);
+  const controlsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isMobile = useIsMobile();
+  const isTV = useMemo(() => isTvEnvironment(), []);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const playerShellRef = useRef<HTMLDivElement | null>(null);
@@ -212,6 +234,9 @@ export function LiveTvPage() {
   const lastPlaybackKeyRef = useRef("");
   const selectedChannelIdRef = useRef("");
   const channelFailureCountRef = useRef<Map<string, number>>(new Map());
+  const reconnectAttemptRef = useRef(0);
+  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const MAX_RECONNECT_ATTEMPTS = 5;
   const [transcodeOverrides, setTranscodeOverrides] = useState<Set<string>>(new Set());
   const channelsById = useMemo(() => new Map(channels.map((channel) => [channel.id, channel])), [channels]);
   useEffect(() => {
@@ -457,6 +482,47 @@ export function LiveTvPage() {
     };
   }, []);
 
+  // Reset reconnect counter when channel changes
+  useEffect(() => {
+    reconnectAttemptRef.current = 0;
+    if (reconnectTimerRef.current) {
+      clearTimeout(reconnectTimerRef.current);
+      reconnectTimerRef.current = null;
+    }
+  }, [selectedChannelId]);
+
+  // Reset reconnect counter on successful playback
+  useEffect(() => {
+    if (playerState === "playing") {
+      reconnectAttemptRef.current = 0;
+    }
+  }, [playerState]);
+
+  // Auto-reconnect on error with exponential backoff
+  useEffect(() => {
+    if (playerState !== "error" || !selectedChannel || !playbackTarget) return;
+    const attempt = reconnectAttemptRef.current;
+    if (attempt >= MAX_RECONNECT_ATTEMPTS) return;
+
+    const delayMs = Math.min(2000 * Math.pow(1.5, attempt), 15000);
+    reconnectTimerRef.current = setTimeout(() => {
+      reconnectTimerRef.current = null;
+      if (reconnectAttemptRef.current >= MAX_RECONNECT_ATTEMPTS) return;
+      reconnectAttemptRef.current += 1;
+      // Force re-attach by clearing the last key so the playback effect re-runs
+      lastPlaybackKeyRef.current = "";
+      setPlayerState("loading");
+      setError(null);
+    }, delayMs);
+
+    return () => {
+      if (reconnectTimerRef.current) {
+        clearTimeout(reconnectTimerRef.current);
+        reconnectTimerRef.current = null;
+      }
+    };
+  }, [playerState, selectedChannel, playbackTarget]);
+
   useEffect(() => {
     function onFullscreenChange() {
       setIsFullscreen(Boolean(document.fullscreenElement));
@@ -467,6 +533,35 @@ export function LiveTvPage() {
       document.removeEventListener("fullscreenchange", onFullscreenChange);
     };
   }, []);
+
+  // Controls auto-hide after 5s of inactivity
+  const showControlsTemporarily = useCallback(() => {
+    setControlsVisible(true);
+    if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+    controlsTimeoutRef.current = setTimeout(() => {
+      setControlsVisible(false);
+    }, 5000);
+  }, []);
+
+  useEffect(() => {
+    function onAnyInput() { showControlsTemporarily(); }
+    window.addEventListener("keydown", onAnyInput);
+    window.addEventListener("pointermove", onAnyInput);
+    window.addEventListener("pointerdown", onAnyInput);
+    return () => {
+      window.removeEventListener("keydown", onAnyInput);
+      window.removeEventListener("pointermove", onAnyInput);
+      window.removeEventListener("pointerdown", onAnyInput);
+      if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+    };
+  }, [showControlsTemporarily]);
+
+  // Auto-fullscreen on TV when playback starts
+  useEffect(() => {
+    if (isTV && selectedChannel && playerState === "playing" && !document.fullscreenElement) {
+      playerShellRef.current?.requestFullscreen?.().catch(() => {});
+    }
+  }, [isTV, selectedChannel, playerState]);
 
   useEffect(() => {
     if (isBuffering && selectedChannel) {
@@ -504,7 +599,13 @@ export function LiveTvPage() {
 
   function handleSelectChannel(channel: LiveTvChannelItem) {
     setSelectedChannelId(channel.id);
-    setShowChannelPanel(false);
+    if (isMobile) setShowChannelPanel(false);
+    // Auto-fullscreen en TV al seleccionar canal
+    if (isTV || document.fullscreenElement) {
+      requestAnimationFrame(() => {
+        playerShellRef.current?.requestFullscreen?.().catch(() => {});
+      });
+    }
   }
 
   function markLogoAsBroken(logoUrl: string | null) {
@@ -592,7 +693,7 @@ export function LiveTvPage() {
         <div className="live-tv-player-shell" ref={playerShellRef}>
           <video ref={videoRef} controls autoPlay playsInline className="video-player live-tv-video" />
 
-          <div className="live-tv-overlay-top">
+          <div className={`live-tv-overlay-top ${controlsVisible ? "is-visible" : ""}`}>
             <div className="live-tv-current">
               {selectedChannel ? (
                 <>
@@ -612,17 +713,31 @@ export function LiveTvPage() {
             </div>
 
             <div className="live-tv-overlay-actions">
-              {isMobile ? (
-                <button
-                  type="button"
-                  className="live-tv-overlay-btn"
-                  onClick={() => setShowChannelPanel(true)}
-                  title="Abrir lista de canales"
-                >
-                  <List size={16} />
-                  <span>Canales</span>
-                </button>
-              ) : null}
+              <button
+                type="button"
+                className="live-tv-overlay-btn"
+                onClick={() => navigateChannel(-1)}
+                title="Canal anterior"
+              >
+                <SkipBack size={16} />
+              </button>
+              <button
+                type="button"
+                className="live-tv-overlay-btn"
+                onClick={() => navigateChannel(1)}
+                title="Canal siguiente"
+              >
+                <SkipForward size={16} />
+              </button>
+              <button
+                type="button"
+                className="live-tv-overlay-btn has-label"
+                onClick={() => setShowChannelPanel((v) => !v)}
+                title={showChannelPanel ? "Cerrar canales" : "Abrir canales"}
+              >
+                <List size={16} />
+                <span>Canales</span>
+              </button>
               <button
                 type="button"
                 className="live-tv-overlay-btn"
@@ -630,7 +745,6 @@ export function LiveTvPage() {
                 title={isFullscreen ? "Salir de pantalla completa" : "Pantalla completa"}
               >
                 {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
-                <span>{isFullscreen ? "Salir" : "Fullscreen"}</span>
               </button>
             </div>
           </div>
@@ -638,10 +752,17 @@ export function LiveTvPage() {
           {selectedChannel ? (
             <div className={`live-tv-status-layer ${playerState === "playing" ? "is-hidden" : ""}`}>
               {playerState === "error" ? (
-                <>
-                  <AlertTriangle size={22} />
-                  <p>Sin senal o canal no disponible.</p>
-                </>
+                reconnectAttemptRef.current < MAX_RECONNECT_ATTEMPTS ? (
+                  <>
+                    <LoaderCircle size={22} className="player-spinner" />
+                    <p>Reconectando... (intento {reconnectAttemptRef.current + 1}/{MAX_RECONNECT_ATTEMPTS})</p>
+                  </>
+                ) : (
+                  <>
+                    <AlertTriangle size={22} />
+                    <p>Sin senal o canal no disponible.</p>
+                  </>
+                )
               ) : (
                 <>
                   <LoaderCircle size={22} className="player-spinner" />
@@ -656,35 +777,24 @@ export function LiveTvPage() {
             </div>
           )}
         </div>
-
-        {/* Desktop: sidebar inline */}
-        {!isMobile ? (
-          <div className="live-tv-sidebar">
-            <ChannelSidebar {...sidebarProps} />
-          </div>
-        ) : null}
       </section>
 
-      {/* Mobile: drawer (bottom sheet) */}
-      {isMobile ? (
-        <>
-          <aside className={`live-tv-drawer ${showChannelPanel ? "is-open" : ""}`}>
-            <ChannelSidebar
-              {...sidebarProps}
-              showClose
-              onClose={() => setShowChannelPanel(false)}
-            />
-          </aside>
+      {/* Offcanvas de canales (desktop y mobile) */}
+      <aside className={`live-tv-drawer ${showChannelPanel ? "is-open" : ""}`}>
+        <ChannelSidebar
+          {...sidebarProps}
+          showClose
+          onClose={() => setShowChannelPanel(false)}
+        />
+      </aside>
 
-          {showChannelPanel ? (
-            <button
-              type="button"
-              className="live-tv-drawer-backdrop"
-              onClick={() => setShowChannelPanel(false)}
-              aria-label="Cerrar panel de canales"
-            />
-          ) : null}
-        </>
+      {showChannelPanel ? (
+        <button
+          type="button"
+          className="live-tv-drawer-backdrop"
+          onClick={() => setShowChannelPanel(false)}
+          aria-label="Cerrar panel de canales"
+        />
       ) : null}
     </main>
   );

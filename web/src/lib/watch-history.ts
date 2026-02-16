@@ -63,7 +63,7 @@ export function getContinueWatching(): WatchHistoryEntry[] {
     .filter((e) => {
       if (e.duration <= 0) return false;
       const pct = e.position / e.duration;
-      return pct > 0.02 && pct < 0.95;
+      return (pct > 0.02 || e.position >= 10) && pct < 0.95;
     })
     .sort((a, b) => b.lastWatched - a.lastWatched)
     .slice(0, 20);

@@ -13,10 +13,15 @@ import {
 import {
   reportPlaybackMetric,
   destroyPlaybackSession,
-  startAutoPlayback
+  startAutoPlayback,
+  reportUserUnavailable,
+  saveWatchProgress,
+  reportGlobalUnavailable,
+  prefetchNextEpisode
 } from "../api";
+import { invalidateAvailability } from "../lib/availability-cache";
 import { useAppStore } from "../store/AppStore";
-import type { AutoPlaybackPayload, Category } from "../types";
+import type { AutoPlaybackAlternative, AutoPlaybackPayload, Category } from "../types";
 import { upsertWatchEntry, getWatchHistory } from "../lib/watch-history";
 import { normalizeLanguageCode, type AudioPreference } from "../lib/audio-preferences";
 import { startVideo, waitForVideoReady } from "../lib/video-helpers";
@@ -94,8 +99,19 @@ export function WatchPage() {
     resetPlaybackState,
     applyAutoPlaybackPayload
   } = usePlaybackSession();
-  const [audioPreference, setAudioPreference] = useState<AudioPreference>("original");
+  const [audioPreference, setAudioPreference] = useState<AudioPreference>(() => {
+    if (typeof window === "undefined") return "es";
+    return (localStorage.getItem("streams_audio_pref") as AudioPreference) || "es";
+  });
   const [actionError, setActionError] = useState<string | null>(null);
+  const [alternatives, setAlternatives] = useState<AutoPlaybackAlternative[]>([]);
+  const [activeAlternativeIndex, setActiveAlternativeIndex] = useState<number>(-1);
+  const handleAudioPreferenceChange = useCallback((value: AudioPreference) => {
+    setAudioPreference(value);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("streams_audio_pref", value);
+    }
+  }, []);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const autoLoadKeyRef = useRef<string>("");
@@ -153,27 +169,50 @@ export function WatchPage() {
     const video = videoRef.current;
     if (!video) return;
 
-    const target = (video.parentElement || video) as HTMLElement & { webkitRequestFullscreen?: () => Promise<void> };
-    const webkitVideo = video as HTMLVideoElement & { webkitEnterFullscreen?: () => void };
+    const webkitVideo = video as HTMLVideoElement & {
+      webkitEnterFullscreen?: () => void;
+      webkitExitFullscreen?: () => void;
+      webkitDisplayingFullscreen?: boolean;
+      webkitRequestFullscreen?: () => Promise<void>;
+    };
+    const stage = video.parentElement as HTMLElement & { webkitRequestFullscreen?: () => Promise<void> } | null;
 
     try {
-      if (document.fullscreenElement && document.exitFullscreen) {
+      // Si ya está en fullscreen, salir
+      if (document.fullscreenElement) {
         void document.exitFullscreen();
         return;
       }
-
-      if (target.requestFullscreen) {
-        void target.requestFullscreen();
+      if (webkitVideo.webkitDisplayingFullscreen && webkitVideo.webkitExitFullscreen) {
+        webkitVideo.webkitExitFullscreen();
         return;
       }
 
-      if (target.webkitRequestFullscreen) {
-        void target.webkitRequestFullscreen();
-        return;
-      }
-
+      // 1. webkitEnterFullscreen en el video (Android WebView, iOS Safari)
       if (webkitVideo.webkitEnterFullscreen) {
         webkitVideo.webkitEnterFullscreen();
+        return;
+      }
+
+      // 2. Fullscreen API estándar sobre el video directamente
+      if (video.requestFullscreen) {
+        void video.requestFullscreen();
+        return;
+      }
+
+      // 3. webkit prefixed sobre el video
+      if (webkitVideo.webkitRequestFullscreen) {
+        void webkitVideo.webkitRequestFullscreen();
+        return;
+      }
+
+      // 4. Fullscreen sobre el contenedor (desktop)
+      if (stage?.requestFullscreen) {
+        void stage.requestFullscreen();
+        return;
+      }
+      if (stage?.webkitRequestFullscreen) {
+        void stage.webkitRequestFullscreen();
       }
     } catch {
       // no-op
@@ -227,8 +266,9 @@ export function WatchPage() {
     const now = Date.now();
     if (!force && now - lastSaveTimeRef.current < 30000) return;
     lastSaveTimeRef.current = now;
-    upsertWatchEntry({
-      type: type === "series" ? "series" : "movie",
+    const entryType = type === "series" ? "series" as const : "movie" as const;
+    const entry = {
+      type: entryType,
       itemId: decodedItemId,
       name: title,
       poster: metaDetails?.info?.poster || selectedFromStore?.poster || null,
@@ -238,8 +278,24 @@ export function WatchPage() {
       episodeTitle: isSeries ? (metaDetails?.episodes?.find((e) => e.season === season && e.episode === episode)?.title) : undefined,
       position: Math.floor(video.currentTime),
       duration: Math.floor(video.duration)
-    });
-  }, [decodedItemId, type, title, metaDetails, selectedFromStore, isSeries, season, episode]);
+    };
+    upsertWatchEntry(entry);
+
+    if (state.user) {
+      void saveWatchProgress(state.user.username, {
+        type: entryType,
+        itemId: decodedItemId,
+        name: entry.name,
+        poster: entry.poster,
+        background: entry.background,
+        season: isSeries ? season : null,
+        episode: isSeries ? episode : null,
+        episodeTitle: isSeries ? (entry.episodeTitle || null) : null,
+        position: entry.position,
+        duration: entry.duration
+      }).catch(() => {});
+    }
+  }, [decodedItemId, type, title, metaDetails, selectedFromStore, isSeries, season, episode, state.user]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -358,6 +414,8 @@ export function WatchPage() {
           preferredSourceKey: preferredSourceKeyRef.current || undefined
         });
         assertPlaybackAttemptActive(playbackAttemptId);
+        setAlternatives(payload.alternatives || []);
+        setActiveAlternativeIndex(-1);
         await playResolvedPayload(payload, shouldAutoplay, playbackAttemptId);
       } catch (error) {
         void reportPlaybackMetric({
@@ -402,11 +460,13 @@ export function WatchPage() {
         setActionError("La reproduccion se recupero automaticamente.");
       } catch {
         setActionError(reason || "No hay video disponible por el momento.");
+        void reportGlobalUnavailable(type, decodedItemId).catch(() => {});
+        invalidateAvailability(type, decodedItemId);
       } finally {
         runtimeRecoveryInProgressRef.current = false;
       }
     },
-    [beginPlaybackAttempt, playWithBackendAuto]
+    [beginPlaybackAttempt, decodedItemId, playWithBackendAuto, type]
   );
 
   useEffect(() => {
@@ -418,6 +478,17 @@ export function WatchPage() {
     };
   }, [handleRuntimePlaybackFailure]);
 
+  const reportUnavailable = useCallback(() => {
+    if (!state.user) return;
+    void reportUserUnavailable({
+      username: state.user.username,
+      type,
+      itemId: decodedItemId
+    }).catch(() => {
+      // no-op
+    });
+  }, [decodedItemId, state.user, type]);
+
   async function handleStartPlayback() {
     setActionError(null);
     try {
@@ -426,11 +497,16 @@ export function WatchPage() {
     } catch (error) {
       const message = error instanceof Error ? error.message : "No hay video disponible por el momento.";
       setActionError(message);
+      reportUnavailable();
+      void reportGlobalUnavailable(type, decodedItemId).catch(() => {});
+      invalidateAvailability(type, decodedItemId);
     }
   }
 
   async function handleQualityClick(value: QualitySelection) {
     setSelectedQuality(value);
+    setAlternatives([]);
+    setActiveAlternativeIndex(-1);
     setActionError(null);
     try {
       const autoAttemptId = beginPlaybackAttempt();
@@ -438,6 +514,32 @@ export function WatchPage() {
     } catch (error) {
       const message = error instanceof Error ? error.message : "No se pudo cambiar la calidad.";
       setActionError(message);
+      reportUnavailable();
+    }
+  }
+
+  async function handlePlayAlternative(alt: AutoPlaybackAlternative, index: number) {
+    setActionError(null);
+    setActiveAlternativeIndex(index);
+    try {
+      const playbackAttemptId = beginPlaybackAttempt();
+      await clearActivePlayback();
+      if (!videoRef.current) throw new Error("Video no disponible.");
+      setHasPlaybackStarted(true);
+      setIsPreparingPlayback(true);
+      setPlayerReady(false);
+
+      const asPayload: AutoPlaybackPayload = {
+        ...alt,
+        availableQualities: [alt.selectedQuality],
+        alternatives: []
+      };
+      await playResolvedPayload(asPayload, true, playbackAttemptId);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "No se pudo cargar esta alternativa.";
+      setActionError(message);
+    } finally {
+      setIsPreparingPlayback(false);
     }
   }
 
@@ -506,6 +608,60 @@ export function WatchPage() {
 
   const episodeList = metaDetails?.episodes || [];
   const seasonList = metaDetails?.seasons || [];
+
+  // Prefetch del siguiente episodio al 70% de progreso
+  const prefetchedRef = useRef(false);
+  useEffect(() => { prefetchedRef.current = false; }, [season, episode, decodedItemId]);
+  useEffect(() => {
+    if (!isSeries || !episodeList.length) return;
+    const video = videoRef.current;
+    if (!video) return;
+    function onTimeUpdate() {
+      if (!video || video.duration <= 0 || prefetchedRef.current) return;
+      if (video.currentTime / video.duration >= 0.70) {
+        prefetchedRef.current = true;
+        const hasNext = episodeList.some((e) => e.season === season && e.episode === episode + 1);
+        if (hasNext) {
+          void prefetchNextEpisode({
+            type: "series", itemId: decodedItemId, season, episode,
+            audioPreference, originalLanguage: originalLanguageCode || undefined
+          }).catch(() => {});
+        }
+      }
+    }
+    video.addEventListener("timeupdate", onTimeUpdate);
+    return () => video.removeEventListener("timeupdate", onTimeUpdate);
+  }, [isSeries, season, episode, episodeList, decodedItemId, audioPreference, originalLanguageCode]);
+
+  // D-pad keyboard controls for video: seek, play/pause, back
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      const video = videoRef.current;
+      if (!video) return;
+
+      switch (e.key) {
+        case "ArrowLeft":
+          e.preventDefault();
+          video.currentTime = Math.max(0, video.currentTime - 10);
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          video.currentTime = Math.min(video.duration || 0, video.currentTime + 10);
+          break;
+        case "Enter":
+        case " ":
+          e.preventDefault();
+          if (video.paused) video.play().catch(() => {});
+          else video.pause();
+          break;
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const displayYear = metaDetails?.info?.year || selectedFromStore?.year || "s/a";
   const displayRuntime = Number(metaDetails?.info?.runtime || 0) > 0 ? `${metaDetails?.info?.runtime} min` : null;
   const displayGenres = metaDetails?.info?.genres?.length ? metaDetails.info.genres.slice(0, 4) : [];
@@ -603,7 +759,7 @@ export function WatchPage() {
                 type="button"
                 onClick={() => void handleQualityClick("auto")}
                 disabled={isPreparingPlayback}
-                className={selectedQuality === "auto" ? "is-active" : ""}
+                className={selectedQuality === "auto" && activeAlternativeIndex === -1 ? "is-active" : ""}
               >
                 Auto
               </button>
@@ -613,12 +769,39 @@ export function WatchPage() {
                   type="button"
                   onClick={() => void handleQualityClick(quality)}
                   disabled={isPreparingPlayback}
-                  className={selectedQuality === quality ? "is-active" : ""}
+                  className={selectedQuality === quality && activeAlternativeIndex === -1 ? "is-active" : ""}
                 >
                   {qualityLabel(quality)}
                 </button>
               )) : null}
             </div>
+
+            {alternatives.length > 0 ? (
+              <>
+                <div className="watch-block-title" style={{ marginTop: 10 }}>
+                  <span>Fuentes alternativas</span>
+                </div>
+                <div className="alt-source-list">
+                  {alternatives.map((alt, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      className={`alt-source-item ${activeAlternativeIndex === idx ? "is-active" : ""}`}
+                      onClick={() => void handlePlayAlternative(alt, idx)}
+                      disabled={isPreparingPlayback}
+                    >
+                      <span className="alt-source-quality">{qualityLabel(alt.selectedQuality)}</span>
+                      <span className="alt-source-name">{alt.chosen.displayName}</span>
+                      <span className="alt-source-meta">
+                        {alt.streamKind === "direct" ? "Directo" : "HLS"}
+                        {alt.chosen.seeders > 0 ? ` · ${alt.chosen.seeders}s` : ""}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : null}
+
             <p className="muted">
               {availableQualities.length > 1
                 ? `Calidad actual: ${qualityLabel(selectedQuality)} | Opciones: ${availableQualities.map((item) => qualityLabel(item)).join(" | ")}`
@@ -658,7 +841,7 @@ export function WatchPage() {
               <span>Audio preferido</span>
               <select
                 value={audioPreference}
-                onChange={(event) => setAudioPreference(event.target.value as AudioPreference)}
+                onChange={(event) => handleAudioPreferenceChange(event.target.value as AudioPreference)}
               >
                 <option value="original">Original + subtitulos</option>
                 <option value="es">Espanol latino</option>

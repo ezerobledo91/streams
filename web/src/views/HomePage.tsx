@@ -2,11 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Clapperboard, Film, Radio, RefreshCw, Search, SlidersHorizontal, Tv2, X } from "lucide-react";
-import { fetchCatalogByCategory, fetchSources, reloadSources } from "../api";
+import { fetchCatalogByCategory, fetchContinueWatching, fetchSources, reloadSources } from "../api";
 import { CategoryRail } from "../components/CategoryRail";
 import { ContinueWatchingRail } from "../components/ContinueWatchingRail";
+import { UserSummary } from "../components/UserSummary";
 import { categoryTitle } from "../components/CategoryTabs";
 import { useAppStore } from "../store/AppStore";
+import { useGamepad } from "../hooks/useGamepad";
 import { getContinueWatching } from "../lib/watch-history";
 import type { WatchHistoryEntry } from "../lib/watch-history";
 import type { CatalogItem, Category } from "../types";
@@ -123,8 +125,55 @@ export function HomePage() {
   }, [actions, state.category]);
 
   useEffect(() => {
-    setContinueWatching(getContinueWatching());
-  }, []);
+    const localEntries = getContinueWatching();
+
+    if (!state.user) {
+      setContinueWatching(localEntries);
+      return;
+    }
+
+    fetchContinueWatching(state.user.username)
+      .then((res) => {
+        const backendEntries: WatchHistoryEntry[] = res.items.map((e) => ({
+          type: e.type,
+          itemId: e.itemId,
+          name: e.name,
+          poster: e.poster,
+          background: e.background,
+          season: e.season ?? undefined,
+          episode: e.episode ?? undefined,
+          episodeTitle: e.episodeTitle ?? undefined,
+          position: e.position,
+          duration: e.duration,
+          lastWatched: e.lastWatched
+        }));
+
+        // Merge: backend has priority, then local entries not already present
+        const seen = new Set<string>();
+        const merged: WatchHistoryEntry[] = [];
+        for (const e of backendEntries) {
+          const k = e.type === "series" && e.season != null && e.episode != null
+            ? `${e.type}:${e.itemId}:${e.season}:${e.episode}`
+            : `${e.type}:${e.itemId}`;
+          if (!seen.has(k)) {
+            seen.add(k);
+            merged.push(e);
+          }
+        }
+        for (const e of localEntries) {
+          const k = e.type === "series" && e.season != null && e.episode != null
+            ? `${e.type}:${e.itemId}:${e.season}:${e.episode}`
+            : `${e.type}:${e.itemId}`;
+          if (!seen.has(k)) {
+            seen.add(k);
+            merged.push(e);
+          }
+        }
+        merged.sort((a, b) => b.lastWatched - a.lastWatched);
+        setContinueWatching(merged);
+      })
+      .catch(() => setContinueWatching(localEntries));
+  }, [state.user]);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -326,10 +375,8 @@ export function HomePage() {
 
   function handleScrollToRow(rowId: string) {
     setIsFilterOpen(false);
-    const section = document.querySelector(`[data-row-id="${rowId}"]`);
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    const query = rowId ? `?row=${encodeURIComponent(rowId)}` : "";
+    navigate(`/category/${activeHomeCategory}${query}`);
   }
 
   function handleOpenSearchPage() {
@@ -422,6 +469,69 @@ export function HomePage() {
   const heroImage = heroItem ? heroItem.background || heroItem.poster || "" : "";
   const heroPosterFallback = Boolean(heroItem?.poster && !heroItem?.background);
   const activeRows = GENRE_ROWS[activeHomeCategory] || [];
+
+  // D-pad navigation for rails
+  useGamepad(!isSearchFocused);
+
+  const activeRailRef = useRef(0);
+  const activeCardRef = useRef(0);
+
+  useEffect(() => {
+    if (isSearchFocused) return;
+
+    function scrollRailCard(railIndex: number, cardIndex: number) {
+      const rows = document.querySelectorAll<HTMLElement>(".home-rows [data-row-id], .home-rows .continue-watching-rail");
+      if (!rows[railIndex]) return;
+      const cards = rows[railIndex].querySelectorAll<HTMLElement>(".media-tile, .continue-card");
+      if (!cards.length) return;
+      const safeCard = Math.max(0, Math.min(cards.length - 1, cardIndex));
+      activeCardRef.current = safeCard;
+
+      // Remove previous focus
+      for (const el of document.querySelectorAll(".tv-focused")) el.classList.remove("tv-focused");
+      cards[safeCard]?.classList.add("tv-focused");
+      cards[safeCard]?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+    }
+
+    function handleKeyDown(e: KeyboardEvent) {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+
+      const allRails = document.querySelectorAll<HTMLElement>(".home-rows [data-row-id], .home-rows .continue-watching-rail");
+      if (!allRails.length) return;
+      const maxRail = allRails.length - 1;
+
+      switch (e.key) {
+        case "ArrowUp":
+          e.preventDefault();
+          activeRailRef.current = Math.max(0, activeRailRef.current - 1);
+          scrollRailCard(activeRailRef.current, activeCardRef.current);
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          activeRailRef.current = Math.min(maxRail, activeRailRef.current + 1);
+          scrollRailCard(activeRailRef.current, activeCardRef.current);
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          scrollRailCard(activeRailRef.current, activeCardRef.current - 1);
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          scrollRailCard(activeRailRef.current, activeCardRef.current + 1);
+          break;
+        case "Enter": {
+          e.preventDefault();
+          const focused = document.querySelector<HTMLElement>(".tv-focused");
+          if (focused) focused.click();
+          break;
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isSearchFocused]);
 
   return (
     <main className="home-shell">
@@ -532,6 +642,7 @@ export function HomePage() {
             <button type="button" className="header-action-btn" onClick={handleReloadSources} title="Recargar fuentes">
               <RefreshCw size={20} className={loading ? "spin" : ""} />
             </button>
+            <UserSummary />
           </div>
         </div>
       </header>
@@ -598,6 +709,7 @@ export function HomePage() {
               title={row.title}
               items={rowData[row.id] || []}
               onSelect={handleSelectItem}
+              browseUrl={`/category/${activeHomeCategory}?row=${row.id}`}
             />
           </div>
         ))}
@@ -642,8 +754,15 @@ export function HomePage() {
           </button>
         </div>
 
-        <p className="muted">Toca un genero para ir a su fila.</p>
+        <p className="muted">Toca un genero para explorar todos sus titulos.</p>
         <div className="genre-grid">
+          <button
+            type="button"
+            className="genre-chip"
+            onClick={() => handleScrollToRow("")}
+          >
+            Explorar todo
+          </button>
           {activeRows.map((row) => (
             <button
               key={row.id}

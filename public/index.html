@@ -3,75 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#d95f30" />
-    <title>Streams Catalog Demo</title>
-    <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="stylesheet" href="./styles.css" />
+    <meta name="theme-color" content="#050505" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="/icon-192.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Streams</title>
+    <script type="module" crossorigin src="/assets/index-tN11ErKz.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-WMY49oIy.css">
   </head>
   <body>
-    <main class="app-layout">
-      <header class="topbar panel">
-        <div>
-          <h1>Streams Catalog Demo</h1>
-          <p class="muted">Catalogo primero, addons para streams con ranking y fallback.</p>
-        </div>
-        <div class="topbar-actions">
-          <div id="sources-summary" class="muted">Cargando fuentes...</div>
-          <button id="reload-sources-btn" type="button">Recargar fuentes JSON</button>
-        </div>
-      </header>
-
-      <section class="panel browser-panel">
-        <div class="tabs" id="category-tabs">
-          <button type="button" class="tab is-active" data-category="movie">Peliculas</button>
-          <button type="button" class="tab" data-category="series">Series</button>
-          <button type="button" class="tab" data-category="tv">TV en vivo</button>
-        </div>
-
-        <div class="search-row">
-          <input id="catalog-search-input" type="search" placeholder="Buscar titulo..." />
-          <button id="catalog-search-btn" type="button">Buscar</button>
-          <button id="catalog-clear-btn" type="button">Limpiar</button>
-        </div>
-
-        <div id="catalog-summary" class="muted"></div>
-        <div id="catalog-grid" class="catalog-grid"></div>
-      </section>
-
-      <section class="panel player-panel">
-        <div class="block-title">Seleccion</div>
-        <div id="selected-item" class="muted">Ningun titulo seleccionado.</div>
-
-        <label>
-          Item ID
-          <input id="item-id-input" type="text" placeholder="tt1234567 | tt1234567:1:1 | tmdb:movie:123" />
-        </label>
-
-        <div id="episode-fields" class="episode-fields hidden">
-          <label>
-            Temporada
-            <input id="season-input" type="number" min="1" step="1" value="1" />
-          </label>
-          <label>
-            Episodio
-            <input id="episode-input" type="number" min="1" step="1" value="1" />
-          </label>
-        </div>
-
-        <div class="player-actions">
-          <button id="find-streams-btn" type="button" disabled>Buscar streams</button>
-          <button id="next-stream-btn" type="button" disabled>Siguiente alternativa</button>
-        </div>
-
-        <div id="ranking-list" class="ranking-list"></div>
-
-        <div class="block-title">Reproductor</div>
-        <video id="video" controls playsinline></video>
-        <div id="playback-status" class="muted">Sin reproduccion activa.</div>
-      </section>
-    </main>
-
+    <div id="root"></div>
     <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
-    <script src="./app.js"></script>
+    <script>if("serviceWorker"in navigator){navigator.serviceWorker.register("/sw.js")}</script>
   </body>
 </html>

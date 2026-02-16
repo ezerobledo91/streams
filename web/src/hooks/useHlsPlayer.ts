@@ -9,6 +9,54 @@ interface UseHlsPlayerOptions {
 
 interface AttachVideoSourceOptions {
   forceHls?: boolean;
+  mode?: "vod" | "live";
+}
+
+function buildHlsConfig(mode: "vod" | "live" = "vod"): Partial<ConstructorParameters<typeof Hls>[0]> {
+  if (mode === "live") {
+    return {
+      enableWorker: true,
+      lowLatencyMode: true,
+      backBufferLength: 15,
+      startPosition: -1,
+      maxBufferLength: 20,
+      maxMaxBufferLength: 40,
+      maxBufferHole: 3,
+      liveSyncDurationCount: 3,
+      liveMaxLatencyDurationCount: 6,
+      manifestLoadingRetryDelay: 500,
+      manifestLoadingMaxRetryTimeout: 20000,
+      manifestLoadingMaxRetry: 30,
+      levelLoadingRetryDelay: 500,
+      levelLoadingMaxRetryTimeout: 12000,
+      levelLoadingMaxRetry: 20,
+      fragLoadingMaxRetry: 12,
+      fragLoadingRetryDelay: 500,
+      fragLoadingMaxRetryTimeout: 12000,
+      nudgeMaxRetry: 8
+    };
+  }
+  return {
+    enableWorker: true,
+    lowLatencyMode: false,
+    backBufferLength: 30,
+    startPosition: -1,
+    maxBufferLength: 45,
+    maxMaxBufferLength: 90,
+    maxBufferHole: 2.5,
+    liveSyncDurationCount: 4,
+    liveMaxLatencyDurationCount: 8,
+    manifestLoadingRetryDelay: 1000,
+    manifestLoadingMaxRetryTimeout: 20000,
+    manifestLoadingMaxRetry: 15,
+    levelLoadingRetryDelay: 1000,
+    levelLoadingMaxRetryTimeout: 15000,
+    levelLoadingMaxRetry: 12,
+    fragLoadingMaxRetry: 6,
+    fragLoadingRetryDelay: 800,
+    fragLoadingMaxRetryTimeout: 12000,
+    nudgeMaxRetry: 8
+  };
 }
 
 export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPlayerOptions) {
@@ -53,27 +101,7 @@ export function useHlsPlayer({ activeSessionIdRef, onRuntimeFailure }: UseHlsPla
       }
 
       await new Promise<void>((resolve, reject) => {
-        const hls = new Hls({
-          enableWorker: true,
-          lowLatencyMode: false,
-          backBufferLength: 90,
-          startPosition: -1,
-          liveSyncDurationCount: 6,
-          liveMaxLatencyDurationCount: 12,
-          manifestLoadingRetryDelay: 2000,
-          manifestLoadingMaxRetryTimeout: 30000,
-          manifestLoadingMaxRetry: 20,
-          levelLoadingRetryDelay: 2000,
-          levelLoadingMaxRetryTimeout: 20000,
-          levelLoadingMaxRetry: 12,
-          fragLoadingMaxRetry: 8,
-          fragLoadingRetryDelay: 1500,
-          fragLoadingMaxRetryTimeout: 20000,
-          maxBufferLength: 60,
-          maxBufferHole: 1.5,
-          maxMaxBufferLength: 120,
-          nudgeMaxRetry: 5
-        });
+        const hls = new Hls(buildHlsConfig(options?.mode || "vod"));
         hlsRef.current = hls;
         let startupSettled = false;
         let runtimeRecoveries = 0;

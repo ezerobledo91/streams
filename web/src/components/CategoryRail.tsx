@@ -1,17 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import type { WheelEvent } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import type { CatalogItem } from "../types";
 import { MediaCard } from "./MediaCard";
 
 export function CategoryRail({
   title,
   items,
-  onSelect
+  onSelect,
+  browseUrl
 }: {
   title: string;
   items: CatalogItem[];
   onSelect: (item: CatalogItem) => void;
+  browseUrl?: string;
 }) {
   if (!items.length) return null;
 
@@ -67,8 +70,11 @@ export function CategoryRail({
 
   return (
     <section className="category-rail">
-      <header>
+      <header className="rail-header">
         <h2>{title}</h2>
+        {browseUrl ? (
+          <Link to={browseUrl} className="rail-browse-link">Ver todo</Link>
+        ) : null}
       </header>
       <div className="rail-carousel-shell">
         <button

@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Star } from "lucide-react";
+import type { MouseEvent } from "react";
+import { Heart, Slash, Star } from "lucide-react";
 import type { CatalogItem } from "../types";
 import { checkAvailability } from "../lib/availability-cache";
+import { toggleUserFavorite } from "../api";
+import { useAppStore } from "../store/AppStore";
 
 function formatRating(rating: number | null): string {
   if (!Number.isFinite(rating || 0) || (rating || 0) <= 0) return "Sin rating";
@@ -20,6 +23,7 @@ export function MediaCard({
   item: CatalogItem;
   onSelect: (item: CatalogItem) => void;
 }) {
+  const { state, actions } = useAppStore();
   const poster = item.poster || item.background;
   const stars = ratingToStars(item.rating);
   const articleRef = useRef<HTMLElement | null>(null);
@@ -49,10 +53,40 @@ export function MediaCard({
     return () => observer.disconnect();
   }, [item.type, item.id]);
 
+  function renderAvailabilityDot() {
+    if (availability !== "available") return null;
+    return <span className="availability-dot is-available" />;
+  }
+
+  const hasAvailable = availability === "available";
+  const isFavorite = Boolean(
+    state.user?.favorites.some((entry) => entry.type === item.type && entry.id === item.id)
+  );
+
+  async function handleToggleFavorite(event: MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation();
+    if (!state.user) {
+      alert("Inicia sesion para marcar favoritos.");
+      return;
+    }
+    const response = await toggleUserFavorite(state.user.username, item);
+    actions.setUser(response.user);
+  }
   return (
     <article ref={articleRef} className="media-tile" onClick={() => onSelect(item)}>
-      {availability !== "unknown" ? (
-        <span className={`availability-dot ${availability === "available" ? "is-available" : "is-unavailable"}`} />
+      {renderAvailabilityDot()}
+      <button
+        type="button"
+        className={`favorite-btn ${isFavorite ? "is-active" : ""}`}
+        onClick={handleToggleFavorite}
+      >
+        <Heart size={16} />
+      </button>
+      {!hasAvailable && availability === "unavailable" ? (
+        <div className="media-tile-unavailable">
+          <Slash size={24} aria-hidden="true" />
+          <span>No disponible</span>
+        </div>
       ) : null}
       {poster ? (
         <img loading="lazy" src={poster} alt={item.name} />
