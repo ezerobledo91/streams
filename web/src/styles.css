@@ -596,17 +596,17 @@ body {
 .live-tv-quality-wrapper { position: relative; }
 .live-tv-quality-menu {
   position: absolute;
-  top: calc(100% + 8px);
+  bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0,0,0,0.85);
+  background: rgba(0,0,0,0.92);
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: 10px;
   padding: 4px;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-width: 90px;
+  min-width: 110px;
   backdrop-filter: blur(12px);
   z-index: 40;
 }
@@ -621,7 +621,8 @@ body {
   text-align: center;
   white-space: nowrap;
 }
-.live-tv-quality-option:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.live-tv-quality-option:hover,
+.live-tv-quality-option:focus { background: rgba(255,255,255,0.12); color: #fff; outline: none; }
 .live-tv-quality-option.is-active { color: var(--brand, #4af); font-weight: 600; }
 .live-tv-quality-toggle { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
 .live-tv-quality-toggle.is-active { background: rgba(74,170,255,0.15); }

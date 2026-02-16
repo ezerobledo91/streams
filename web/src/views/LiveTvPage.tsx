@@ -1256,6 +1256,44 @@ export function LiveTvPage() {
 
       // ===== OVERLAY state (botones de acción del player) =====
       if (state === "overlay") {
+        // Sub-state: quality menu open → navigate within it
+        if (showQualityMenu) {
+          const qOptions = Array.from(
+            document.querySelectorAll<HTMLElement>(".live-tv-quality-menu .live-tv-quality-option")
+          );
+          const qFocused = qOptions.findIndex((el) => el.classList.contains("tv-focused"));
+          switch (e.key) {
+            case "ArrowUp":
+              e.preventDefault();
+              if (qFocused > 0) {
+                qOptions.forEach((el) => el.classList.remove("tv-focused"));
+                qOptions[qFocused - 1].classList.add("tv-focused");
+              }
+              break;
+            case "ArrowDown":
+              e.preventDefault();
+              if (qFocused < qOptions.length - 1) {
+                qOptions.forEach((el) => el.classList.remove("tv-focused"));
+                qOptions[qFocused + 1].classList.add("tv-focused");
+              }
+              break;
+            case "Enter":
+            case " ":
+              e.preventDefault();
+              if (qFocused >= 0 && qOptions[qFocused]) qOptions[qFocused].click();
+              break;
+            case "Escape":
+            case "Backspace":
+            case "ArrowLeft":
+            case "ArrowRight":
+              e.preventDefault();
+              setShowQualityMenu(false);
+              qOptions.forEach((el) => el.classList.remove("tv-focused"));
+              break;
+          }
+          return;
+        }
+
         const items = getOverlayButtons();
         const idx = overlayFocusIndexRef.current;
         switch (e.key) {
@@ -1280,7 +1318,19 @@ export function LiveTvPage() {
           case "Enter":
           case " ":
             e.preventDefault();
-            if (items[idx]) items[idx].click();
+            if (items[idx]) {
+              items[idx].click();
+              // Si abrió el quality menu, dar focus a la primera opción
+              if (showQualityMenu === false) {
+                requestAnimationFrame(() => {
+                  const qOpts = document.querySelectorAll<HTMLElement>(".live-tv-quality-menu .live-tv-quality-option");
+                  if (qOpts.length) {
+                    qOpts.forEach((el) => el.classList.remove("tv-focused"));
+                    qOpts[0].classList.add("tv-focused");
+                  }
+                });
+              }
+            }
             break;
           case "Escape":
           case "Backspace":
@@ -1464,7 +1514,7 @@ export function LiveTvPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [navigateChannel, enterOverlay, openDrawer, closeDrawer, getOverlayButtons, applyOverlayFocus,
       getDrawerChannelButtons, applyDrawerChannelFocus, getDrawerCategories, applyDrawerCategoryFocus,
-      getChannelRowActions, clearAllFocus, showChannelPanel, showOsd, navigate]);
+      getChannelRowActions, clearAllFocus, showChannelPanel, showOsd, showQualityMenu, navigate]);
 
   const sidebarProps: ChannelSidebarProps = {
     categories,
