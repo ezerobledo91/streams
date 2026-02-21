@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import { useAppStore } from "./store/AppStore";
+import { AppShell } from "./components/AppShell";
 import { HomePage } from "./views/HomePage";
 import { LiveTvPage } from "./views/LiveTvPage";
 import { EventosPage } from "./views/EventosPage";
@@ -14,7 +15,12 @@ function RequireAuth() {
   const { state, initializing } = useAppStore();
   if (initializing) return null;
   if (!state.user) return <Navigate to="/login" replace />;
-  return <Outlet />;
+  // Envuelve el Outlet con AppShell para que todas las rutas hijas lo usen
+  return (
+    <AppShell>
+      <Outlet />
+    </AppShell>
+  );
 }
 
 function RedirectIfAuth() {

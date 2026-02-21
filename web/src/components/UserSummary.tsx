@@ -19,7 +19,7 @@ export function UserSummary() {
     <div className="user-summary" style={{ position: "relative" }}>
       <button
         type="button"
-        className="user-avatar-btn"
+        className="user-avatar-btn home-header-focusable"
         onClick={() => setShowMenu((v) => !v)}
         title={state.user.displayName}
       >

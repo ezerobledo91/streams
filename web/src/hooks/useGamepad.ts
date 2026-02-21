@@ -12,15 +12,16 @@ export function useGamepad(enabled = true) {
     if (!enabled || typeof navigator.getGamepads !== "function") return;
 
     const BUTTON_MAP: Record<number, string> = {
-      0: "Enter",       // A / X — select
-      1: "Escape",      // B / Circle — back
+      0: "Enter",       // A / X - select
+      1: "Escape",      // B / Circle - back
+      3: "ContextMenu", // Y / Triangle - open menu
       12: "ArrowUp",    // D-pad up
       13: "ArrowDown",  // D-pad down
       14: "ArrowLeft",  // D-pad left
       15: "ArrowRight", // D-pad right
       4: "PageUp",      // L bumper
       5: "PageDown",    // R bumper
-      9: "f"            // Start — fullscreen toggle
+      9: "f"            // Start - fullscreen toggle
     };
 
     function dispatchKey(key: string) {
@@ -43,7 +44,7 @@ export function useGamepad(enabled = true) {
           }
         }
 
-        // Axes (analog stick) — threshold 0.5
+        // Axes (analog stick) - threshold 0.5
         const axisX = gp.axes[0] ?? 0;
         const axisY = gp.axes[1] ?? 0;
         const prevAxes = (prevButtonsRef.current as unknown as Record<string, number[]>)[`axes_${gi}`] || [0, 0];

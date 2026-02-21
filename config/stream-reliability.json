@@ -1,6 +1,6 @@
 {
   "loadedAt": "2026-02-12T15:27:36.8440834-03:00",
-  "updatedAt": "2026-02-21T16:14:49.591Z",
+  "updatedAt": "2026-02-21T17:56:14.291Z",
   "providers": {
     "torrentdb": {
       "successes": 47,
@@ -162,11 +162,11 @@
     },
     "torrentio": {
       "successes": 128,
-      "failures": 6,
-      "consecutiveFailures": 0,
+      "failures": 7,
+      "consecutiveFailures": 1,
       "lastSuccessAt": 1771690489591,
-      "lastFailureAt": 1771643788763,
-      "lastFailureReason": "[in#0 @ 0000016a34735900] Error opening input: Invalid data found when processing input\r\nError opening input file pipe:0.\r\nError opening input files: Invalid data found when proces",
+      "lastFailureAt": 1771693537341,
+      "lastFailureReason": "El torrent no contiene el episodio solicitado.",
       "breakerUntil": 0,
       "sources": {
         "274f9ead8b229a31a8ad551c914e879f09efe6fb": {
@@ -542,10 +542,10 @@
         },
         "68c98769b2b8093f3cd1f6e068b76a0b43886cf1": {
           "successes": 0,
-          "failures": 1,
-          "consecutiveFailures": 1,
+          "failures": 2,
+          "consecutiveFailures": 2,
           "lastSuccessAt": 0,
-          "lastFailureAt": 1771248533258
+          "lastFailureAt": 1771693537341
         },
         "d15995942b50859c601b901ad9fadc8b69124c8d": {
           "successes": 1,
@@ -821,10 +821,10 @@
       }
     },
     "m3u-vod": {
-      "successes": 31,
+      "successes": 44,
       "failures": 20,
       "consecutiveFailures": 0,
-      "lastSuccessAt": 1771690450009,
+      "lastSuccessAt": 1771696574291,
       "lastFailureAt": 1771683521597,
       "lastFailureReason": "timeout",
       "breakerUntil": 0,
@@ -942,24 +942,24 @@
           "lastFailureAt": 0
         },
         "url:http://rey-premium.ddns.net/series/DPVEduardoEspa/Espa020828/476963.mp4": {
-          "successes": 0,
+          "successes": 1,
           "failures": 1,
-          "consecutiveFailures": 1,
-          "lastSuccessAt": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771693530192,
           "lastFailureAt": 1771683518093
         },
         "url:http://rey-premium.ddns.net/series/DPVEduardoEspa/Espa020828/570011.mkv": {
-          "successes": 0,
+          "successes": 1,
           "failures": 1,
-          "consecutiveFailures": 1,
-          "lastSuccessAt": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771693533867,
           "lastFailureAt": 1771683521597
         },
         "url:http://rey-premium.ddns.net/series/DPVEduardoEspa/Espa020828/547661.mkv": {
-          "successes": 1,
+          "successes": 2,
           "failures": 0,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1771683524734,
+          "lastSuccessAt": 1771693531832,
           "lastFailureAt": 0
         },
         "url:http://rey-premium.ddns.net/series/DPVEduardoEspa/Espa020828/570263.mkv": {
@@ -974,6 +974,48 @@
           "failures": 0,
           "consecutiveFailures": 0,
           "lastSuccessAt": 1771690335634,
+          "lastFailureAt": 0
+        },
+        "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/18756.mkv": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771695721711,
+          "lastFailureAt": 0
+        },
+        "url:http://rey-premium.ddns.net/series/DPVEduardoEspa/Espa020828/744530.mkv": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771695723124,
+          "lastFailureAt": 0
+        },
+        "url:http://rey-premium.ddns.net/movie/DPVEduardoEspa/Espa020828/511577.mp4": {
+          "successes": 2,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771696570815,
+          "lastFailureAt": 0
+        },
+        "url:http://rey-premium.ddns.net/movie/DPVEduardoEspa/Espa020828/748097.mkv": {
+          "successes": 2,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771696571850,
+          "lastFailureAt": 0
+        },
+        "url:http://live.fuxxion.club:8080/movie/juanvernazza/85GbSi1ewU/149124.mkv": {
+          "successes": 2,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771696573344,
+          "lastFailureAt": 0
+        },
+        "url:http://rey-premium.ddns.net/movie/DPVEduardoEspa/Espa020828/747231.mkv": {
+          "successes": 2,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771696574291,
           "lastFailureAt": 0
         }
       }

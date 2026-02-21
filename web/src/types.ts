@@ -32,12 +32,22 @@ export interface CatalogItem {
     name: string;
     catalogId?: string;
   };
+  availability?: {
+    region: string;
+    providers: Array<{
+      id: string;
+      name: string;
+      logo: string | null;
+      types: string[];
+    }>;
+  };
 }
 
 export interface CatalogBrowsePayload {
   category: Category;
   query: string;
   genre: string;
+  provider?: string;
   page: number;
   limit: number;
   total: number;
@@ -47,6 +57,7 @@ export interface CatalogBrowsePayload {
     catalogSourcesQueried: number;
     tmdbItems: number;
     addonItems: number;
+    includeAvailability?: boolean;
   };
 }
 

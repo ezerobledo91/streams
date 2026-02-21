@@ -9,6 +9,7 @@ import { UserSummary } from "../components/UserSummary";
 import { categoryTitle } from "../components/CategoryTabs";
 import { useAppStore } from "../store/AppStore";
 import { useGamepad } from "../hooks/useGamepad";
+import { useAppShell } from "../context/AppShellContext";
 import { getContinueWatching } from "../lib/watch-history";
 import type { WatchHistoryEntry } from "../lib/watch-history";
 import type { CatalogItem, Category } from "../types";
@@ -19,6 +20,8 @@ interface RowConfig {
   genre?: string;
   limit: number;
 }
+
+type Direction = "up" | "down" | "left" | "right";
 
 const GENRE_ROWS: Record<Category, RowConfig[]> = {
   movie: [
@@ -90,13 +93,136 @@ function suggestionScore(item: CatalogItem, term: string): number {
   return score;
 }
 
+function isEditableTarget(target: EventTarget | null): boolean {
+  const element = target as HTMLElement | null;
+  const tag = element?.tagName;
+  return Boolean(
+    tag === "INPUT" ||
+      tag === "TEXTAREA" ||
+      tag === "SELECT" ||
+      element?.isContentEditable
+  );
+}
+
+function isVisibleElement(element: HTMLElement): boolean {
+  return element.getClientRects().length > 0;
+}
+
+function findDirectionalIndex(elements: HTMLElement[], currentIndex: number, direction: Direction): number {
+  if (!elements.length) return -1;
+  const boundedIndex = Math.max(0, Math.min(elements.length - 1, currentIndex));
+
+  const points = elements.map((element, index) => {
+    const rect = element.getBoundingClientRect();
+    return {
+      index,
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2
+    };
+  });
+
+  const sorted = [...points].sort((a, b) => {
+    if (Math.abs(a.y - b.y) > 8) return a.y - b.y;
+    return a.x - b.x;
+  });
+
+  const rows: Array<Array<{ index: number; x: number; y: number }>> = [];
+  const rowThreshold = 18;
+  for (const point of sorted) {
+    const lastRow = rows[rows.length - 1];
+    if (!lastRow) {
+      rows.push([point]);
+      continue;
+    }
+    const avgY = lastRow.reduce((acc, entry) => acc + entry.y, 0) / lastRow.length;
+    if (Math.abs(point.y - avgY) <= rowThreshold) {
+      lastRow.push(point);
+    } else {
+      rows.push([point]);
+    }
+  }
+
+  for (const row of rows) {
+    row.sort((a, b) => a.x - b.x);
+  }
+
+  let currentRowIndex = -1;
+  let currentColumnIndex = -1;
+  for (let rowIndex = 0; rowIndex < rows.length; rowIndex += 1) {
+    const colIndex = rows[rowIndex].findIndex((entry) => entry.index === boundedIndex);
+    if (colIndex >= 0) {
+      currentRowIndex = rowIndex;
+      currentColumnIndex = colIndex;
+      break;
+    }
+  }
+
+  if (currentRowIndex < 0 || currentColumnIndex < 0) return -1;
+  const current = rows[currentRowIndex][currentColumnIndex];
+  if (!current) return -1;
+
+  if (direction === "left") {
+    const next = rows[currentRowIndex][currentColumnIndex - 1];
+    return next ? next.index : -1;
+  }
+
+  if (direction === "right") {
+    const next = rows[currentRowIndex][currentColumnIndex + 1];
+    return next ? next.index : -1;
+  }
+
+  if (direction === "up") {
+    const targetRow = rows[currentRowIndex - 1];
+    if (!targetRow?.length) return -1;
+    let best = targetRow[0];
+    let bestDistance = Math.abs(best.x - current.x);
+    for (const candidate of targetRow) {
+      const distance = Math.abs(candidate.x - current.x);
+      if (distance < bestDistance) {
+        best = candidate;
+        bestDistance = distance;
+      }
+    }
+    return best.index;
+  }
+
+  if (direction === "down") {
+    const targetRow = rows[currentRowIndex + 1];
+    if (!targetRow?.length) return -1;
+    let best = targetRow[0];
+    let bestDistance = Math.abs(best.x - current.x);
+    for (const candidate of targetRow) {
+      const distance = Math.abs(candidate.x - current.x);
+      if (distance < bestDistance) {
+        best = candidate;
+        bestDistance = distance;
+      }
+    }
+    return best.index;
+  }
+
+  return -1;
+}
+
 export function HomePage() {
   const { state, actions } = useAppStore();
+  const { isSideNavOpen } = useAppShell();
   const navigate = useNavigate();
+  const homeRootRef = useRef<HTMLElement | null>(null);
+  const filterPanelRef = useRef<HTMLElement | null>(null);
   const searchBoxRef = useRef<HTMLDivElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const searchButtonRef = useRef<HTMLButtonElement | null>(null);
   const searchRequestIdRef = useRef(0);
   const loadRequestIdRef = useRef(0);
+  const focusedHomeElementRef = useRef<HTMLElement | null>(null);
+  const homeNavActivatedRef = useRef(false);
+  const headerIndexRef = useRef(0);
+  const railRowIndexRef = useRef(0);
+  const railColByRowRef = useRef<Record<number, number>>({});
+  const desiredRailColRef = useRef(0);
+  const filterFocusedIndexRef = useRef(0);
+  const lastFocusedBeforeFilterRef = useRef<HTMLElement | null>(null);
 
   const [rowData, setRowData] = useState<Record<string, CatalogItem[]>>({});
   const [searchCatalogByCategory, setSearchCatalogByCategory] = useState<Record<Category, CatalogItem[]>>({
@@ -117,6 +243,214 @@ export function HomePage() {
 
   const categories: Category[] = useMemo(() => ["movie", "series"], []);
   const activeHomeCategory: Category = state.category === "tv" ? "movie" : state.category;
+
+  const getHeaderFocusableElements = useCallback(() => {
+    const root = homeRootRef.current;
+    if (!root) return [] as HTMLElement[];
+    const elements = Array.from(root.querySelectorAll<HTMLElement>(".home-header-focusable"))
+      .filter(isVisibleElement);
+    for (const element of elements) {
+      element.tabIndex = -1;
+    }
+    return elements;
+  }, []);
+
+  const getHeroFocusableElement = useCallback(() => {
+    const root = homeRootRef.current;
+    if (!root) return null;
+    const element = root.querySelector<HTMLElement>(".home-hero-focusable");
+    if (!element || !isVisibleElement(element)) return null;
+    element.tabIndex = -1;
+    return element;
+  }, []);
+
+  const getRailRows = useCallback(() => {
+    const root = homeRootRef.current;
+    if (!root) return [] as HTMLElement[][];
+
+    const rails = Array.from(root.querySelectorAll<HTMLElement>(".home-rows .category-rail"));
+    return rails
+      .map((rail) => {
+        const cards = Array.from(rail.querySelectorAll<HTMLElement>(".carousel-track > .media-tile"))
+          .filter(isVisibleElement);
+        const browse = rail.querySelector<HTMLElement>(".rail-browse-link");
+        const row = browse && isVisibleElement(browse) ? [...cards, browse] : cards;
+        for (const element of row) {
+          element.classList.add("home-rail-focusable");
+          element.tabIndex = -1;
+        }
+        return row;
+      })
+      .filter((row) => row.length > 0);
+  }, []);
+
+  const clearHomeFocus = useCallback(() => {
+    const root = homeRootRef.current;
+    if (!root) return;
+    for (const element of root.querySelectorAll<HTMLElement>(".home-header-focusable, .home-hero-focusable, .home-rail-focusable")) {
+      element.classList.remove("tv-focused");
+      element.tabIndex = -1;
+    }
+  }, []);
+
+  const markHomeLocation = useCallback(
+    (element: HTMLElement) => {
+      const headerElements = getHeaderFocusableElements();
+      const headerIndex = headerElements.indexOf(element);
+      if (headerIndex >= 0) {
+        headerIndexRef.current = headerIndex;
+        focusedHomeElementRef.current = element;
+        return { zone: "header" as const, index: headerIndex };
+      }
+
+      const heroElement = getHeroFocusableElement();
+      if (heroElement && heroElement === element) {
+        focusedHomeElementRef.current = element;
+        return { zone: "hero" as const };
+      }
+
+      const rows = getRailRows();
+      for (let rowIndex = 0; rowIndex < rows.length; rowIndex += 1) {
+        const columnIndex = rows[rowIndex].indexOf(element);
+        if (columnIndex >= 0) {
+          railRowIndexRef.current = rowIndex;
+          railColByRowRef.current[rowIndex] = columnIndex;
+          desiredRailColRef.current = columnIndex;
+          focusedHomeElementRef.current = element;
+          return { zone: "rails" as const, rowIndex, columnIndex };
+        }
+      }
+
+      focusedHomeElementRef.current = null;
+      return null;
+    },
+    [getHeaderFocusableElements, getHeroFocusableElement, getRailRows]
+  );
+
+  const applyHomeFocus = useCallback(
+    (element: HTMLElement | null) => {
+      if (!element || !element.isConnected) return false;
+      clearHomeFocus();
+      element.classList.add("tv-focused");
+      element.tabIndex = 0;
+      element.focus({ preventScroll: false });
+      element.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+      markHomeLocation(element);
+      homeNavActivatedRef.current = true;
+      return true;
+    },
+    [clearHomeFocus, markHomeLocation]
+  );
+
+  const focusHeaderByIndex = useCallback(
+    (nextIndex: number) => {
+      const elements = getHeaderFocusableElements();
+      if (!elements.length) return false;
+      const bounded = Math.max(0, Math.min(elements.length - 1, nextIndex));
+      return applyHomeFocus(elements[bounded]);
+    },
+    [applyHomeFocus, getHeaderFocusableElements]
+  );
+
+  const focusHeroPrimary = useCallback(() => {
+    const hero = getHeroFocusableElement();
+    return applyHomeFocus(hero);
+  }, [applyHomeFocus, getHeroFocusableElement]);
+
+  const focusRailByCoordinates = useCallback(
+    (rowIndex: number, columnIndex: number) => {
+      const rows = getRailRows();
+      if (!rows.length) return false;
+
+      const boundedRow = Math.max(0, Math.min(rows.length - 1, rowIndex));
+      const row = rows[boundedRow];
+      if (!row?.length) return false;
+
+      desiredRailColRef.current = Math.max(0, columnIndex);
+      const boundedColumn = Math.max(0, Math.min(row.length - 1, desiredRailColRef.current));
+      railRowIndexRef.current = boundedRow;
+      railColByRowRef.current[boundedRow] = boundedColumn;
+      return applyHomeFocus(row[boundedColumn]);
+    },
+    [applyHomeFocus, getRailRows]
+  );
+
+  const getCurrentHomeLocation = useCallback(() => {
+    const current = focusedHomeElementRef.current;
+    if (current && current.isConnected) {
+      const location = markHomeLocation(current);
+      if (location) return location;
+    }
+
+    const active = document.activeElement;
+    if (active && active instanceof HTMLElement && homeRootRef.current?.contains(active)) {
+      const location = markHomeLocation(active);
+      if (location) return location;
+    }
+
+    return null;
+  }, [markHomeLocation]);
+
+  const getFilterFocusableElements = useCallback(() => {
+    const panel = filterPanelRef.current;
+    if (!panel) return [] as HTMLElement[];
+    const elements = Array.from(panel.querySelectorAll<HTMLElement>(".home-filter-focusable"))
+      .filter(isVisibleElement);
+    for (const element of elements) {
+      element.tabIndex = -1;
+    }
+    return elements;
+  }, []);
+
+  const clearFilterFocus = useCallback((elements?: HTMLElement[]) => {
+    const list = elements || getFilterFocusableElements();
+    for (const element of list) {
+      element.classList.remove("tv-focused");
+      element.tabIndex = -1;
+    }
+  }, [getFilterFocusableElements]);
+
+  const applyFilterFocusByIndex = useCallback(
+    (nextIndex: number) => {
+      const elements = getFilterFocusableElements();
+      if (!elements.length) return false;
+      const bounded = Math.max(0, Math.min(elements.length - 1, nextIndex));
+      filterFocusedIndexRef.current = bounded;
+      clearFilterFocus(elements);
+
+      const target = elements[bounded];
+      target.classList.add("tv-focused");
+      target.tabIndex = 0;
+      target.focus({ preventScroll: false });
+      target.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+      return true;
+    },
+    [clearFilterFocus, getFilterFocusableElements]
+  );
+
+  const closeSearchOverlay = useCallback(
+    (restoreHeaderFocus = true) => {
+      setIsSearchFocused(false);
+      setActiveSuggestionIndex(-1);
+      searchInputRef.current?.blur();
+      if (!restoreHeaderFocus) return;
+      if (searchButtonRef.current) {
+        applyHomeFocus(searchButtonRef.current);
+      }
+    },
+    [applyHomeFocus]
+  );
+
+  const closeFilterPanel = useCallback(() => {
+    clearFilterFocus();
+    setIsFilterOpen(false);
+    const previous = lastFocusedBeforeFilterRef.current;
+    if (previous && previous.isConnected) {
+      window.requestAnimationFrame(() => {
+        applyHomeFocus(previous);
+      });
+    }
+  }, [applyHomeFocus, clearFilterFocus]);
 
   useEffect(() => {
     if (state.category === "tv") {
@@ -148,7 +482,6 @@ export function HomePage() {
           lastWatched: e.lastWatched
         }));
 
-        // Merge: backend has priority, then local entries not already present
         const seen = new Set<string>();
         const merged: WatchHistoryEntry[] = [];
         for (const e of backendEntries) {
@@ -189,16 +522,6 @@ export function HomePage() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setIsFilterOpen(false);
-      }
-    }
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
   useEffect(() => {
@@ -350,13 +673,11 @@ export function HomePage() {
     setDebouncedQuery(immediateQuery);
     actions.setQuery(immediateQuery);
     if (!immediateQuery) {
-      setIsSearchFocused(false);
-      setActiveSuggestionIndex(-1);
+      closeSearchOverlay();
       return;
     }
     navigate(`/search?q=${encodeURIComponent(immediateQuery)}`);
-    setIsSearchFocused(false);
-    setActiveSuggestionIndex(-1);
+    closeSearchOverlay(false);
   }
 
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
@@ -368,12 +689,12 @@ export function HomePage() {
     setSearchInput("");
     setDebouncedQuery("");
     actions.setQuery("");
-    setIsSearchFocused(false);
-    setActiveSuggestionIndex(-1);
+    closeSearchOverlay();
     setSearchCatalogByCategory({ movie: [], series: [], tv: [] });
   }
 
   function handleScrollToRow(rowId: string) {
+    clearFilterFocus();
     setIsFilterOpen(false);
     const query = rowId ? `?row=${encodeURIComponent(rowId)}` : "";
     navigate(`/category/${activeHomeCategory}${query}`);
@@ -420,32 +741,10 @@ export function HomePage() {
     setActiveSuggestionIndex(-1);
   }, [normalizedSearchTerm, activeHomeCategory]);
 
-  // D-pad zone refs (declared early so handleSearchKeyDown can reference them)
-  type TvZone = "nav" | "hero" | "rails";
-  const tvZoneRef = useRef<TvZone>("hero");
-  const activeRailRef = useRef(0);
-  const activeCardRef = useRef(0);
-  const activeNavRef = useRef(0);
-  const focusedGenreIndexRef = useRef(0);
-
   function handleSearchKeyDown(event: ReactKeyboardEvent<HTMLInputElement>) {
-    if (event.key === "Escape") {
-      setIsSearchFocused(false);
-      setActiveSuggestionIndex(-1);
-      // Restore nav focus on the search icon button
-      requestAnimationFrame(() => {
-        const navItems = document.querySelectorAll<HTMLElement>(".home-nav .nav-link, .home-header-right .search-icon-btn, .home-header-right .header-action-btn, .home-header-right .user-avatar-btn");
-        // Find the search-icon-btn index
-        for (let i = 0; i < navItems.length; i++) {
-          if (navItems[i].classList.contains("search-icon-btn")) {
-            tvZoneRef.current = "nav";
-            activeNavRef.current = i;
-            for (const el of document.querySelectorAll(".tv-focused")) el.classList.remove("tv-focused");
-            navItems[i].classList.add("tv-focused");
-            break;
-          }
-        }
-      });
+    if (event.key === "Escape" || event.key === "BrowserBack" || event.key === "GoBack") {
+      event.preventDefault();
+      closeSearchOverlay();
       return;
     }
 
@@ -462,9 +761,16 @@ export function HomePage() {
       setActiveSuggestionIndex((current) => Math.max(-1, current - 1));
       return;
     }
+
+    if (event.key === "Enter" && activeSuggestionIndex >= 0) {
+      event.preventDefault();
+      const selectedItem = searchSuggestions[activeSuggestionIndex];
+      if (selectedItem) {
+        handleSelectItem(selectedItem);
+      }
+    }
   }
 
-  // Hero from trending row
   const trendingItems = rowData["trending"] || [];
   const heroPool = useMemo(
     () => trendingItems.filter((item) => item.background).slice(0, 12),
@@ -492,243 +798,284 @@ export function HomePage() {
   const heroPosterFallback = Boolean(heroItem?.poster && !heroItem?.background);
   const activeRows = GENRE_ROWS[activeHomeCategory] || [];
 
-  // D-pad navigation — zones: header-nav | hero | rails
-  useGamepad(!isSearchFocused);
-
+  useGamepad(true);
 
   useEffect(() => {
-    if (isSearchFocused) return;
-
-    function clearAllFocus() {
-      for (const el of document.querySelectorAll(".tv-focused")) el.classList.remove("tv-focused");
+    if (!isFilterOpen) {
+      clearFilterFocus();
+      filterFocusedIndexRef.current = 0;
+      return;
     }
 
-    function focusNavItem(index: number) {
-      clearAllFocus();
-      const navItems = document.querySelectorAll<HTMLElement>(".home-nav .nav-link, .home-header-right .search-icon-btn, .home-header-right .header-action-btn, .home-header-right .user-avatar-btn");
-      if (!navItems.length) return;
-      const safe = Math.max(0, Math.min(navItems.length - 1, index));
-      activeNavRef.current = safe;
-      navItems[safe]?.classList.add("tv-focused");
-      navItems[safe]?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+    const focusables = getFilterFocusableElements();
+    if (!focusables.length) return;
+    const firstChipIndex = focusables.findIndex((item) => item.classList.contains("genre-chip"));
+    const initialIndex = firstChipIndex >= 0 ? firstChipIndex : 0;
+    const timeout = window.setTimeout(() => {
+      applyFilterFocusByIndex(initialIndex);
+    }, 40);
+
+    return () => window.clearTimeout(timeout);
+  }, [applyFilterFocusByIndex, clearFilterFocus, getFilterFocusableElements, isFilterOpen]);
+
+  useEffect(() => {
+    if (!homeNavActivatedRef.current) return;
+    if (isSideNavOpen || isFilterOpen || isSearchFocused) return;
+
+    const location = getCurrentHomeLocation();
+    if (!location) {
+      focusHeaderByIndex(headerIndexRef.current);
+      return;
     }
-
-    function focusHero() {
-      clearAllFocus();
-      const heroBtn = document.querySelector<HTMLElement>(".hero-actions .primary-btn");
-      if (heroBtn) {
-        heroBtn.classList.add("tv-focused");
-        heroBtn.scrollIntoView({ block: "nearest", behavior: "smooth" });
-      }
+    if (location.zone === "header") {
+      focusHeaderByIndex(location.index);
+      return;
     }
-
-    function focusRailCard(railIndex: number, cardIndex: number) {
-      clearAllFocus();
-      const rows = document.querySelectorAll<HTMLElement>(".home-rows [data-row-id], .home-rows .continue-watching-rail");
-      if (!rows[railIndex]) return;
-      // Incluimos el link de "Ver todo" en la lista de elementos enfocables del rail
-      const cards = rows[railIndex].querySelectorAll<HTMLElement>(".media-tile, .continue-card, .rail-browse-link");
-      if (!cards.length) return;
-      const safeCard = Math.max(0, Math.min(cards.length - 1, cardIndex));
-      activeCardRef.current = safeCard;
-      activeRailRef.current = railIndex;
-      cards[safeCard]?.classList.add("tv-focused");
-      cards[safeCard]?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+    if (location.zone === "hero") {
+      focusHeroPrimary();
+      return;
     }
+    focusRailByCoordinates(location.rowIndex, location.columnIndex);
+  }, [
+    activeHomeCategory,
+    continueWatching,
+    focusHeaderByIndex,
+    focusHeroPrimary,
+    focusRailByCoordinates,
+    getCurrentHomeLocation,
+    isFilterOpen,
+    isSearchFocused,
+    isSideNavOpen,
+    rowData
+  ]);
 
-    function handleKeyDown(e: KeyboardEvent) {
-      const tag = (e.target as HTMLElement)?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.defaultPrevented || isSideNavOpen) return;
+      const key = event.key;
+      const isBackKey = key === "Escape" || key === "Backspace" || key === "BrowserBack" || key === "GoBack";
 
-      // --- OFFCANVAS de géneros abierto ---
       if (isFilterOpen) {
-        const chips = Array.from(document.querySelectorAll<HTMLElement>(".genre-offcanvas .genre-chip, .genre-offcanvas .icon-only-btn"));
-        if (!chips.length) return;
-        const cols = window.innerWidth <= 520 ? 1 : 2; // grid responsive
-        let idx = focusedGenreIndexRef.current;
-
-        switch (e.key) {
-          case "ArrowDown":
-            e.preventDefault();
-            // Si estamos en el botón X (idx 0), bajar al primer chip
-            if (idx === 0) idx = 1;
-            else idx = Math.min(chips.length - 1, idx + cols);
-            break;
-          case "ArrowUp":
-            e.preventDefault();
-            // Si estamos en la primera fila de chips, subir al botón X
-            if (idx <= cols && idx > 0) idx = 0;
-            else if (idx > 0) idx = Math.max(1, idx - cols);
-            break;
-          case "ArrowRight":
-            e.preventDefault();
-            if (idx === 0) break; // El botón X no tiene nada a la derecha
-            idx = Math.min(chips.length - 1, idx + 1);
-            break;
-          case "ArrowLeft":
-            e.preventDefault();
-            if (idx === 0) break;
-            idx = Math.max(0, idx - 1);
-            break;
-          case "Enter":
-          case " ":
-            e.preventDefault();
-            if (chips[idx]) chips[idx].click();
-            return;
-          case "Escape":
-          case "Backspace":
-            e.preventDefault();
-            setIsFilterOpen(false);
-            clearAllFocus();
-            return;
-          default:
-            return;
+        if (isBackKey) {
+          event.preventDefault();
+          closeFilterPanel();
+          return;
         }
-        focusedGenreIndexRef.current = idx;
-        clearAllFocus();
-        if (chips[idx]) {
-          chips[idx].classList.add("tv-focused");
-          chips[idx].scrollIntoView({ block: "nearest", behavior: "smooth" });
+
+        if (key === "Enter") {
+          event.preventDefault();
+          const focusables = getFilterFocusableElements();
+          const index = Math.max(0, Math.min(focusables.length - 1, filterFocusedIndexRef.current));
+          focusables[index]?.click();
+          return;
+        }
+
+        if (key === "ArrowUp" || key === "ArrowDown" || key === "ArrowLeft" || key === "ArrowRight") {
+          event.preventDefault();
+          const focusables = getFilterFocusableElements();
+          const currentIndex = Math.max(0, Math.min(focusables.length - 1, filterFocusedIndexRef.current));
+          const direction = key.replace("Arrow", "").toLowerCase() as Direction;
+          const nextIndex = findDirectionalIndex(focusables, currentIndex, direction);
+          if (nextIndex >= 0) {
+            applyFilterFocusByIndex(nextIndex);
+          }
+          return;
+        }
+
+        return;
+      }
+
+      if (isSearchFocused) {
+        if (key === "Escape" || key === "BrowserBack" || key === "GoBack") {
+          event.preventDefault();
+          closeSearchOverlay();
+          return;
+        }
+
+        if (isEditableTarget(event.target)) return;
+        if (!showSearchPanel || !searchSuggestions.length) return;
+
+        if (key === "ArrowDown") {
+          event.preventDefault();
+          setActiveSuggestionIndex((current) => Math.min(searchSuggestions.length - 1, current + 1));
+          return;
+        }
+
+        if (key === "ArrowUp") {
+          event.preventDefault();
+          setActiveSuggestionIndex((current) => Math.max(-1, current - 1));
+          return;
+        }
+
+        if (key === "Enter") {
+          event.preventDefault();
+          const selectedItem = activeSuggestionIndex >= 0 ? searchSuggestions[activeSuggestionIndex] : null;
+          if (selectedItem) {
+            handleSelectItem(selectedItem);
+          } else {
+            openSearchResults(searchInput);
+          }
         }
         return;
       }
 
-      const zone = tvZoneRef.current;
-      const allRails = document.querySelectorAll<HTMLElement>(".home-rows [data-row-id], .home-rows .continue-watching-rail");
-      const maxRail = allRails.length - 1;
+      if (isEditableTarget(event.target)) return;
+      if (key !== "ArrowUp" && key !== "ArrowDown" && key !== "ArrowLeft" && key !== "ArrowRight" && key !== "Enter") {
+        return;
+      }
 
-      switch (e.key) {
-        case "ArrowUp":
-          e.preventDefault();
-          if (zone === "rails") {
-            if (activeRailRef.current > 0) {
-              activeRailRef.current -= 1;
-              focusRailCard(activeRailRef.current, activeCardRef.current);
-            } else {
-              tvZoneRef.current = "hero";
-              focusHero();
-            }
-          } else if (zone === "hero") {
-            tvZoneRef.current = "nav";
-            focusNavItem(activeNavRef.current);
-          } else if (zone === "nav") {
-            // Ya arriba del todo — no hacer nada
+      const location = getCurrentHomeLocation();
+      if (!location) {
+        event.preventDefault();
+        if (key === "ArrowDown") {
+          if (!focusHeroPrimary() && !focusRailByCoordinates(0, railColByRowRef.current[0] ?? 0)) {
+            focusHeaderByIndex(headerIndexRef.current);
           }
-          break;
-
-        case "ArrowDown":
-          e.preventDefault();
-          if (zone === "nav") {
-            tvZoneRef.current = "hero";
-            focusHero();
-          } else if (zone === "hero") {
-            if (allRails.length) {
-              tvZoneRef.current = "rails";
-              activeRailRef.current = 0;
-              focusRailCard(0, activeCardRef.current);
-            }
-          } else if (zone === "rails") {
-            if (activeRailRef.current < maxRail) {
-              activeRailRef.current += 1;
-              focusRailCard(activeRailRef.current, activeCardRef.current);
-            }
-          }
-          break;
-
-        case "ArrowLeft":
-          e.preventDefault();
-          if (zone === "nav") {
-            focusNavItem(activeNavRef.current - 1);
-          } else if (zone === "hero") {
-            // Cambiar hero selector
-            setHeroIndex((c) => Math.max(0, c - 1));
-          } else if (zone === "rails") {
-            focusRailCard(activeRailRef.current, activeCardRef.current - 1);
-          }
-          break;
-
-        case "ArrowRight":
-          e.preventDefault();
-          if (zone === "nav") {
-            focusNavItem(activeNavRef.current + 1);
-          } else if (zone === "hero") {
-            setHeroIndex((c) => c + 1);
-          } else if (zone === "rails") {
-            focusRailCard(activeRailRef.current, activeCardRef.current + 1);
-          }
-          break;
-
-        case "Enter": {
-          e.preventDefault();
-          const focused = document.querySelector<HTMLElement>(".tv-focused");
-          if (focused) focused.click();
-          break;
+          return;
         }
+        focusHeaderByIndex(headerIndexRef.current);
+        return;
+      }
 
-        case "Backspace":
-          e.preventDefault();
-          if (zone === "rails") {
-            tvZoneRef.current = "hero";
-            focusHero();
-          } else if (zone === "hero") {
-            tvZoneRef.current = "nav";
-            focusNavItem(activeNavRef.current);
-          } else if (zone === "nav") {
-            // Optional: could trigger a "confirm exit" or similar
+      if (location.zone === "header") {
+        switch (key) {
+          case "ArrowLeft":
+            event.preventDefault();
+            focusHeaderByIndex(location.index - 1);
+            return;
+          case "ArrowRight":
+            event.preventDefault();
+            focusHeaderByIndex(location.index + 1);
+            return;
+          case "ArrowDown":
+            event.preventDefault();
+            if (!focusHeroPrimary() && !focusRailByCoordinates(0, railColByRowRef.current[0] ?? location.index)) {
+              focusHeaderByIndex(location.index);
+            }
+            return;
+          case "ArrowUp":
+            event.preventDefault();
+            return;
+          case "Enter":
+            event.preventDefault();
+            getHeaderFocusableElements()[location.index]?.click();
+            return;
+        }
+        return;
+      }
+
+      if (location.zone === "hero") {
+        switch (key) {
+          case "ArrowUp":
+            event.preventDefault();
+            focusHeaderByIndex(headerIndexRef.current);
+            return;
+          case "ArrowDown":
+            event.preventDefault();
+            focusRailByCoordinates(0, railColByRowRef.current[0] ?? desiredRailColRef.current);
+            return;
+          case "ArrowLeft":
+          case "ArrowRight":
+            event.preventDefault();
+            return;
+          case "Enter":
+            event.preventDefault();
+            getHeroFocusableElement()?.click();
+            return;
+        }
+        return;
+      }
+
+      switch (key) {
+        case "ArrowLeft":
+          event.preventDefault();
+          focusRailByCoordinates(location.rowIndex, location.columnIndex - 1);
+          return;
+        case "ArrowRight":
+          event.preventDefault();
+          focusRailByCoordinates(location.rowIndex, location.columnIndex + 1);
+          return;
+        case "ArrowUp":
+          event.preventDefault();
+          if (location.rowIndex === 0) {
+            if (!focusHeroPrimary()) {
+              focusHeaderByIndex(headerIndexRef.current);
+            }
+          } else {
+            focusRailByCoordinates(location.rowIndex - 1, desiredRailColRef.current);
           }
-          break;
+          return;
+        case "ArrowDown":
+          event.preventDefault();
+          focusRailByCoordinates(location.rowIndex + 1, desiredRailColRef.current);
+          return;
+        case "Enter":
+          event.preventDefault();
+          getRailRows()[location.rowIndex]?.[location.columnIndex]?.click();
+          return;
       }
     }
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isSearchFocused, isFilterOpen]);
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [
+    activeSuggestionIndex,
+    applyFilterFocusByIndex,
+    closeFilterPanel,
+    closeSearchOverlay,
+    focusHeaderByIndex,
+    focusHeroPrimary,
+    focusRailByCoordinates,
+    getCurrentHomeLocation,
+    getFilterFocusableElements,
+    getHeaderFocusableElements,
+    getHeroFocusableElement,
+    getRailRows,
+    isFilterOpen,
+    isSearchFocused,
+    isSideNavOpen,
+    searchInput,
+    searchSuggestions,
+    showSearchPanel
+  ]);
 
   return (
-    <main className="home-shell">
+    <main
+      className="home-shell"
+      ref={homeRootRef}
+      onFocusCapture={(event) => {
+        const target = event.target as HTMLElement;
+        if (target.classList.contains("home-filter-focusable")) {
+          const items = getFilterFocusableElements();
+          const index = items.indexOf(target);
+          if (index >= 0) {
+            filterFocusedIndexRef.current = index;
+            clearFilterFocus(items);
+            target.classList.add("tv-focused");
+            target.tabIndex = 0;
+          }
+          return;
+        }
+        if (
+          !target.classList.contains("home-header-focusable") &&
+          !target.classList.contains("home-hero-focusable") &&
+          !target.classList.contains("home-rail-focusable")
+        ) {
+          return;
+        }
+        clearHomeFocus();
+        target.classList.add("tv-focused");
+        target.tabIndex = 0;
+        markHomeLocation(target);
+        homeNavActivatedRef.current = true;
+      }}
+    >
       <header className={`home-header ${isHeaderScrolled ? "is-scrolled" : ""}`}>
         <div className="home-header-inner">
           <div className="home-header-left">
-            <div className="brand-logo" aria-label="streams" onClick={() => {
-              actions.setCategory("movie");
-              actions.setQuery("");
-              setSearchInput("");
-              setDebouncedQuery("");
-              setSearchCatalogByCategory({ movie: [], series: [], tv: [] });
-              setIsSearchFocused(false);
-              setActiveSuggestionIndex(-1);
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}>
+            <div className="brand-logo" aria-label="streams" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
               streams
             </div>
-            <nav className="home-nav">
-              <button
-                type="button"
-                className={`nav-link ${state.category === "movie" ? "is-active" : ""}`}
-                onClick={() => actions.setCategory("movie")}
-              >
-                Peliculas
-              </button>
-              <button
-                type="button"
-                className={`nav-link ${state.category === "series" ? "is-active" : ""}`}
-                onClick={() => actions.setCategory("series")}
-              >
-                Series
-              </button>
-              <Link to="/live-tv" className="nav-link">
-                TV en vivo
-              </Link>
-              <Link to="/eventos" className="nav-link">
-                Eventos
-              </Link>
-              <Link to="/247" className="nav-link">
-                24/7
-              </Link>
-              <Link to="/favorites" className="nav-link">
-                Favoritos
-              </Link>
-            </nav>
           </div>
 
           <div className="home-header-right">
@@ -736,7 +1083,8 @@ export function HomePage() {
               <form className="header-search-v2" onSubmit={handleSearchSubmit}>
                 <button
                   type="button"
-                  className="search-icon-btn"
+                  ref={searchButtonRef}
+                  className="search-icon-btn home-header-focusable"
                   onClick={() => {
                     setIsSearchFocused(true);
                     searchInputRef.current?.focus();
@@ -796,10 +1144,23 @@ export function HomePage() {
               ) : null}
             </div>
 
-            <button type="button" className="header-action-btn" onClick={() => setIsFilterOpen(true)} title="Filtros">
+            <button
+              type="button"
+              className="header-action-btn home-header-focusable"
+              onClick={(event) => {
+                lastFocusedBeforeFilterRef.current = event.currentTarget;
+                setIsFilterOpen(true);
+              }}
+              title="Filtros"
+            >
               <SlidersHorizontal size={20} />
             </button>
-            <button type="button" className="header-action-btn" onClick={handleReloadSources} title="Recargar fuentes">
+            <button
+              type="button"
+              className="header-action-btn home-header-focusable"
+              onClick={handleReloadSources}
+              title="Recargar fuentes"
+            >
               <RefreshCw size={20} className={loading ? "spin" : ""} />
             </button>
             <UserSummary />
@@ -832,7 +1193,7 @@ export function HomePage() {
 
             <div className="hero-actions">
               {heroItem ? (
-                <button type="button" className="primary-btn" onClick={() => handleSelectItem(heroItem)}>
+                <button type="button" className="primary-btn home-hero-focusable" onClick={() => handleSelectItem(heroItem)}>
                   <Tv2 size={24} />
                   Reproducir
                 </button>
@@ -911,11 +1272,11 @@ export function HomePage() {
           <span>Favs</span>
         </Link>
       </nav>
-      {isFilterOpen ? <div className="offcanvas-backdrop" onClick={() => setIsFilterOpen(false)} /> : null}
-      <aside className={`genre-offcanvas ${isFilterOpen ? "is-open" : ""}`} aria-hidden={!isFilterOpen}>
+      {isFilterOpen ? <div className="offcanvas-backdrop" onClick={closeFilterPanel} /> : null}
+      <aside ref={filterPanelRef} className={`genre-offcanvas ${isFilterOpen ? "is-open" : ""}`} aria-hidden={!isFilterOpen}>
         <div className="genre-offcanvas-header">
           <h3>Generos de {categoryTitle(activeHomeCategory)}</h3>
-          <button type="button" className="icon-only-btn" onClick={() => setIsFilterOpen(false)}>
+          <button type="button" className="icon-only-btn home-filter-focusable" onClick={closeFilterPanel}>
             <X size={16} />
           </button>
         </div>
@@ -924,7 +1285,7 @@ export function HomePage() {
         <div className="genre-grid">
           <button
             type="button"
-            className="genre-chip"
+            className="genre-chip home-filter-focusable"
             onClick={() => handleScrollToRow("")}
           >
             Explorar todo
@@ -933,7 +1294,7 @@ export function HomePage() {
             <button
               key={row.id}
               type="button"
-              className="genre-chip"
+              className="genre-chip home-filter-focusable"
               onClick={() => handleScrollToRow(row.id)}
             >
               {row.title}
@@ -944,3 +1305,5 @@ export function HomePage() {
     </main>
   );
 }
+
+

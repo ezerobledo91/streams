@@ -23,6 +23,32 @@
       "unavailable": [],
       "continueWatching": [
         {
+          "type": "movie",
+          "itemId": "tmdb:movie:1236153",
+          "name": "Sin piedad",
+          "poster": "https://image.tmdb.org/t/p/w500/9zBNg8koM3fjUTPT7QeJHuGG2r9.jpg",
+          "background": "https://image.tmdb.org/t/p/w500/7HKpc11uQfxnw0Y8tRUYn1fsKqE.jpg",
+          "season": null,
+          "episode": null,
+          "episodeTitle": null,
+          "position": 9,
+          "duration": 5998,
+          "lastWatched": 1771696598394
+        },
+        {
+          "type": "series",
+          "itemId": "tmdb:tv:456",
+          "name": "Los Simpson",
+          "poster": "https://image.tmdb.org/t/p/w500/gpGPI732PWspwGpPyWrWov8IYmq.jpg",
+          "background": "https://image.tmdb.org/t/p/w500/jIArNHIekrCSVgdMbKPAXpPY03Y.jpg",
+          "season": 1,
+          "episode": 1,
+          "episodeTitle": "Sin blanca navidad",
+          "position": 5,
+          "duration": 1396,
+          "lastWatched": 1771695750954
+        },
+        {
           "type": "series",
           "itemId": "tt2442560",
           "name": "Peaky Blinders",

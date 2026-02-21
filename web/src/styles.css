@@ -195,6 +195,43 @@ body {
   flex-direction: column;
   gap: 12px;
 }
+.category-provider-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.category-provider-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.category-provider-home-rails {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.category-provider-home-rails .category-rail {
+  padding: 0;
+  margin-bottom: 18px;
+}
+.category-provider-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid #252525;
+  padding-bottom: 8px;
+}
+.category-provider-head h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #f0f0f0;
+}
+.category-provider-head span {
+  font-size: 12px;
+  color: #a9a9a9;
+}
 .category-results-grid .media-tile:hover { transform: scale(1.06); }
 .category-scroll-sentinel { width: 100%; height: 1px; }
 .category-loading-more {
@@ -1715,3 +1752,266 @@ select, input { background: #1a1a1a; border: 1px solid #333; color: #fff; paddin
   height: 100% !important;
 }
 
+
+/* === App Shell & Side Navigation === */
+.app-shell-root {
+  position: relative;
+  min-height: 100vh;
+}
+
+.app-page-wrapper {
+  min-height: 100vh;
+}
+
+.shell-menu-trigger {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 1885;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid #313131;
+  background: rgba(12, 12, 12, 0.86);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background 0.18s, border-color 0.18s, opacity 0.18s, transform 0.18s;
+}
+
+.shell-menu-trigger:hover {
+  background: rgba(24, 24, 24, 0.94);
+  border-color: #5c5c5c;
+}
+
+.shell-menu-trigger.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-12px);
+}
+
+.app-sidenav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(320px, 90vw);
+  z-index: 1890;
+  background:
+    radial-gradient(520px 240px at -20% -8%, rgba(229, 9, 20, 0.25), transparent 56%),
+    linear-gradient(180deg, #111 0%, #0a0a0a 100%);
+  border-right: 1px solid #2a2a2a;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(calc(-100% - 24px));
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 20px 0 48px rgba(0, 0, 0, 0.58);
+}
+
+.app-sidenav.is-open {
+  transform: translateX(0);
+}
+
+.sidenav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 14px;
+  border-bottom: 1px solid #242424;
+}
+
+.sidenav-header .brand-logo {
+  font-size: 32px;
+  letter-spacing: 0.03em;
+}
+
+.sidenav-section-label {
+  margin: 0 0 6px;
+  color: #808080;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.sidenav-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px 18px;
+  overflow-y: auto;
+}
+
+.sidenav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidenav-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.sidenav-switch-btn {
+  min-height: 34px;
+  border-radius: 10px;
+  border: 1px solid #313131;
+  background: #141414;
+  color: #bcbcbc;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+}
+
+.sidenav-switch-btn:hover {
+  border-color: #4e4e4e;
+  color: #fff;
+}
+
+.sidenav-switch-btn.is-active {
+  border-color: rgba(229, 9, 20, 0.6);
+  background: rgba(229, 9, 20, 0.18);
+  color: #fff;
+}
+
+.sidenav-group-head {
+  display: grid;
+  grid-template-columns: 1fr 36px;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.sidenav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  color: #aaa;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.18s;
+}
+
+.sidenav-link svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.sidenav-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: #3a3a3a;
+  color: #fff;
+  transform: translateX(2px);
+}
+
+.sidenav-link.is-active {
+  background: linear-gradient(90deg, rgba(229, 9, 20, 0.92), rgba(182, 13, 24, 0.92));
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.sidenav-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-left: 12px;
+  padding-left: 10px;
+  border-left: 1px solid #2c2c2c;
+}
+
+.sidenav-subitem {
+  min-height: 36px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #c8c8c8;
+}
+
+.sidenav-subitem.is-active {
+  background: rgba(229, 9, 20, 0.3);
+  border-color: rgba(229, 9, 20, 0.45);
+  color: #fff;
+}
+
+.sidenav-expand-btn {
+  width: 36px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #b3b3b3;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+}
+
+.sidenav-expand-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: #3a3a3a;
+  color: #fff;
+}
+
+.sidenav-link.tv-focused,
+.sidenav-close-btn.tv-focused,
+.sidenav-expand-btn.tv-focused,
+.sidenav-switch-btn.tv-focused,
+.shell-menu-trigger.tv-focused {
+  border-color: #fff;
+  box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.33);
+}
+
+.sidenav-close-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid #363636;
+  background: rgba(8, 8, 8, 0.6);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.18s, background 0.18s;
+}
+
+.sidenav-close-btn:hover {
+  border-color: #686868;
+  background: rgba(26, 26, 26, 0.84);
+}
+
+@media (max-width: 899px) {
+  .shell-menu-trigger {
+    top: 10px;
+    left: 10px;
+    width: 40px;
+    height: 40px;
+  }
+  .app-sidenav {
+    width: min(300px, 92vw);
+  }
+  .sidenav-header .brand-logo {
+    font-size: 30px;
+  }
+}
+
+.home-nav {
+  display: none !important;
+}

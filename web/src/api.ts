@@ -67,6 +67,8 @@ export function fetchCatalogByCategory(params: {
   category: Category;
   query?: string;
   genre?: string;
+  provider?: string;
+  includeAvailability?: boolean;
   year?: string;
   limit?: number;
   page?: number;
@@ -81,6 +83,12 @@ export function fetchCatalogByCategory(params: {
   }
   if (params.genre?.trim()) {
     searchParams.set("genre", params.genre.trim());
+  }
+  if (params.provider?.trim()) {
+    searchParams.set("provider", params.provider.trim());
+  }
+  if (params.includeAvailability) {
+    searchParams.set("includeAvailability", "true");
   }
   if (params.year?.trim()) {
     searchParams.set("year", params.year.trim());
