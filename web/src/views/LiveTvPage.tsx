@@ -39,7 +39,7 @@ import { useHlsPlayer } from "../hooks/useHlsPlayer";
 
 type PlayerState = "idle" | "loading" | "playing" | "buffering" | "error";
 type ActiveSource = "local" | "remote";
-type TvScope = "player" | "selector";
+type TvScope = "player" | "selector" | "controls";
 type SelectorPane = "categories" | "channels" | "chan-actions";
 
 const ADULT_PASSWORD = "12345";
@@ -791,6 +791,7 @@ export function LiveTvPage() {
   }, [getPaneItems]);
 
   const openPanel = useCallback(() => {
+    document.querySelectorAll(".live-tv-overlay-btn.tv-focused").forEach((e) => e.classList.remove("tv-focused"));
     setShowChannelPanel(true);
     tvScopeRef.current = "selector";
     selectorPaneRef.current = "channels";
@@ -806,6 +807,37 @@ export function LiveTvPage() {
     setShowChannelPanel(false);
     tvScopeRef.current = "player";
     document.querySelectorAll(".live-tv-selector .tv-focused").forEach((e) => e.classList.remove("tv-focused"));
+  }, []);
+
+  // ── TV helpers — overlay controls ──────────────────────────────────────────
+  const controlsIndexRef = useRef(0);
+
+  const getOverlayButtons = useCallback((): HTMLElement[] => {
+    return Array.from(
+      document.querySelectorAll<HTMLElement>(".live-tv-overlay-actions .live-tv-overlay-btn")
+    );
+  }, []);
+
+  const applyControlsFocus = useCallback((index: number) => {
+    document.querySelectorAll(".live-tv-overlay-btn.tv-focused").forEach((e) => e.classList.remove("tv-focused"));
+    const items = getOverlayButtons();
+    if (!items.length) return;
+    const clamped = Math.max(0, Math.min(items.length - 1, index));
+    controlsIndexRef.current = clamped;
+    items[clamped].classList.add("tv-focused");
+    showControlsTemporarily();
+  }, [getOverlayButtons, showControlsTemporarily]);
+
+  const enterControls = useCallback(() => {
+    tvScopeRef.current = "controls";
+    controlsIndexRef.current = 0;
+    showControlsTemporarily();
+    requestAnimationFrame(() => applyControlsFocus(0));
+  }, [applyControlsFocus, showControlsTemporarily]);
+
+  const exitControls = useCallback(() => {
+    document.querySelectorAll(".live-tv-overlay-btn.tv-focused").forEach((e) => e.classList.remove("tv-focused"));
+    tvScopeRef.current = "player";
   }, []);
 
   // ── Handlers — canales ────────────────────────────────────────────────────
@@ -850,6 +882,7 @@ export function LiveTvPage() {
           case "ChannelDown":
             e.preventDefault(); navigateChannel(1); break;
           case "Enter":
+            e.preventDefault(); enterControls(); break;
           case "ArrowRight":
           case "ContextMenu":
             e.preventDefault(); openPanel(); break;
@@ -858,6 +891,8 @@ export function LiveTvPage() {
             e.preventDefault(); void handleToggleFullscreen(); break;
           case "Escape":
           case "Backspace":
+          case "BrowserBack":
+          case "GoBack":
             e.preventDefault();
             if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
             else navigate("/");
@@ -866,10 +901,41 @@ export function LiveTvPage() {
         return;
       }
 
+      // ===== CONTROLS (overlay buttons) =====
+      if (scope === "controls") {
+        switch (e.key) {
+          case "ArrowLeft":
+            e.preventDefault();
+            applyControlsFocus(controlsIndexRef.current - 1);
+            break;
+          case "ArrowRight":
+            e.preventDefault();
+            applyControlsFocus(controlsIndexRef.current + 1);
+            break;
+          case "Enter":
+          case " ":
+            e.preventDefault();
+            getOverlayButtons()[controlsIndexRef.current]?.click();
+            break;
+          case "ArrowDown":
+          case "Escape":
+          case "Backspace":
+          case "BrowserBack":
+          case "GoBack":
+            e.preventDefault();
+            exitControls();
+            break;
+          case "ArrowUp":
+            e.preventDefault();
+            break;
+        }
+        return;
+      }
+
       // ===== SELECTOR =====
       const pane = selectorPaneRef.current;
 
-      if (e.key === "Escape" || e.key === "Backspace" || e.key === "BrowserBack") {
+      if (e.key === "Escape" || e.key === "Backspace" || e.key === "BrowserBack" || e.key === "GoBack") {
         e.preventDefault();
         if (pane === "chan-actions") {
           // Volver al panel de canales
@@ -955,7 +1021,7 @@ export function LiveTvPage() {
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [navigateChannel, navigate, openPanel, closePanel, applyPaneFocus, getPaneItems]);
+  }, [navigateChannel, navigate, openPanel, closePanel, applyPaneFocus, getPaneItems, enterControls, exitControls, applyControlsFocus, getOverlayButtons]);
 
   // ── Render ────────────────────────────────────────────────────────────────
   const remoteUpdatedAt = remoteSources

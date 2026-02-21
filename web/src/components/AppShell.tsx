@@ -43,24 +43,28 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      if (isSideNavOpen) return;
       if (event.defaultPrevented) return;
 
       const key = event.key;
-      const shouldOpen =
+      const isMenuKey =
         key === "ContextMenu" ||
         key === "Menu" ||
+        key === "F1" ||
         key === "m" ||
         key === "M";
 
-      if (!shouldOpen) return;
+      if (!isMenuKey) return;
       event.preventDefault();
-      openSideNav();
+      if (isSideNavOpen) {
+        closeSideNav();
+      } else {
+        openSideNav();
+      }
     }
 
     window.addEventListener("keydown", onGlobalMenuKeyDown);
     return () => window.removeEventListener("keydown", onGlobalMenuKeyDown);
-  }, [isSideNavOpen, openSideNav]);
+  }, [isSideNavOpen, openSideNav, closeSideNav]);
 
   const contextValue = useMemo(
     () => ({

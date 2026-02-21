@@ -1,6 +1,6 @@
 {
   "loadedAt": "2026-02-12T15:27:36.8440834-03:00",
-  "updatedAt": "2026-02-21T20:16:54.683Z",
+  "updatedAt": "2026-02-21T21:30:01.937Z",
   "providers": {
     "torrentdb": {
       "successes": 47,
@@ -162,12 +162,12 @@
     },
     "torrentio": {
       "successes": 129,
-      "failures": 17,
-      "consecutiveFailures": 9,
+      "failures": 23,
+      "consecutiveFailures": 15,
       "lastSuccessAt": 1771698318985,
-      "lastFailureAt": 1771705014683,
+      "lastFailureAt": 1771708970636,
       "lastFailureReason": "ENOSPC: no space left on device, write",
-      "breakerUntil": 1771708614683,
+      "breakerUntil": 1771712570636,
       "sources": {
         "274f9ead8b229a31a8ad551c914e879f09efe6fb": {
           "successes": 0,
@@ -542,17 +542,17 @@
         },
         "68c98769b2b8093f3cd1f6e068b76a0b43886cf1": {
           "successes": 0,
-          "failures": 4,
-          "consecutiveFailures": 4,
+          "failures": 5,
+          "consecutiveFailures": 5,
           "lastSuccessAt": 0,
-          "lastFailureAt": 1771702724587
+          "lastFailureAt": 1771708830485
         },
         "d15995942b50859c601b901ad9fadc8b69124c8d": {
           "successes": 1,
-          "failures": 1,
-          "consecutiveFailures": 1,
+          "failures": 2,
+          "consecutiveFailures": 2,
           "lastSuccessAt": 1771248535295,
-          "lastFailureAt": 1771702858071
+          "lastFailureAt": 1771708970636
         },
         "f59a9883cdc10e2ea1ea9bb77ac434c5b2b9a23e": {
           "successes": 1,
@@ -658,6 +658,34 @@
           "consecutiveFailures": 2,
           "lastSuccessAt": 0,
           "lastFailureAt": 1771704880320
+        },
+        "4ee4d48d00da1d69c5b3d5add76d40dcfca4e316": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771708844069
+        },
+        "574b27ddd751f5c98246e46c3e15e67cb62d5f08": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771708870381
+        },
+        "65370a26f22e83bfba4cd61df361d1b62388b692": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771708917983
+        },
+        "b200cbe1bbbc75b454abff512f6bb8bf06861d39": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771708946546
         }
       }
     },
@@ -849,10 +877,10 @@
       }
     },
     "m3u-vod": {
-      "successes": 159,
+      "successes": 178,
       "failures": 20,
       "consecutiveFailures": 0,
-      "lastSuccessAt": 1771704812878,
+      "lastSuccessAt": 1771709401937,
       "lastFailureAt": 1771683521597,
       "lastFailureReason": "timeout",
       "breakerUntil": 0,
@@ -970,24 +998,24 @@
           "lastFailureAt": 0
         },
         "url:http://rey-premium.ddns.net/series/DPVEduardoEspa/Espa020828/476963.mp4": {
-          "successes": 9,
+          "successes": 10,
           "failures": 1,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1771703664579,
+          "lastSuccessAt": 1771708824697,
           "lastFailureAt": 1771683518093
         },
         "url:http://rey-premium.ddns.net/series/DPVEduardoEspa/Espa020828/570011.mkv": {
-          "successes": 7,
+          "successes": 8,
           "failures": 1,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1771703651085,
+          "lastSuccessAt": 1771708826446,
           "lastFailureAt": 1771683521597
         },
         "url:http://rey-premium.ddns.net/series/DPVEduardoEspa/Espa020828/547661.mkv": {
-          "successes": 10,
+          "successes": 11,
           "failures": 0,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1771703713096,
+          "lastSuccessAt": 1771708825676,
           "lastFailureAt": 0
         },
         "url:http://rey-premium.ddns.net/series/DPVEduardoEspa/Espa020828/570263.mkv": {
@@ -1019,45 +1047,45 @@
           "lastFailureAt": 0
         },
         "url:http://rey-premium.ddns.net/movie/DPVEduardoEspa/Espa020828/511577.mp4": {
-          "successes": 2,
+          "successes": 3,
           "failures": 0,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1771696570815,
+          "lastSuccessAt": 1771709398962,
           "lastFailureAt": 0
         },
         "url:http://rey-premium.ddns.net/movie/DPVEduardoEspa/Espa020828/748097.mkv": {
-          "successes": 2,
+          "successes": 3,
           "failures": 0,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1771696571850,
+          "lastSuccessAt": 1771709399899,
           "lastFailureAt": 0
         },
         "url:http://live.fuxxion.club:8080/movie/juanvernazza/85GbSi1ewU/149124.mkv": {
-          "successes": 2,
+          "successes": 3,
           "failures": 0,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1771696573344,
+          "lastSuccessAt": 1771709401211,
           "lastFailureAt": 0
         },
         "url:http://rey-premium.ddns.net/movie/DPVEduardoEspa/Espa020828/747231.mkv": {
-          "successes": 2,
+          "successes": 3,
           "failures": 0,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1771696574291,
+          "lastSuccessAt": 1771709401937,
           "lastFailureAt": 0
         },
         "url:http://rey-premium.ddns.net/movie/DPVEduardoEspa/Espa020828/748099.mkv": {
-          "successes": 1,
+          "successes": 7,
           "failures": 0,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1771698294866,
+          "lastSuccessAt": 1771709274338,
           "lastFailureAt": 0
         },
         "url:http://rey-premium.ddns.net/movie/DPVEduardoEspa/Espa020828/748107.mkv": {
-          "successes": 1,
+          "successes": 7,
           "failures": 0,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1771698296413,
+          "lastSuccessAt": 1771709275167,
           "lastFailureAt": 0
         },
         "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/21822.mp4": {

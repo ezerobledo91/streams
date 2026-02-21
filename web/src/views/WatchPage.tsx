@@ -8,7 +8,11 @@ import {
   Languages,
   LoaderCircle,
   Maximize2,
+  Minimize2,
+  Pause,
   Play,
+  Rewind,
+  FastForward,
   XCircle
 } from "lucide-react";
 import {
@@ -162,6 +166,9 @@ export function WatchPage() {
   const [selectedMkvAudioTrackIndex, setSelectedMkvAudioTrackIndex] = useState(0);
   const [isSubtitleMenuOpen, setIsSubtitleMenuOpen] = useState(false);
   const [subtitleMenuIndex, setSubtitleMenuIndex] = useState(0);
+  const [controlsVisible, setControlsVisible] = useState(false);
+  const controlsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const controlsIndexRef = useRef(0);
   const seekTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const subtitleMenuRef = useRef<HTMLDivElement | null>(null);
   const hasMultipleAudioTracks = mkvAudioTracks.length > 1;
@@ -283,6 +290,68 @@ export function WatchPage() {
     seekTimerRef.current = setTimeout(() => setSeekTooltip(null), 1200);
   }, []);
 
+  // ── Player controls overlay (TV) ──────────────────────────────────────────
+  const showControlsTemporarily = useCallback(() => {
+    setControlsVisible(true);
+    if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current);
+    controlsTimerRef.current = setTimeout(() => setControlsVisible(false), 5000);
+  }, []);
+
+  const getControlButtons = useCallback((): HTMLElement[] => {
+    return Array.from(
+      document.querySelectorAll<HTMLElement>(".watch-controls-bar .watch-control-btn")
+    );
+  }, []);
+
+  const applyControlsFocus = useCallback((index: number) => {
+    document.querySelectorAll(".watch-control-btn.tv-focused").forEach((e) => e.classList.remove("tv-focused"));
+    const items = getControlButtons();
+    if (!items.length) return;
+    const clamped = Math.max(0, Math.min(items.length - 1, index));
+    controlsIndexRef.current = clamped;
+    items[clamped].classList.add("tv-focused");
+    showControlsTemporarily();
+  }, [getControlButtons, showControlsTemporarily]);
+
+  const enterPlayerControls = useCallback(() => {
+    tvZoneRef.current = "controls";
+    controlsIndexRef.current = 0;
+    showControlsTemporarily();
+    requestAnimationFrame(() => applyControlsFocus(0));
+  }, [applyControlsFocus, showControlsTemporarily]);
+
+  const exitPlayerControls = useCallback(() => {
+    document.querySelectorAll(".watch-control-btn.tv-focused").forEach((e) => e.classList.remove("tv-focused"));
+    setControlsVisible(false);
+    tvZoneRef.current = "player";
+  }, []);
+
+  const handleControlAction = useCallback((action: string) => {
+    const video = videoRef.current;
+    if (!video) return;
+    switch (action) {
+      case "rewind":
+        video.currentTime = Math.max(0, video.currentTime - 10);
+        showSeekTooltip("-10s");
+        showControlsTemporarily();
+        break;
+      case "playpause":
+        if (video.paused) video.play().catch(() => {});
+        else video.pause();
+        showControlsTemporarily();
+        break;
+      case "forward":
+        video.currentTime = Math.min(video.duration || 0, video.currentTime + 10);
+        showSeekTooltip("+10s");
+        showControlsTemporarily();
+        break;
+      case "fullscreen":
+        handleEnterFullscreen();
+        showControlsTemporarily();
+        break;
+    }
+  }, [showSeekTooltip, showControlsTemporarily]);
+
   const refreshMkvAudioTracks = useCallback(() => {
     const video = videoRef.current as VideoWithAudioTracks | null;
     if (!video) {
@@ -362,6 +431,19 @@ export function WatchPage() {
   }, [activeSessionIdRef, destroyHls, resetPlaybackState, setSessionSubtitles]);
 
   useEffect(() => { isPreparingRef.current = isPreparingPlayback; }, [isPreparingPlayback]);
+
+  // Mostrar controles al mover el mouse sobre el player
+  useEffect(() => {
+    const stage = playerStageRef.current;
+    if (!stage) return;
+    const onPointer = () => { if (hasPlaybackStarted && playerReady) showControlsTemporarily(); };
+    stage.addEventListener("pointermove", onPointer);
+    stage.addEventListener("pointerdown", onPointer);
+    return () => {
+      stage.removeEventListener("pointermove", onPointer);
+      stage.removeEventListener("pointerdown", onPointer);
+    };
+  }, [hasPlaybackStarted, playerReady, showControlsTemporarily]);
 
   useEffect(() => {
     if (!isSideNavOpen) return;
@@ -885,7 +967,7 @@ export function WatchPage() {
   }, [isSeries, season, episode, episodeList, decodedItemId, audioPreference, originalLanguageCode]);
 
   // D-pad keyboard controls with zone navigation: header / player / sidebar
-  const tvZoneRef = useRef<"header" | "player" | "sidebar">("player");
+  const tvZoneRef = useRef<"header" | "player" | "sidebar" | "controls">("player");
   const sidebarFocusIndexRef = useRef(0);
   const headerFocusIndexRef = useRef(0);
 
@@ -939,7 +1021,7 @@ export function WatchPage() {
     applyFocus(items[clamped]);
   }, [getHeaderFocusables, applyFocus]);
 
-  const goToZone = useCallback((zone: "header" | "player" | "sidebar") => {
+  const goToZone = useCallback((zone: "header" | "player" | "sidebar" | "controls") => {
     tvZoneRef.current = zone;
     if (zone === "header") {
       applyHeaderFocus(headerFocusIndexRef.current);
@@ -955,6 +1037,18 @@ export function WatchPage() {
     }
   }, [applyHeaderFocus, applySidebarFocus, getPlayerFocusables, applyFocus, clearAllFocus]);
 
+  // Auto-apply TV focus al boton Play cuando es visible en zona player
+  useEffect(() => {
+    if (tvZoneRef.current !== "player") return;
+    requestAnimationFrame(() => {
+      const items = getPlayerFocusables();
+      if (items.length) {
+        applyFocus(items[0]);
+      } else {
+        clearAllFocus();
+      }
+    });
+  }, [hasPlaybackStarted, playerReady, isPreparingPlayback, getPlayerFocusables, applyFocus, clearAllFocus]);
 
   // Ref para cancelPlayback estable en keyboard handler
   const cancelPlaybackRef = useRef(cancelPlayback);
@@ -973,18 +1067,19 @@ export function WatchPage() {
       const isPreparing = isPreparingRef.current;
 
       // --- Global: Escape/Backspace cancela carga o navega atrás ---
-      if (e.key === "Escape" || e.key === "Backspace" || e.key === "BrowserBack") {
+      if (e.key === "Escape" || e.key === "Backspace" || e.key === "BrowserBack" || e.key === "GoBack") {
         e.preventDefault();
         if (isSubtitleMenuOpen) {
           setIsSubtitleMenuOpen(false);
           return;
         }
         if (isPreparing) {
-          // Cancelar intento en curso en vez de navegar
           cancelPlaybackRef.current();
           return;
         }
+        if (zone === "controls") { exitPlayerControls(); return; }
         if (zone === "sidebar") { goToZone("player"); return; }
+        if (zone === "header") { goToZone("player"); return; }
         if (document.fullscreenElement) { void document.exitFullscreen().catch(() => {}); return; }
         navigate("/");
         return;
@@ -1057,9 +1152,39 @@ export function WatchPage() {
             } else if (hasStartButton) {
               playerItems[0].click();
             } else {
-              if (video.paused) video.play().catch(() => {});
-              else video.pause();
+              // Video reproduciendose: entrar a barra de controles
+              enterPlayerControls();
             }
+            break;
+        }
+        return;
+      }
+
+      // --- CONTROLS zone (barra de controles del video) ---
+      if (zone === "controls") {
+        switch (e.key) {
+          case "ArrowLeft":
+            e.preventDefault();
+            applyControlsFocus(controlsIndexRef.current - 1);
+            break;
+          case "ArrowRight":
+            e.preventDefault();
+            applyControlsFocus(controlsIndexRef.current + 1);
+            break;
+          case "Enter":
+          case " ":
+            e.preventDefault();
+            getControlButtons()[controlsIndexRef.current]?.click();
+            break;
+          case "ArrowUp":
+            e.preventDefault();
+            exitPlayerControls();
+            goToZone("header");
+            break;
+          case "ArrowDown":
+            e.preventDefault();
+            exitPlayerControls();
+            goToZone("sidebar");
             break;
         }
         return;
@@ -1171,7 +1296,11 @@ export function WatchPage() {
     goToZone,
     showSeekTooltip,
     getPlayerFocusables,
-    openSubtitleMenu
+    openSubtitleMenu,
+    enterPlayerControls,
+    exitPlayerControls,
+    applyControlsFocus,
+    getControlButtons
   ]);
 
   const displayYear = metaDetails?.info?.year || selectedFromStore?.year || "s/a";
@@ -1237,6 +1366,43 @@ export function WatchPage() {
             {seekTooltip ? (
               <div className="seek-indicator-overlay">
                 {seekTooltip}
+              </div>
+            ) : null}
+
+            {hasPlaybackStarted && playerReady && !showLoaderOverlay ? (
+              <div className={`watch-controls-bar ${controlsVisible ? "is-visible" : ""}`}>
+                <button
+                  type="button"
+                  className="watch-control-btn"
+                  onClick={() => handleControlAction("rewind")}
+                  aria-label="Retroceder 10s"
+                >
+                  <Rewind size={18} />
+                </button>
+                <button
+                  type="button"
+                  className="watch-control-btn"
+                  onClick={() => handleControlAction("playpause")}
+                  aria-label="Reproducir / Pausar"
+                >
+                  {videoRef.current?.paused ? <Play size={18} /> : <Pause size={18} />}
+                </button>
+                <button
+                  type="button"
+                  className="watch-control-btn"
+                  onClick={() => handleControlAction("forward")}
+                  aria-label="Adelantar 10s"
+                >
+                  <FastForward size={18} />
+                </button>
+                <button
+                  type="button"
+                  className="watch-control-btn"
+                  onClick={() => handleControlAction("fullscreen")}
+                  aria-label="Pantalla completa"
+                >
+                  {document.fullscreenElement ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+                </button>
               </div>
             ) : null}
 
