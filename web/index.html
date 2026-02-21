@@ -17,6 +17,6 @@
     <div id="root"></div>
     <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
     <script type="module" src="/src/main.tsx"></script>
-    <script>if("serviceWorker"in navigator){navigator.serviceWorker.register("/sw.js")}</script>
+    <script>if("serviceWorker"in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.unregister()})});caches.keys().then(function(k){k.forEach(function(n){caches.delete(n)})})}</script>
   </body>
 </html>

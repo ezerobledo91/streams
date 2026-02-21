@@ -7,7 +7,8 @@
     "a6b4204e0d499bca80",
     "16d198a799c18a743c",
     "386354ca0c78302157",
-    "3ea189effe4e6a46ec"
+    "3ea189effe4e6a46ec",
+    "f75459f5702270c636"
   ],
   "hidden": [
     "2efe2d1e1f30af574a",
@@ -75,7 +76,8 @@
     "eedeabfa015bbc5ff0": "Net TV (Alt 6)",
     "4192ca8899e7dab323": "Net TV (Alt 7)",
     "465de164ff00bfb4b9": "Net TV (Alt 8)",
-    "5c863369144d10cfde": "Net TV (Alt 9)"
+    "5c863369144d10cfde": "Net TV (Alt 9)",
+    "96933b144977b651d9": "Telefe (i)(720)"
   },
   "customCategories": {
     "3949f6cff317599a40": "noticias",
@@ -109,5 +111,6 @@
     "4192ca8899e7dab323": "noticias",
     "465de164ff00bfb4b9": "noticias",
     "5c863369144d10cfde": "noticias"
-  }
+  },
+  "activeSource": "remote"
 }

@@ -7460,3 +7460,8 @@ FeedUrl: https://magnetz.eu/search?query=The+O.C.
 2026-02-16 16:19:39.4|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
 2026-02-16 16:19:39.7|Debug|InstallUpdateService|No update available
 2026-02-16 16:19:39.8|Debug|FlareSolverr|Cloudflare Detected, Applying FlareSolverr Proxy FlareSolverr to request https://prowlarr.servarr.com/v1/ping
+2026-02-16 22:20:00.4|Debug|InstallUpdateService|Checking for updates
+2026-02-16 22:20:00.4|Debug|IndexerFactory|Temporarily ignoring indexer 1337x till 02/17/2026 11:44:49 due to recent failures.
+2026-02-16 22:20:00.5|Debug|IndexerFactory|Temporarily ignoring indexer DaMagNet till 02/16/2026 22:39:56 due to recent failures.
+2026-02-16 22:20:00.9|Debug|InstallUpdateService|No update available
+2026-02-16 22:20:00.9|Debug|FlareSolverr|Cloudflare Detected, Applying FlareSolverr Proxy FlareSolverr to request https://prowlarr.servarr.com/v1/ping

@@ -45,21 +45,22 @@ const clientDir = fs.existsSync(path.join(WEB_DIST_DIR, "index.html"))
   ? WEB_DIST_DIR
   : LEGACY_PUBLIC_DIR;
 
+// SW self-destruct inline (por si queda registrado /service-worker.js)
 app.get("/service-worker.js", (req, res) => {
   res.setHeader("Content-Type", "application/javascript; charset=utf-8");
   res.setHeader("Cache-Control", "no-store, max-age=0");
-  res.send(`
-self.addEventListener("install", () => self.skipWaiting());
-self.addEventListener("activate", (event) => {
-  event.waitUntil((async () => {
-    const keys = await caches.keys();
-    await Promise.all(keys.map((key) => caches.delete(key)));
-    await self.registration.unregister();
-    const clients = await self.clients.matchAll({ type: "window" });
-    clients.forEach((client) => client.navigate(client.url));
-  })());
+  res.send(`self.addEventListener("install",()=>self.skipWaiting());self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.map(n=>caches.delete(n)))).then(()=>self.registration.unregister()))});`);
 });
-`);
+
+// Forzar no-cache en index.html y sw.js — nunca deben quedar en HTTP cache
+app.use((req, res, next) => {
+  const p = req.path;
+  if (p === "/" || p === "/index.html" || p === "/sw.js") {
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+  }
+  next();
 });
 
 app.use(express.static(clientDir));
@@ -67,6 +68,7 @@ app.use(express.static(clientDir));
 registerApiRoutes(app);
 
 app.get("*", (req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
   res.sendFile(path.join(clientDir, "index.html"));
 });
 
@@ -100,7 +102,7 @@ function startServer() {
   try {
     const liveTvSummary = loadLiveTvFromDisk();
     console.log(
-      `Live TV cargado. Existe: ${liveTvSummary.exists ? "si" : "no"} | Archivos: ${liveTvSummary.fileCount} | Categorias: ${liveTvSummary.categoryCount} | Canales: ${liveTvSummary.channelCount}`
+      `Live TV cargado. Existe: ${liveTvSummary.exists ? "si" : "no"} | Archivos: ${liveTvSummary.fileCount} | TV Categorias: ${liveTvSummary.categoryCount} | TV Canales: ${liveTvSummary.channelCount} | Eventos: ${liveTvSummary.eventosCount} | 24/7: ${liveTvSummary.marathonCount} | VOD: ${liveTvSummary.vodCount}`
     );
   } catch (error) {
     console.error("No se pudieron cargar listas Live TV:", error.message);

@@ -2,6 +2,8 @@ import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import { useAppStore } from "./store/AppStore";
 import { HomePage } from "./views/HomePage";
 import { LiveTvPage } from "./views/LiveTvPage";
+import { EventosPage } from "./views/EventosPage";
+import { Page247 } from "./views/Page247";
 import { LoginPage } from "./views/LoginPage";
 import { SearchPage } from "./views/SearchPage";
 import { WatchPage } from "./views/WatchPage";
@@ -49,6 +51,14 @@ export const appRouter = createBrowserRouter([
       {
         path: "/live-tv",
         element: <LiveTvPage />
+      },
+      {
+        path: "/eventos",
+        element: <EventosPage />
+      },
+      {
+        path: "/247",
+        element: <Page247 />
       },
       {
         path: "/favorites",

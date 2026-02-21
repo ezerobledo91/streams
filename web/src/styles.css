@@ -442,6 +442,8 @@ body {
 .player-overlay-icon { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 999px; background: rgba(255,255,255,0.08); }
 .player-spinner { animation: spin 1s linear infinite; }
 .player-overlay-text { font-size: 13px; color: #d8d8d8; text-align: center; max-width: 280px; line-height: 1.4; }
+.player-cancel-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; background: rgba(255,255,255,0.08); color: #fff; font-size: 13px; cursor: pointer; transition: background 0.2s, border-color 0.2s; margin-top: 4px; }
+.player-cancel-btn:hover, .player-cancel-btn:focus, .player-cancel-btn.tv-focused { background: rgba(229,9,20,0.7); border-color: var(--brand); outline: none; }
 
 .watch-info-panel { background: #0a0a0a; border-left: 1px solid #222; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
 .watch-mini-media { width: 100px; aspect-ratio: 2/3; border-radius: 4px; overflow: hidden; border: 1px solid #333; flex-shrink: 0; }
@@ -525,6 +527,21 @@ body {
   height: 100%;
   overflow: hidden;
   background: #000;
+}
+.live-tv-main-area {
+  flex: 1 1 100%;
+  position: relative;
+  min-width: 0;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+@media (min-width: 900px) {
+  .live-tv-player-shell.has-panel-open {
+    display: flex;
+  }
+  .live-tv-player-shell.has-panel-open .live-tv-main-area {
+    flex: 0 0 calc(100% - min(480px, 44%));
+  }
 }
 .live-tv-video {
   width: 100% !important;
@@ -691,6 +708,55 @@ body {
 .live-tv-close-btn:hover { background: #222; color: #fff; }
 .live-tv-search { margin: 0; width: 100%; opacity: 1; border: 1px solid #222; background: #111; border-radius: 10px; flex-shrink: 0; }
 .live-tv-search input { width: 100%; opacity: 1; padding: 12px 14px; font-size: 14px; }
+.live-tv-source-switcher {
+  display: flex;
+  flex-shrink: 0;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.live-tv-source-tab {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #888;
+  background: #111;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+.live-tv-source-tab:hover:not(:disabled) { background: #1a1a1a; color: #ccc; }
+.live-tv-source-tab.is-active { background: var(--brand); color: #fff; cursor: default; }
+.live-tv-source-tab:disabled:not(.is-active) { cursor: not-allowed; opacity: 0.7; }
+.live-tv-remote-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 8px;
+  padding: 2px 0;
+}
+.live-tv-remote-refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #aaa;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+.live-tv-remote-refresh-btn:hover:not(:disabled) { background: #222; color: #fff; }
+.live-tv-remote-refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .live-tv-drawer-top-actions { display: flex; align-items: center; justify-content: flex-start; flex-shrink: 0; }
 .live-tv-reload-btn {
   width: 36px;
@@ -1354,6 +1420,170 @@ select, input { background: #1a1a1a; border: 1px solid #333; color: #fff; paddin
   ::-webkit-scrollbar { display: none; }
   * { scrollbar-width: none; }
 }
+
+/* ===== Panel selector TV — dos columnas, overlay bottom ===== */
+.live-tv-selector {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 1250;
+  display: flex;
+  flex-direction: column;
+  height: 55%;
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid #222;
+  transform: translateY(100%);
+  transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+  overflow: hidden;
+}
+.live-tv-selector.is-open { transform: translateY(0); }
+
+.live-tv-selector-header {
+  flex-shrink: 0;
+  padding: 10px 12px;
+  border-bottom: 1px solid #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.live-tv-selector-header-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.live-tv-selector-cols {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Columna izquierda: categorías */
+.live-tv-cat-panel {
+  width: 220px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  border-right: 1px solid #1a1a1a;
+  padding: 8px 0;
+}
+/* Columna derecha: canales */
+.live-tv-chan-panel {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+/* Items de categoría */
+.live-tv-cat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  color: #aaa;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+.live-tv-cat-item:hover,
+.live-tv-cat-item.tv-focused { background: #1a1a1a; color: #fff; }
+.live-tv-cat-item.is-active { color: var(--brand); font-weight: 600; background: rgba(229,9,20,0.08); }
+
+/* Items de canal en el nuevo panel */
+.live-tv-chan-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  border-left: 3px solid transparent;
+  background: none;
+  color: #ccc;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+.live-tv-chan-item:hover,
+.live-tv-chan-item.tv-focused { background: #1a1a1a; color: #fff; }
+.live-tv-chan-item.is-active { border-left-color: var(--brand); color: #fff; background: #1a1014; }
+
+/* En móvil: el selector ocupa más altura */
+@media (max-width: 700px) {
+  .live-tv-selector { height: 72%; }
+  .live-tv-cat-panel { width: 130px; }
+}
+
+/* Desktop/TV: panel lateral derecho */
+@media (min-width: 900px) {
+  .live-tv-selector {
+    top: 0; right: 0; bottom: 0; left: auto;
+    width: min(480px, 44%);
+    height: 100%;
+    border-top: none;
+    border-left: 1px solid #222;
+    transform: translateX(100%);
+  }
+  .live-tv-selector.is-open { transform: translateX(0); }
+}
+
+/* ── Modo edición: botón toggle ── */
+.live-tv-edit-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px;
+  border: 1px solid #2a2a2a; border-radius: 6px;
+  background: none; color: #777; cursor: pointer; flex-shrink: 0;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.live-tv-edit-btn:hover { background: #1e1e1e; color: #fff; border-color: #444; }
+.live-tv-edit-btn.is-active { background: rgba(229,9,20,0.15); color: var(--brand); border-color: var(--brand); }
+
+/* ── Fila de canal con botones de acción ── */
+.live-tv-chan-row { display: flex; align-items: center; }
+.live-tv-chan-row .live-tv-chan-item { flex: 1; min-width: 0; width: auto; }
+.live-tv-chan-action-btns {
+  display: flex; align-items: center; gap: 2px;
+  padding-right: 6px; flex-shrink: 0;
+}
+.live-tv-chan-action-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px;
+  border: none; border-radius: 6px;
+  background: none; color: #555; cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.live-tv-chan-action-btn:hover { background: #222; color: #ddd; }
+.live-tv-chan-action-btn.tv-focused {
+  background: #222; color: var(--brand);
+  outline: 2px solid var(--brand); outline-offset: -2px;
+}
+.live-tv-chan-action-btn.is-fav { color: #ff8c42; }
+
+/* ── Fila de categoría con botón ocultar ── */
+.live-tv-cat-row { display: flex; align-items: center; }
+.live-tv-cat-row .live-tv-cat-item { flex: 1; min-width: 0; width: auto; }
+.live-tv-cat-hide-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; flex-shrink: 0; margin-right: 4px;
+  border: none; border-radius: 5px;
+  background: none; color: #444; cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.live-tv-cat-hide-btn:hover { background: #1e1e1e; color: #aaa; }
+.live-tv-cat-item.is-hidden-cat { color: #3a3a3a; font-style: italic; }
+.live-tv-cat-item.is-hidden-cat:hover { color: #888; }
+
+/* Botón para mostrar/ocultar categorías filtradas */
+.live-tv-cat-show-hidden-btn {
+  display: flex; align-items: center; gap: 6px;
+  width: 100%; padding: 8px 14px;
+  border: none; border-top: 1px solid #1a1a1a;
+  background: none; color: #444; font-size: 12px; cursor: pointer;
+  margin-top: 4px; transition: color 0.15s;
+}
+.live-tv-cat-show-hidden-btn:hover { color: #999; }
 
 /* Drawer as overlay in fullscreen */
 :fullscreen .live-tv-drawer,

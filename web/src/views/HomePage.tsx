@@ -719,6 +719,12 @@ export function HomePage() {
               <Link to="/live-tv" className="nav-link">
                 TV en vivo
               </Link>
+              <Link to="/eventos" className="nav-link">
+                Eventos
+              </Link>
+              <Link to="/247" className="nav-link">
+                24/7
+              </Link>
               <Link to="/favorites" className="nav-link">
                 Favoritos
               </Link>

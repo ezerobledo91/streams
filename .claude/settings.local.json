@@ -17,7 +17,11 @@
       "Bash(while read:*)",
       "Bash(do rm \"$f\")",
       "Bash(done)",
-      "Bash(git check-ignore:*)"
+      "Bash(git check-ignore:*)",
+      "Bash(echo === FUXXION: URLs de canales LIVE \\(CANALES-*\\) ===:*)",
+      "Bash(echo === REY-PREMIUM: URLs de CINE 2024 ===:*)",
+      "Bash(echo === FUXXION URL patterns ===:*)",
+      "Bash(echo === REY-PREMIUM: muestra de CINE \\(movie\\) ===:*)"
     ]
   }
 }

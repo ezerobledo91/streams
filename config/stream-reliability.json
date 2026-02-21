@@ -1,6 +1,6 @@
 {
   "loadedAt": "2026-02-12T15:27:36.8440834-03:00",
-  "updatedAt": "2026-02-16T18:40:34.195Z",
+  "updatedAt": "2026-02-21T16:14:49.591Z",
   "providers": {
     "torrentdb": {
       "successes": 47,
@@ -161,12 +161,12 @@
       }
     },
     "torrentio": {
-      "successes": 108,
-      "failures": 4,
+      "successes": 128,
+      "failures": 6,
       "consecutiveFailures": 0,
-      "lastSuccessAt": 1771267234195,
-      "lastFailureAt": 1771248533258,
-      "lastFailureReason": "El torrent no contiene el episodio solicitado.",
+      "lastSuccessAt": 1771690489591,
+      "lastFailureAt": 1771643788763,
+      "lastFailureReason": "[in#0 @ 0000016a34735900] Error opening input: Invalid data found when processing input\r\nError opening input file pipe:0.\r\nError opening input files: Invalid data found when proces",
       "breakerUntil": 0,
       "sources": {
         "274f9ead8b229a31a8ad551c914e879f09efe6fb": {
@@ -506,10 +506,10 @@
           "lastFailureAt": 0
         },
         "cd3188b38f65e16d82fbbec5fd4cb5a971cfd20f": {
-          "successes": 1,
+          "successes": 3,
           "failures": 0,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1771199884351,
+          "lastSuccessAt": 1771689864089,
           "lastFailureAt": 0
         },
         "b2dc08cda835fc1d8f885e4fa6c66655be0cca92": {
@@ -576,10 +576,10 @@
           "lastFailureAt": 0
         },
         "e221efa71dda628a2d3ffe21f60756a4ec5a2935": {
-          "successes": 1,
+          "successes": 2,
           "failures": 0,
           "consecutiveFailures": 0,
-          "lastSuccessAt": 1771255767350,
+          "lastSuccessAt": 1771648993207,
           "lastFailureAt": 0
         },
         "10c9824c86dc7716265c59cceeb106e01d5c3c7f": {
@@ -587,6 +587,48 @@
           "failures": 0,
           "consecutiveFailures": 0,
           "lastSuccessAt": 1771267234195,
+          "lastFailureAt": 0
+        },
+        "01cf3cfa07ae31a65157bc3bae98f3128c637cca": {
+          "successes": 0,
+          "failures": 2,
+          "consecutiveFailures": 2,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771643788763
+        },
+        "9e6388ed6f30418ae33ea753b7e6134d20d77787": {
+          "successes": 2,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771652208224,
+          "lastFailureAt": 0
+        },
+        "4f33cbd2ec6e0760fe9ab01e049ca8277007d910": {
+          "successes": 8,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771652028521,
+          "lastFailureAt": 0
+        },
+        "6344ac2237b9a2162a195d1d564b394358c5abac": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771683196150,
+          "lastFailureAt": 0
+        },
+        "4da721447ed8793c48c6f5e25c3d995baaa8f914": {
+          "successes": 2,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771690489591,
+          "lastFailureAt": 0
+        },
+        "2b01c3f588cef67d999dc2aefef87678cb011213": {
+          "successes": 4,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771690255475,
           "lastFailureAt": 0
         }
       }
@@ -774,6 +816,164 @@
           "failures": 0,
           "consecutiveFailures": 0,
           "lastSuccessAt": 1771249452762,
+          "lastFailureAt": 0
+        }
+      }
+    },
+    "m3u-vod": {
+      "successes": 31,
+      "failures": 20,
+      "consecutiveFailures": 0,
+      "lastSuccessAt": 1771690450009,
+      "lastFailureAt": 1771683521597,
+      "lastFailureReason": "timeout",
+      "breakerUntil": 0,
+      "sources": {
+        "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/106480.mkv": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771648985557
+        },
+        "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/106407.mkv": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771648986479
+        },
+        "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/106408.mkv": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771648987307
+        },
+        "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/106409.mkv": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771648988123
+        },
+        "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/106410.mkv": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771648989012
+        },
+        "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/106411.mkv": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771648990067
+        },
+        "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/120457.mkv": {
+          "successes": 3,
+          "failures": 2,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771652091136,
+          "lastFailureAt": 1771652028502
+        },
+        "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/120458.mkv": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771650853304
+        },
+        "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/120459.mkv": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771650854173
+        },
+        "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/120460.mkv": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771650855000
+        },
+        "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/120461.mkv": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771650855830
+        },
+        "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/120462.mkv": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771650856730
+        },
+        "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/121095.mkv": {
+          "successes": 1,
+          "failures": 1,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771652503502,
+          "lastFailureAt": 1771652198212
+        },
+        "url:http://rey-premium.ddns.net/series/DPVEduardoEspa/Espa020828/483410.mp4": {
+          "successes": 2,
+          "failures": 2,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771690447551,
+          "lastFailureAt": 1771683285869
+        },
+        "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/73611.mkv": {
+          "successes": 2,
+          "failures": 2,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771690450009,
+          "lastFailureAt": 1771683292492
+        },
+        "url:http://rey-premium.ddns.net/series/DPVEduardoEspa/Espa020828/552369.mkv": {
+          "successes": 4,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771690448590,
+          "lastFailureAt": 0
+        },
+        "url:http://rey-premium.ddns.net/series/DPVEduardoEspa/Espa020828/476963.mp4": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771683518093
+        },
+        "url:http://rey-premium.ddns.net/series/DPVEduardoEspa/Espa020828/570011.mkv": {
+          "successes": 0,
+          "failures": 1,
+          "consecutiveFailures": 1,
+          "lastSuccessAt": 0,
+          "lastFailureAt": 1771683521597
+        },
+        "url:http://rey-premium.ddns.net/series/DPVEduardoEspa/Espa020828/547661.mkv": {
+          "successes": 1,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771683524734,
+          "lastFailureAt": 0
+        },
+        "url:http://rey-premium.ddns.net/series/DPVEduardoEspa/Espa020828/570263.mkv": {
+          "successes": 9,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771690334526,
+          "lastFailureAt": 0
+        },
+        "url:http://live.fuxxion.club:8080/series/juanvernazza/85GbSi1ewU/24274.mkv": {
+          "successes": 9,
+          "failures": 0,
+          "consecutiveFailures": 0,
+          "lastSuccessAt": 1771690335634,
           "lastFailureAt": 0
         }
       }

@@ -9,6 +9,7 @@ import type {
   MetaDetailsPayload,
   PlaybackPreflightPayload,
   PlaybackSessionPayload,
+  RemoteSourceStatus,
   SourcesPayload,
   StreamsPayload,
   SubtitlesPayload,
@@ -23,6 +24,13 @@ async function apiFetch<T>(path: string, options: ApiOptions = {}): Promise<T> {
   const controller = new AbortController();
   const timeoutMs = options.timeoutMs ?? 15000;
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  // Combinar signal externo (cancelación manual) con timeout interno
+  const externalSignal = options.signal;
+  if (externalSignal) {
+    if (externalSignal.aborted) controller.abort();
+    else externalSignal.addEventListener("abort", () => controller.abort(), { once: true });
+  }
 
   try {
     const response = await fetch(path, {
@@ -186,10 +194,11 @@ export function startAutoPlayback(payload: {
   maxCandidates?: number;
   validationBudgetMs?: number;
   preferredSourceKey?: string;
-}): Promise<AutoPlaybackPayload> {
+}, signal?: AbortSignal): Promise<AutoPlaybackPayload> {
   return apiFetch<AutoPlaybackPayload>("/api/playback/auto", {
     method: "POST",
     body: JSON.stringify(payload),
+    signal,
     timeoutMs: Math.max(30000, Math.round(Number(payload.validationBudgetMs) || Number(payload.waitReadyMs) || 0) + 15000)
   });
 }
@@ -296,8 +305,69 @@ export function fetchLiveTvChannels(params: {
   }
 
   return apiFetch<LiveTvChannelsPayload>(`/api/live-tv/channels?${searchParams.toString()}`, {
-    timeoutMs: 20000
+    timeoutMs: 30000
   });
+}
+
+function fetchLiveBucketCategories(apiPrefix: "/api/eventos" | "/api/247"): Promise<LiveTvCategoriesPayload> {
+  return apiFetch<LiveTvCategoriesPayload>(`${apiPrefix}/categories`, {
+    timeoutMs: 15000
+  });
+}
+
+function fetchLiveBucketChannels(
+  apiPrefix: "/api/eventos" | "/api/247",
+  params: {
+    category?: string;
+    query?: string;
+    page?: number;
+    limit?: number;
+    webOnly?: boolean;
+  }
+): Promise<LiveTvChannelsPayload> {
+  const searchParams = new URLSearchParams({
+    page: String(params.page ?? 1),
+    limit: String(params.limit ?? 400),
+    webOnly: String(params.webOnly ?? true)
+  });
+  if (params.category?.trim()) {
+    searchParams.set("category", params.category.trim());
+  }
+  if (params.query?.trim()) {
+    searchParams.set("query", params.query.trim());
+  }
+
+  return apiFetch<LiveTvChannelsPayload>(`${apiPrefix}/channels?${searchParams.toString()}`, {
+    timeoutMs: 30000
+  });
+}
+
+export function fetchEventosCategories(): Promise<LiveTvCategoriesPayload> {
+  return fetchLiveBucketCategories("/api/eventos");
+}
+
+export function fetchEventosChannels(params: {
+  category?: string;
+  query?: string;
+  page?: number;
+  limit?: number;
+  webOnly?: boolean;
+}): Promise<LiveTvChannelsPayload> {
+  return fetchLiveBucketChannels("/api/eventos", params);
+}
+
+export function fetch247Categories(): Promise<LiveTvCategoriesPayload> {
+  return fetchLiveBucketCategories("/api/247");
+}
+
+export function fetch247Channels(params: {
+  category?: string;
+  query?: string;
+  page?: number;
+  limit?: number;
+  webOnly?: boolean;
+}): Promise<LiveTvChannelsPayload> {
+  return fetchLiveBucketChannels("/api/247", params);
 }
 
 export function checkAvailabilityBatch(
@@ -455,6 +525,37 @@ export function setLiveTvChannelCategoryApi(channelId: string, categoryId: strin
   return apiFetch<LiveTvPreferences>("/api/live-tv/preferences/categories", {
     method: "POST",
     body: JSON.stringify({ channelId, categoryId })
+  });
+}
+
+// --- Fuentes remotas Live TV ---
+
+export interface ActiveSourcePayload {
+  activeSource: "local" | "remote" | "all";
+  remoteSources: RemoteSourceStatus[];
+}
+
+export function fetchActiveSource(): Promise<ActiveSourcePayload> {
+  return apiFetch<ActiveSourcePayload>("/api/live-tv/active-source");
+}
+
+export function setActiveSourceApi(source: "local" | "remote" | "all"): Promise<{ ok: boolean; activeSource: string }> {
+  return apiFetch<{ ok: boolean; activeSource: string }>("/api/live-tv/active-source", {
+    method: "POST",
+    body: JSON.stringify({ source }),
+    timeoutMs: 150000 // hasta 2.5 min si descarga varias listas
+  });
+}
+
+export function fetchRemoteSourcesApi(): Promise<{ sources: RemoteSourceStatus[] }> {
+  return apiFetch<{ sources: RemoteSourceStatus[] }>("/api/live-tv/remote-sources");
+}
+
+export function refreshRemoteSourcesApi(): Promise<{ ok: boolean; results: Array<{ id: string; ok: boolean; error?: string }> }> {
+  return apiFetch<{ ok: boolean; results: Array<{ id: string; ok: boolean; error?: string }> }>("/api/live-tv/remote-sources/refresh", {
+    method: "POST",
+    body: "{}",
+    timeoutMs: 120000
   });
 }
 

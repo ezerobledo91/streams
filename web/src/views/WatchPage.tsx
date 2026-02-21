@@ -8,7 +8,8 @@ import {
   Languages,
   LoaderCircle,
   Maximize2,
-  Play
+  Play,
+  XCircle
 } from "lucide-react";
 import {
   reportPlaybackMetric,
@@ -63,6 +64,24 @@ function typeLabel(value: Category): string {
   if (value === "tv") return "TV";
   return "Pelicula";
 }
+
+type AudioTrackOption = {
+  index: number;
+  label: string;
+  language: string;
+};
+
+type VideoWithAudioTracks = HTMLVideoElement & {
+  audioTracks?: {
+    length: number;
+    [index: number]: {
+      label?: string;
+      language?: string;
+      enabled?: boolean;
+    };
+  };
+};
+
 export function WatchPage() {
   const params = useParams<{ type: string; itemId: string }>();
   const navigate = useNavigate();
@@ -107,7 +126,12 @@ export function WatchPage() {
   const [alternatives, setAlternatives] = useState<AutoPlaybackAlternative[]>([]);
   const [activeAlternativeIndex, setActiveAlternativeIndex] = useState<number>(-1);
   const [seekTooltip, setSeekTooltip] = useState<string | null>(null);
+  const [activeChosenCandidate, setActiveChosenCandidate] = useState<AutoPlaybackPayload["chosen"] | null>(null);
+  const [mkvAudioTracks, setMkvAudioTracks] = useState<AudioTrackOption[]>([]);
+  const [selectedMkvAudioTrackIndex, setSelectedMkvAudioTrackIndex] = useState(0);
   const seekTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isCurrentMkv = String(activeChosenCandidate?.fileExtension || "").toLowerCase() === "mkv";
+  const showMkvAudioTrackSelector = isCurrentMkv && mkvAudioTracks.length > 1;
 
   const handleAudioPreferenceChange = useCallback((value: AudioPreference) => {
     setAudioPreference(value);
@@ -123,6 +147,8 @@ export function WatchPage() {
   const hasEverPlayedRef = useRef(false);
   const lastSaveTimeRef = useRef(0);
   const hasResumedRef = useRef(false);
+  const autoPlayAbortRef = useRef<AbortController | null>(null);
+  const isPreparingRef = useRef(false);
   const runtimeFailureHandlerRef = useRef<(reason: string) => void>(() => {});
   const handleRuntimeFailure = useCallback((reason: string) => {
     runtimeFailureHandlerRef.current(reason);
@@ -200,6 +226,59 @@ export function WatchPage() {
     seekTimerRef.current = setTimeout(() => setSeekTooltip(null), 1200);
   }, []);
 
+  const refreshMkvAudioTracks = useCallback(() => {
+    const video = videoRef.current as VideoWithAudioTracks | null;
+    if (!video || !isCurrentMkv) {
+      setMkvAudioTracks([]);
+      setSelectedMkvAudioTrackIndex(0);
+      return;
+    }
+    const rawTracks = video.audioTracks;
+    if (!rawTracks || typeof rawTracks.length !== "number" || rawTracks.length <= 0) {
+      setMkvAudioTracks([]);
+      setSelectedMkvAudioTrackIndex(0);
+      return;
+    }
+
+    const parsedTracks: AudioTrackOption[] = [];
+    let enabledIndex = -1;
+    for (let index = 0; index < rawTracks.length; index += 1) {
+      const track = rawTracks[index] || {};
+      const language = String(track.language || "und").trim() || "und";
+      const label = String(track.label || "").trim() || `Pista ${index + 1}`;
+      if (track.enabled) enabledIndex = index;
+      parsedTracks.push({
+        index,
+        label: `${label} (${language})`,
+        language
+      });
+    }
+    setMkvAudioTracks(parsedTracks);
+    if (enabledIndex >= 0) {
+      setSelectedMkvAudioTrackIndex(enabledIndex);
+    } else if (parsedTracks.length) {
+      setSelectedMkvAudioTrackIndex((current) => Math.max(0, Math.min(parsedTracks.length - 1, current)));
+    } else {
+      setSelectedMkvAudioTrackIndex(0);
+    }
+  }, [isCurrentMkv]);
+
+  const handleMkvAudioTrackChange = useCallback((nextIndex: number) => {
+    const video = videoRef.current as VideoWithAudioTracks | null;
+    const rawTracks = video?.audioTracks;
+    if (!video || !rawTracks || typeof rawTracks.length !== "number" || rawTracks.length <= 1) {
+      return;
+    }
+    const index = Math.max(0, Math.min(rawTracks.length - 1, Number(nextIndex) || 0));
+    for (let trackIndex = 0; trackIndex < rawTracks.length; trackIndex += 1) {
+      const track = rawTracks[trackIndex];
+      if (!track) continue;
+      track.enabled = trackIndex === index;
+    }
+    setSelectedMkvAudioTrackIndex(index);
+    refreshMkvAudioTracks();
+  }, [refreshMkvAudioTracks]);
+
   const clearActivePlayback = useCallback(async (resetStarted = false) => {
     const sessionId = activeSessionIdRef.current;
     setSessionSubtitles([]);
@@ -214,6 +293,9 @@ export function WatchPage() {
     }
 
     destroyHls();
+    setActiveChosenCandidate(null);
+    setMkvAudioTracks([]);
+    setSelectedMkvAudioTrackIndex(0);
 
     if (videoRef.current) {
       videoRef.current.pause();
@@ -222,8 +304,19 @@ export function WatchPage() {
     }
   }, [activeSessionIdRef, destroyHls, resetPlaybackState, setSessionSubtitles]);
 
+  useEffect(() => { isPreparingRef.current = isPreparingPlayback; }, [isPreparingPlayback]);
+
+  const cancelPlayback = useCallback(() => {
+    autoPlayAbortRef.current?.abort();
+    autoPlayAbortRef.current = null;
+    beginPlaybackAttempt();
+    setIsPreparingPlayback(false);
+    setActionError(null);
+  }, [beginPlaybackAttempt, setIsPreparingPlayback]);
+
   useEffect(() => {
     return () => {
+      autoPlayAbortRef.current?.abort();
       beginPlaybackAttempt();
       void clearActivePlayback(true);
     };
@@ -245,6 +338,8 @@ export function WatchPage() {
   const saveProgress = useCallback((force = false) => {
     const video = videoRef.current;
     if (!video || !video.duration || !decodedItemId) return;
+    // No guardar progreso si aún no hay posición real (evita sobreescribir entries válidos con position=0)
+    if (video.currentTime < 5) return;
     const now = Date.now();
     if (!force && now - lastSaveTimeRef.current < 30000) return;
     lastSaveTimeRef.current = now;
@@ -305,6 +400,9 @@ export function WatchPage() {
 
       const ttffStartedAt = performance.now();
       applyAutoPlaybackPayload(payload, setSessionSubtitles);
+      setActiveChosenCandidate(payload.chosen || null);
+      setMkvAudioTracks([]);
+      setSelectedMkvAudioTrackIndex(0);
       const isHlsSession = payload.streamUrl.includes("/hls/") && payload.sessionId;
       const hlsMode = isHlsSession ? "event" : "vod";
       console.log(`[PLAY-DEBUG] attachVideoSource: url=${payload.streamUrl} mode=${hlsMode}`);
@@ -326,7 +424,14 @@ export function WatchPage() {
       }
       assertPlaybackAttemptActive(playbackAttemptId);
       setPlayerReady(true);
+      refreshMkvAudioTracks();
       hasEverPlayedRef.current = true;
+
+      // Persistir la fuente que funcionó para "seguir viendo"
+      if (payload.chosen?.sourceKey) {
+        preferredSourceKeyRef.current = payload.chosen.sourceKey;
+        try { localStorage.setItem(`streams_src|${streamsType}|${decodedItemId}`, payload.chosen.sourceKey); } catch {}
+      }
 
       if (!hasResumedRef.current && videoRef.current) {
         hasResumedRef.current = true;
@@ -384,7 +489,8 @@ export function WatchPage() {
       refreshAddonSubtitles,
       setSessionSubtitles,
       streamsType,
-      syncSelectedQuality
+      syncSelectedQuality,
+      refreshMkvAudioTracks
     ]
   );
 
@@ -402,6 +508,11 @@ export function WatchPage() {
       setPlayerReady(false);
       setSessionSubtitles([]);
 
+      // Crear AbortController para poder cancelar este intento
+      autoPlayAbortRef.current?.abort();
+      const abortCtrl = new AbortController();
+      autoPlayAbortRef.current = abortCtrl;
+
       try {
         const payload = await startAutoPlayback({
           type: streamsType,
@@ -416,7 +527,7 @@ export function WatchPage() {
           probeTimeoutMs: 3500,
           maxCandidates: 25,
           preferredSourceKey: preferredSourceKeyRef.current || undefined
-        });
+        }, abortCtrl.signal);
         assertPlaybackAttemptActive(playbackAttemptId);
         setAlternatives(payload.alternatives || []);
         setActiveAlternativeIndex(-1);
@@ -481,10 +592,18 @@ export function WatchPage() {
       void clearUserUnavailable({ username: state.user.username, type, itemId: decodedItemId }).catch(() => {});
     }
     invalidateAvailability(type, decodedItemId);
+    // Restaurar fuente preferida de "seguir viendo"
+    if (!preferredSourceKeyRef.current) {
+      try {
+        const stored = localStorage.getItem(`streams_src|${streamsType}|${decodedItemId}`);
+        if (stored) preferredSourceKeyRef.current = stored;
+      } catch {}
+    }
     try {
       const autoAttemptId = beginPlaybackAttempt();
       await playWithBackendAuto(selectedQuality || "auto", true, autoAttemptId);
     } catch (error) {
+      if ((error as Error)?.name === "AbortError") return; // cancelado por el usuario
       const message = error instanceof Error ? error.message : "No hay video disponible por el momento.";
       setActionError(message);
     }
@@ -492,13 +611,25 @@ export function WatchPage() {
 
   async function handleQualityClick(value: QualitySelection) {
     setSelectedQuality(value);
+    setActionError(null);
+
+    // Intentar reutilizar una alternativa ya validada antes de re-buscar
+    if (value !== "auto" && alternatives.length > 0) {
+      const matchIdx = alternatives.findIndex((alt) => alt.selectedQuality === value);
+      if (matchIdx >= 0) {
+        void handlePlayAlternative(alternatives[matchIdx], matchIdx);
+        return;
+      }
+    }
+
+    // Sin match → búsqueda completa
     setAlternatives([]);
     setActiveAlternativeIndex(-1);
-    setActionError(null);
     try {
       const autoAttemptId = beginPlaybackAttempt();
       await playWithBackendAuto(value, true, autoAttemptId);
     } catch (error) {
+      if ((error as Error)?.name === "AbortError") return;
       const message = error instanceof Error ? error.message : "No se pudo cambiar la calidad.";
       setActionError(message);
     }
@@ -533,20 +664,23 @@ export function WatchPage() {
     const key = `${type}|${decodedItemId}|${season}|${episode}`;
     if (!decodedItemId) return;
     if (autoLoadKeyRef.current === key) return;
-    const isEpisodeChange = hasEverPlayedRef.current;
     autoLoadKeyRef.current = key;
 
     const attemptId = beginPlaybackAttempt();
-    preferredSourceKeyRef.current = "";
+    // Restaurar fuente preferida si existe, en vez de resetear
+    try {
+      const stored = localStorage.getItem(`streams_src|${type}|${decodedItemId}`);
+      preferredSourceKeyRef.current = stored || "";
+    } catch { preferredSourceKeyRef.current = ""; }
     resetValidatedQualities();
     void clearActivePlayback(true);
     setActionError(null);
 
-    if (isEpisodeChange) {
-      void playWithBackendAuto("auto", true, attemptId).catch((err) => {
-        setActionError(err instanceof Error ? err.message : "No hay video disponible.");
-      });
-    }
+    // Autoplay siempre: al entrar a la página y al cambiar episodio
+    void playWithBackendAuto("auto", true, attemptId).catch((err) => {
+      if ((err as Error)?.name === "AbortError") return;
+      setActionError(err instanceof Error ? err.message : "No hay video disponible.");
+    });
   }, [
     beginPlaybackAttempt,
     clearActivePlayback,
@@ -567,14 +701,17 @@ export function WatchPage() {
       setIsBuffering(false);
       setPlayerReady(true);
       setActionError(null);
+      refreshMkvAudioTracks();
     };
     const onCanPlay = () => {
       setIsBuffering(false);
       setPlayerReady(true);
       setActionError(null);
+      refreshMkvAudioTracks();
     };
     const onLoadedData = () => {
       setPlayerReady(true);
+      refreshMkvAudioTracks();
     };
 
     video.addEventListener("waiting", onWaiting);
@@ -590,7 +727,16 @@ export function WatchPage() {
       video.removeEventListener("loadeddata", onLoadedData);
       video.removeEventListener("loadedmetadata", onLoadedData);
     };
-  }, [hasPlaybackStarted, setPlayerReady]);
+  }, [hasPlaybackStarted, setPlayerReady, refreshMkvAudioTracks]);
+
+  useEffect(() => {
+    if (!isCurrentMkv) {
+      setMkvAudioTracks([]);
+      setSelectedMkvAudioTrackIndex(0);
+      return;
+    }
+    refreshMkvAudioTracks();
+  }, [isCurrentMkv, refreshMkvAudioTracks]);
 
   const episodeList = metaDetails?.episodes || [];
   const seasonList = metaDetails?.seasons || [];
@@ -691,17 +837,34 @@ export function WatchPage() {
   }, [applyHeaderFocus, applySidebarFocus, getPlayerFocusables, applyFocus, clearAllFocus]);
 
 
+  // Ref para cancelPlayback estable en keyboard handler
+  const cancelPlaybackRef = useRef(cancelPlayback);
+  useEffect(() => { cancelPlaybackRef.current = cancelPlayback; }, [cancelPlayback]);
+
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      // Allow typing in inputs normally
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
-      // If a native <select> dropdown is open, let the browser handle all keys
       if (tag === "SELECT") return;
 
       const video = videoRef.current;
       if (!video) return;
       const zone = tvZoneRef.current;
+      const isPreparing = isPreparingRef.current;
+
+      // --- Global: Escape/Backspace cancela carga o navega atrás ---
+      if (e.key === "Escape" || e.key === "Backspace" || e.key === "BrowserBack") {
+        e.preventDefault();
+        if (isPreparing) {
+          // Cancelar intento en curso en vez de navegar
+          cancelPlaybackRef.current();
+          return;
+        }
+        if (zone === "sidebar") { goToZone("player"); return; }
+        if (document.fullscreenElement) { void document.exitFullscreen().catch(() => {}); return; }
+        navigate("/");
+        return;
+      }
 
       // --- HEADER zone ---
       if (zone === "header") {
@@ -725,11 +888,6 @@ export function WatchPage() {
             e.preventDefault();
             if (items[idx]) items[idx].click();
             break;
-          case "Escape":
-          case "Backspace":
-            e.preventDefault();
-            navigate("/");
-            break;
         }
         return;
       }
@@ -742,14 +900,14 @@ export function WatchPage() {
         switch (e.key) {
           case "ArrowLeft":
             e.preventDefault();
-            if (!hasStartButton) {
+            if (!hasStartButton && !isPreparing) {
               video.currentTime = Math.max(0, video.currentTime - 10);
               showSeekTooltip("-10s");
             }
             break;
           case "ArrowRight":
             e.preventDefault();
-            if (!hasStartButton) {
+            if (!hasStartButton && !isPreparing) {
               video.currentTime = Math.min(video.duration || 0, video.currentTime + 10);
               showSeekTooltip("+10s");
             }
@@ -770,22 +928,18 @@ export function WatchPage() {
           case "Enter":
           case " ":
             e.preventDefault();
-            if (hasStartButton) {
+            if (isPreparing) {
+              cancelPlaybackRef.current();
+            } else if (hasStartButton) {
               playerItems[0].click();
             } else {
               if (video.paused) video.play().catch(() => {});
               else video.pause();
             }
             break;
-          case "Escape":
-          case "Backspace":
-            e.preventDefault();
-            navigate("/");
-            break;
         }
         return;
       }
-
 
       // --- SIDEBAR zone ---
       const items = getSidebarFocusables();
@@ -846,22 +1000,16 @@ export function WatchPage() {
         case " ":
           e.preventDefault();
           if (isSelect) {
-            // Open native dropdown — browser handles selection internally
             (current as HTMLSelectElement).showPicker?.();
           } else if (current) {
             current.click();
           }
           break;
-        case "Escape":
-        case "Backspace":
-          e.preventDefault();
-          goToZone("player");
-          break;
       }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [navigate, getSidebarFocusables, getHeaderFocusables, applySidebarFocus, applyHeaderFocus, goToZone, clearAllFocus]);
+  }, [navigate, getSidebarFocusables, getHeaderFocusables, applySidebarFocus, applyHeaderFocus, goToZone, showSeekTooltip, getPlayerFocusables]);
 
   const displayYear = metaDetails?.info?.year || selectedFromStore?.year || "s/a";
   const displayRuntime = Number(metaDetails?.info?.runtime || 0) > 0 ? `${metaDetails?.info?.runtime} min` : null;
@@ -935,6 +1083,17 @@ export function WatchPage() {
                   <LoaderCircle size={22} className="player-spinner" />
                 </div>
                 {loadingStateText ? <div className="player-overlay-text">{loadingStateText}</div> : null}
+                {isPreparingPlayback ? (
+                  <button
+                    type="button"
+                    className="player-cancel-btn"
+                    onClick={cancelPlayback}
+                    aria-label="Cancelar carga"
+                  >
+                    <XCircle size={16} />
+                    <span>Cancelar</span>
+                  </button>
+                ) : null}
               </div>
             ) : null}
 
@@ -943,7 +1102,6 @@ export function WatchPage() {
                 type="button"
                 className="player-start-cta"
                 onClick={() => void handleStartPlayback()}
-                disabled={isPreparingPlayback}
                 aria-label="Iniciar reproduccion"
               >
                 <span className="player-start-cta-icon">
@@ -965,7 +1123,6 @@ export function WatchPage() {
               <button
                 type="button"
                 onClick={() => void handleQualityClick("auto")}
-                disabled={isPreparingPlayback}
                 className={selectedQuality === "auto" && activeAlternativeIndex === -1 ? "is-active" : ""}
               >
                 Auto
@@ -975,7 +1132,6 @@ export function WatchPage() {
                   key={quality}
                   type="button"
                   onClick={() => void handleQualityClick(quality)}
-                  disabled={isPreparingPlayback}
                   className={selectedQuality === quality && activeAlternativeIndex === -1 ? "is-active" : ""}
                 >
                   {qualityLabel(quality)}
@@ -995,7 +1151,6 @@ export function WatchPage() {
                       type="button"
                       className={`alt-source-item ${activeAlternativeIndex === idx ? "is-active" : ""}`}
                       onClick={() => void handlePlayAlternative(alt, idx)}
-                      disabled={isPreparingPlayback}
                     >
                       <span className="alt-source-quality">{qualityLabel(alt.selectedQuality)}</span>
                       <span className="alt-source-name">{alt.chosen.displayName}</span>
@@ -1054,6 +1209,21 @@ export function WatchPage() {
                 <option value="es">Espanol latino</option>
               </select>
             </label>
+            {showMkvAudioTrackSelector ? (
+              <label className="season-select">
+                <span>Pista MKV</span>
+                <select
+                  value={selectedMkvAudioTrackIndex}
+                  onChange={(event) => handleMkvAudioTrackChange(Number(event.target.value))}
+                >
+                  {mkvAudioTracks.map((track) => (
+                    <option key={track.index} value={track.index}>
+                      {track.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
           </div>
 
           {isSeries ? (
@@ -1068,7 +1238,6 @@ export function WatchPage() {
                   <select
                     value={season}
                     onChange={(event) => setSeason(Number(event.target.value || 1))}
-                    disabled={isPreparingPlayback}
                   >
                     {seasonList
                       .filter((item) => item.season > 0)
@@ -1112,7 +1281,6 @@ export function WatchPage() {
                       type="button"
                       className={`episode-item ${item.episode === episode ? "is-active" : ""}`}
                       onClick={() => setEpisode(item.episode)}
-                      disabled={isPreparingPlayback}
                     >
                       {formatEpisodeLabel(item)}
                     </button>

@@ -24,6 +24,84 @@
       "continueWatching": [
         {
           "type": "series",
+          "itemId": "tt2442560",
+          "name": "Peaky Blinders",
+          "poster": "https://image.tmdb.org/t/p/w500/zUqNyXRfYkFAFXsqJJjKMZpjYus.jpg",
+          "background": "https://image.tmdb.org/t/p/w500/l8v3gJDlASN0lNn51gR8zQJsu5O.jpg",
+          "season": 1,
+          "episode": 1,
+          "episodeTitle": "Episodio 1",
+          "position": 0,
+          "duration": 3419,
+          "lastWatched": 1771690495242
+        },
+        {
+          "type": "series",
+          "itemId": "tmdb:tv:1399",
+          "name": "Juego de tronos",
+          "poster": "https://image.tmdb.org/t/p/w500/3hDtRuwTfQQYRst3kjhvp4Cogjw.jpg",
+          "background": "https://image.tmdb.org/t/p/w500/zZqpAXxVSBtxV9qPBcscfXBcL2w.jpg",
+          "season": 1,
+          "episode": 1,
+          "episodeTitle": "Se acerca el invierno",
+          "position": 0,
+          "duration": 3697,
+          "lastWatched": 1771690281024
+        },
+        {
+          "type": "series",
+          "itemId": "tmdb:tv:1395",
+          "name": "Gossip Girl",
+          "poster": "https://image.tmdb.org/t/p/w500/fmegxZBz7GF8k4eme4ZJXXGI0TO.jpg",
+          "background": "https://image.tmdb.org/t/p/w500/5RWAjCYhu3D8Ai2QBYP7GjaxFb3.jpg",
+          "season": 1,
+          "episode": 1,
+          "episodeTitle": "Piloto",
+          "position": 51,
+          "duration": 2550,
+          "lastWatched": 1771683689463
+        },
+        {
+          "type": "series",
+          "itemId": "tmdb:tv:76479",
+          "name": "The Boys",
+          "poster": "https://image.tmdb.org/t/p/w500/5kgY14oisiHcJ4zq0Xgq1e97PHm.jpg",
+          "background": "https://image.tmdb.org/t/p/w500/czffzEgaBko4mXW84B1J1EnQBzo.jpg",
+          "season": 1,
+          "episode": 1,
+          "episodeTitle": "Las reglas del juego",
+          "position": 325,
+          "duration": 3609,
+          "lastWatched": 1771652551205
+        },
+        {
+          "type": "series",
+          "itemId": "tmdb:tv:106379",
+          "name": "Fallout",
+          "poster": "https://image.tmdb.org/t/p/w500/uNctKf62RRL8RKPTrdyFrcttwT2.jpg",
+          "background": "https://image.tmdb.org/t/p/w500/coaPCIqQBPUZsOnJcWZxhaORcDT.jpg",
+          "season": 1,
+          "episode": 1,
+          "episodeTitle": "El fin",
+          "position": 369,
+          "duration": 4497,
+          "lastWatched": 1771652170876
+        },
+        {
+          "type": "series",
+          "itemId": "tmdb:tv:79744",
+          "name": "The Rookie",
+          "poster": "https://image.tmdb.org/t/p/w500/g39Rn6PcZjK2yLzz5Z5oBKSpsZR.jpg",
+          "background": "https://image.tmdb.org/t/p/w500/6iNWfGVCEfASDdlNb05TP5nG0ll.jpg",
+          "season": 1,
+          "episode": 1,
+          "episodeTitle": "Piloto",
+          "position": 0,
+          "duration": 2581,
+          "lastWatched": 1771649002766
+        },
+        {
+          "type": "series",
           "itemId": "tmdb:tv:11235",
           "name": "Medabots",
           "poster": "https://image.tmdb.org/t/p/w500/x4bQto8Jsphbd0VxLKcvqDQS0Mj.jpg",
@@ -60,19 +138,6 @@
           "position": 540,
           "duration": 1743,
           "lastWatched": 1771258158007
-        },
-        {
-          "type": "series",
-          "itemId": "tmdb:tv:79744",
-          "name": "The Rookie",
-          "poster": "https://image.tmdb.org/t/p/w500/g39Rn6PcZjK2yLzz5Z5oBKSpsZR.jpg",
-          "background": "https://image.tmdb.org/t/p/w500/6iNWfGVCEfASDdlNb05TP5nG0ll.jpg",
-          "season": 1,
-          "episode": 1,
-          "episodeTitle": "Piloto",
-          "position": 20,
-          "duration": 2581,
-          "lastWatched": 1771255843187
         },
         {
           "type": "movie",
@@ -190,19 +255,6 @@
           "position": 92,
           "duration": 3930,
           "lastWatched": 1771106684549
-        },
-        {
-          "type": "series",
-          "itemId": "tmdb:tv:106379",
-          "name": "Fallout",
-          "poster": "https://image.tmdb.org/t/p/w500/uNctKf62RRL8RKPTrdyFrcttwT2.jpg",
-          "background": "https://image.tmdb.org/t/p/w500/coaPCIqQBPUZsOnJcWZxhaORcDT.jpg",
-          "season": 1,
-          "episode": 1,
-          "episodeTitle": "El fin",
-          "position": 101,
-          "duration": 4497,
-          "lastWatched": 1771106564387
         },
         {
           "type": "movie",

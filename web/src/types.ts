@@ -266,6 +266,19 @@ export interface LiveTvChannelsPayload {
   items: LiveTvChannelItem[];
 }
 
+export interface RemoteSourceCache {
+  exists: boolean;
+  updatedAt: string | null;
+  stale: boolean;
+}
+
+export interface RemoteSourceStatus {
+  id: string;
+  name: string;
+  enabled: boolean;
+  cache: RemoteSourceCache;
+}
+
 export interface AutoPlaybackCandidateSummary {
   providerId: string;
   providerName: string;
@@ -280,6 +293,7 @@ export interface AutoPlaybackCandidateSummary {
   hasMagnet: boolean;
   hasDirectUrl: boolean;
   fileIdx: number | null;
+  sourceKey?: string;
 }
 
 export interface AutoPlaybackAlternative {
