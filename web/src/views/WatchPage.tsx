@@ -15,6 +15,7 @@ import {
   reportPlaybackMetric,
   destroyPlaybackSession,
   startAutoPlayback,
+  forceHlsPlayback,
   saveWatchProgress,
   prefetchNextEpisode,
   clearUserUnavailable
@@ -30,6 +31,7 @@ import { useMetaDetails } from "../hooks/useMetaDetails";
 import { usePlaybackSession } from "../hooks/usePlaybackSession";
 import { useStreamCandidates, type QualitySelection } from "../hooks/useStreamCandidates";
 import { useSubtitleSelection } from "../hooks/useSubtitleSelection";
+import { useAppShell } from "../context/AppShellContext";
 
 function normalizeType(raw: string): Category {
   const clean = String(raw || "").toLowerCase();
@@ -50,6 +52,29 @@ function qualityLabel(value: QualitySelection): string {
   return "SD";
 }
 
+function languageBadge(code: string): string {
+  if (code === "es-419") return "Latino";
+  if (code === "es") return "Castellano";
+  if (code === "en") return "Inglés";
+  if (code === "multi") return "Multi";
+  if (code === "pt") return "Portugués";
+  return code.toUpperCase();
+}
+
+function formatLanguageHints(hints: string[] | undefined): string {
+  if (!hints?.length) return "";
+  const priority = ["es-419", "es", "en", "multi"];
+  const relevant = hints.filter(h => priority.includes(h));
+  const display = relevant.length ? relevant.slice(0, 2) : hints.slice(0, 2);
+  return display.map(languageBadge).join(" / ");
+}
+
+function formatFileSize(bytes: number): string {
+  if (!bytes || bytes <= 0) return "";
+  const gb = bytes / (1024 * 1024 * 1024);
+  return gb >= 1 ? `${gb.toFixed(1)}GB` : `${Math.round(gb * 1024)}MB`;
+}
+
 function formatRating(value: number | null | undefined): string {
   if (!Number.isFinite(Number(value))) return "N/D";
   return `${Number(value).toFixed(1)}/10`;
@@ -63,6 +88,10 @@ function typeLabel(value: Category): string {
   if (value === "series") return "Serie";
   if (value === "tv") return "TV";
   return "Pelicula";
+}
+
+function isVisibleElement(element: HTMLElement): boolean {
+  return element.getClientRects().length > 0;
 }
 
 type AudioTrackOption = {
@@ -86,6 +115,7 @@ export function WatchPage() {
   const params = useParams<{ type: string; itemId: string }>();
   const navigate = useNavigate();
   const { state } = useAppStore();
+  const { isSideNavOpen } = useAppShell();
 
   const type = normalizeType(params.type || "movie");
   const decodedItemId = decodeURIComponent(params.itemId || "");
@@ -127,11 +157,15 @@ export function WatchPage() {
   const [activeAlternativeIndex, setActiveAlternativeIndex] = useState<number>(-1);
   const [seekTooltip, setSeekTooltip] = useState<string | null>(null);
   const [activeChosenCandidate, setActiveChosenCandidate] = useState<AutoPlaybackPayload["chosen"] | null>(null);
+  const [activeStreamKind, setActiveStreamKind] = useState<"direct" | "hls">("direct");
   const [mkvAudioTracks, setMkvAudioTracks] = useState<AudioTrackOption[]>([]);
   const [selectedMkvAudioTrackIndex, setSelectedMkvAudioTrackIndex] = useState(0);
+  const [isSubtitleMenuOpen, setIsSubtitleMenuOpen] = useState(false);
+  const [subtitleMenuIndex, setSubtitleMenuIndex] = useState(0);
   const seekTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isCurrentMkv = String(activeChosenCandidate?.fileExtension || "").toLowerCase() === "mkv";
-  const showMkvAudioTrackSelector = isCurrentMkv && mkvAudioTracks.length > 1;
+  const subtitleMenuRef = useRef<HTMLDivElement | null>(null);
+  const hasMultipleAudioTracks = mkvAudioTracks.length > 1;
+  const showMkvAudioTrackSelector = hasMultipleAudioTracks;
 
   const handleAudioPreferenceChange = useCallback((value: AudioPreference) => {
     setAudioPreference(value);
@@ -191,8 +225,31 @@ export function WatchPage() {
     videoRef,
     subtitleFailoverAttemptsRef
   });
+  const subtitleOptions = [
+    { value: -1, label: "Sin subtitulos" },
+    ...subtitleTracks.map((_, index) => ({
+      value: index,
+      label: `Opcion ${index + 1}`
+    }))
+  ];
+  const selectedSubtitleOption = subtitleOptions.find((option) => option.value === selectedSubtitleIndex) || subtitleOptions[0];
   const title = metaDetails?.info?.title || selectedFromStore?.name || decodedItemId;
   const originalLanguageCode = normalizeLanguageCode(metaDetails?.info?.originalLanguage || "");
+
+  const openSubtitleMenu = useCallback(() => {
+    const currentIndex = Math.max(0, subtitleOptions.findIndex((option) => option.value === selectedSubtitleIndex));
+    setSubtitleMenuIndex(currentIndex);
+    setIsSubtitleMenuOpen(true);
+  }, [selectedSubtitleIndex, subtitleOptions]);
+
+  const applySubtitleOptionByIndex = useCallback((index: number) => {
+    const bounded = Math.max(0, Math.min(subtitleOptions.length - 1, index));
+    const option = subtitleOptions[bounded];
+    if (!option) return;
+    setSelectedSubtitleIndex(option.value);
+    setSubtitleMenuIndex(bounded);
+    setIsSubtitleMenuOpen(false);
+  }, [setSelectedSubtitleIndex, subtitleOptions]);
 
   function handleEnterFullscreen() {
     const stage = playerStageRef.current;
@@ -228,7 +285,7 @@ export function WatchPage() {
 
   const refreshMkvAudioTracks = useCallback(() => {
     const video = videoRef.current as VideoWithAudioTracks | null;
-    if (!video || !isCurrentMkv) {
+    if (!video) {
       setMkvAudioTracks([]);
       setSelectedMkvAudioTrackIndex(0);
       return;
@@ -261,7 +318,7 @@ export function WatchPage() {
     } else {
       setSelectedMkvAudioTrackIndex(0);
     }
-  }, [isCurrentMkv]);
+  }, []);
 
   const handleMkvAudioTrackChange = useCallback((nextIndex: number) => {
     const video = videoRef.current as VideoWithAudioTracks | null;
@@ -305,6 +362,39 @@ export function WatchPage() {
   }, [activeSessionIdRef, destroyHls, resetPlaybackState, setSessionSubtitles]);
 
   useEffect(() => { isPreparingRef.current = isPreparingPlayback; }, [isPreparingPlayback]);
+
+  useEffect(() => {
+    if (!isSideNavOpen) return;
+    setIsSubtitleMenuOpen(false);
+  }, [isSideNavOpen]);
+
+  useEffect(() => {
+    if (!isSubtitleMenuOpen) return;
+    const maxIndex = Math.max(0, subtitleOptions.length - 1);
+    if (subtitleMenuIndex > maxIndex) {
+      setSubtitleMenuIndex(maxIndex);
+    }
+  }, [isSubtitleMenuOpen, subtitleMenuIndex, subtitleOptions.length]);
+
+  useEffect(() => {
+    if (!isSubtitleMenuOpen) return;
+    const menu = subtitleMenuRef.current;
+    if (!menu) return;
+    const active = menu.querySelector<HTMLElement>(".watch-select-option.is-active");
+    active?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [isSubtitleMenuOpen, subtitleMenuIndex]);
+
+  useEffect(() => {
+    if (!isSubtitleMenuOpen) return;
+    function onPointerDown(event: MouseEvent) {
+      const target = event.target as HTMLElement | null;
+      if (!target) return;
+      if (target.closest(".watch-subtitle-select")) return;
+      setIsSubtitleMenuOpen(false);
+    }
+    window.addEventListener("pointerdown", onPointerDown);
+    return () => window.removeEventListener("pointerdown", onPointerDown);
+  }, [isSubtitleMenuOpen]);
 
   const cancelPlayback = useCallback(() => {
     autoPlayAbortRef.current?.abort();
@@ -401,6 +491,7 @@ export function WatchPage() {
       const ttffStartedAt = performance.now();
       applyAutoPlaybackPayload(payload, setSessionSubtitles);
       setActiveChosenCandidate(payload.chosen || null);
+      setActiveStreamKind(payload.streamKind || "direct");
       setMkvAudioTracks([]);
       setSelectedMkvAudioTrackIndex(0);
       const isHlsSession = payload.streamUrl.includes("/hls/") && payload.sessionId;
@@ -660,6 +751,39 @@ export function WatchPage() {
     }
   }
 
+  async function handleForceHls() {
+    const hlsSourceKey = String(activeChosenCandidate?.sourceKey || "").trim();
+    if (!hlsSourceKey) {
+      setActionError("No hay sourceKey activo para forzar HLS.");
+      return;
+    }
+    setActionError(null);
+    try {
+      const playbackAttemptId = beginPlaybackAttempt();
+      await clearActivePlayback();
+      if (!videoRef.current) throw new Error("Video no disponible.");
+      setHasPlaybackStarted(true);
+      setIsPreparingPlayback(true);
+      setPlayerReady(false);
+
+      const payload = await forceHlsPlayback({
+        type: streamsType,
+        itemId: decodedItemId,
+        season: isSeries ? season : undefined,
+        episode: isSeries ? episode : undefined,
+        sourceKey: hlsSourceKey
+      });
+
+      await playResolvedPayload(payload, true, playbackAttemptId);
+    } catch (error) {
+      if ((error as Error)?.name === "AbortError") return;
+      const message = error instanceof Error ? error.message : "No se pudo forzar HLS.";
+      setActionError(message);
+    } finally {
+      setIsPreparingPlayback(false);
+    }
+  }
+
   useEffect(() => {
     const key = `${type}|${decodedItemId}|${season}|${episode}`;
     if (!decodedItemId) return;
@@ -730,13 +854,8 @@ export function WatchPage() {
   }, [hasPlaybackStarted, setPlayerReady, refreshMkvAudioTracks]);
 
   useEffect(() => {
-    if (!isCurrentMkv) {
-      setMkvAudioTracks([]);
-      setSelectedMkvAudioTrackIndex(0);
-      return;
-    }
     refreshMkvAudioTracks();
-  }, [isCurrentMkv, refreshMkvAudioTracks]);
+  }, [activeChosenCandidate, refreshMkvAudioTracks]);
 
   const episodeList = metaDetails?.episodes || [];
   const seasonList = metaDetails?.seasons || [];
@@ -773,17 +892,17 @@ export function WatchPage() {
   const getHeaderFocusables = useCallback((): HTMLElement[] => {
     return Array.from(
       document.querySelectorAll<HTMLElement>(
-        ".watch-hero-strip .back-link-icon, .watch-hero-strip .watch-top-action-btn"
+        ".shell-menu-trigger, .watch-hero-strip .back-link-icon, .watch-hero-strip .watch-top-action-btn"
       )
-    );
+    ).filter(isVisibleElement);
   }, []);
 
   const getSidebarFocusables = useCallback((): HTMLElement[] => {
     return Array.from(
       document.querySelectorAll<HTMLElement>(
-        ".watch-info-panel button, .watch-info-panel select, .watch-info-panel .episode-item, .watch-details-panel .secondary-btn"
+        ".watch-info-panel button:not(.watch-select-option), .watch-info-panel select, .watch-info-panel .episode-item, .watch-details-panel .secondary-btn"
       )
-    );
+    ).filter(isVisibleElement);
   }, []);
 
   const getPlayerFocusables = useCallback((): HTMLElement[] => {
@@ -791,7 +910,7 @@ export function WatchPage() {
       document.querySelectorAll<HTMLElement>(
         ".player-stage .player-start-cta"
       )
-    );
+    ).filter(isVisibleElement);
   }, []);
 
   const clearAllFocus = useCallback(() => {
@@ -843,6 +962,7 @@ export function WatchPage() {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
+      if (isSideNavOpen) return;
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
       if (tag === "SELECT") return;
@@ -855,6 +975,10 @@ export function WatchPage() {
       // --- Global: Escape/Backspace cancela carga o navega atrás ---
       if (e.key === "Escape" || e.key === "Backspace" || e.key === "BrowserBack") {
         e.preventDefault();
+        if (isSubtitleMenuOpen) {
+          setIsSubtitleMenuOpen(false);
+          return;
+        }
         if (isPreparing) {
           // Cancelar intento en curso en vez de navegar
           cancelPlaybackRef.current();
@@ -946,6 +1070,28 @@ export function WatchPage() {
       const idx = sidebarFocusIndexRef.current;
       const current = items[idx] || null;
       const isSelect = current?.tagName === "SELECT";
+      const isSubtitleTrigger = current?.classList.contains("watch-select-trigger");
+
+      if (isSubtitleMenuOpen) {
+        switch (e.key) {
+          case "ArrowDown":
+          case "ArrowRight":
+            e.preventDefault();
+            setSubtitleMenuIndex((prev) => Math.min(subtitleOptions.length - 1, prev + 1));
+            break;
+          case "ArrowUp":
+          case "ArrowLeft":
+            e.preventDefault();
+            setSubtitleMenuIndex((prev) => Math.max(0, prev - 1));
+            break;
+          case "Enter":
+          case " ":
+            e.preventDefault();
+            applySubtitleOptionByIndex(subtitleMenuIndex);
+            break;
+        }
+        return;
+      }
 
       switch (e.key) {
         case "ArrowDown":
@@ -968,7 +1114,7 @@ export function WatchPage() {
           e.preventDefault();
           if (current) {
             const row = current.parentElement;
-            if (row && (row.classList.contains("chip-row") || row.classList.contains("episode-list") || row.classList.contains("alt-source-list"))) {
+            if (row && (row.classList.contains("chip-row") || row.classList.contains("episode-list") || row.classList.contains("alt-source-list") || row.classList.contains("watch-radio-group"))) {
               const siblings = Array.from(row.children) as HTMLElement[];
               const posInRow = siblings.indexOf(current);
               if (posInRow < siblings.length - 1) {
@@ -984,7 +1130,7 @@ export function WatchPage() {
           e.preventDefault();
           if (current) {
             const row = current.parentElement;
-            if (row && (row.classList.contains("chip-row") || row.classList.contains("episode-list") || row.classList.contains("alt-source-list"))) {
+            if (row && (row.classList.contains("chip-row") || row.classList.contains("episode-list") || row.classList.contains("alt-source-list") || row.classList.contains("watch-radio-group"))) {
               const siblings = Array.from(row.children) as HTMLElement[];
               const posInRow = siblings.indexOf(current);
               if (posInRow > 0) {
@@ -999,7 +1145,9 @@ export function WatchPage() {
         case "Enter":
         case " ":
           e.preventDefault();
-          if (isSelect) {
+          if (isSubtitleTrigger) {
+            openSubtitleMenu();
+          } else if (isSelect) {
             (current as HTMLSelectElement).showPicker?.();
           } else if (current) {
             current.click();
@@ -1009,7 +1157,22 @@ export function WatchPage() {
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [navigate, getSidebarFocusables, getHeaderFocusables, applySidebarFocus, applyHeaderFocus, goToZone, showSeekTooltip, getPlayerFocusables]);
+  }, [
+    navigate,
+    isSideNavOpen,
+    isSubtitleMenuOpen,
+    subtitleOptions.length,
+    subtitleMenuIndex,
+    applySubtitleOptionByIndex,
+    getSidebarFocusables,
+    getHeaderFocusables,
+    applySidebarFocus,
+    applyHeaderFocus,
+    goToZone,
+    showSeekTooltip,
+    getPlayerFocusables,
+    openSubtitleMenu
+  ]);
 
   const displayYear = metaDetails?.info?.year || selectedFromStore?.year || "s/a";
   const displayRuntime = Number(metaDetails?.info?.runtime || 0) > 0 ? `${metaDetails?.info?.runtime} min` : null;
@@ -1139,6 +1302,25 @@ export function WatchPage() {
               )) : null}
             </div>
 
+            {activeChosenCandidate ? (
+              <div className="alt-source-list" style={{ marginTop: 6 }}>
+                <div className="alt-source-item is-active" style={{ cursor: "default", opacity: 1 }}>
+                  <span className="alt-source-quality">
+                    {qualityLabel(selectedQuality)}
+                    {activeChosenCandidate.score > 0 ? ` · ${Math.round(activeChosenCandidate.score)}pts` : ""}
+                  </span>
+                  <span className="alt-source-name">{activeChosenCandidate.displayName}</span>
+                  <span className="alt-source-meta">
+                    {activeChosenCandidate.fileExtension ? activeChosenCandidate.fileExtension.toUpperCase() : ""}
+                    {formatLanguageHints(activeChosenCandidate.languageHints) ? ` · ${formatLanguageHints(activeChosenCandidate.languageHints)}` : ""}
+                    {" · "}{activeStreamKind === "direct" ? "Directo" : "HLS"}
+                    {activeChosenCandidate.seeders > 0 ? ` · ${activeChosenCandidate.seeders}s` : ""}
+                    {activeChosenCandidate.videoSizeBytes > 0 ? ` · ${formatFileSize(activeChosenCandidate.videoSizeBytes)}` : ""}
+                  </span>
+                </div>
+              </div>
+            ) : null}
+
             {alternatives.length > 0 ? (
               <>
                 <div className="watch-block-title" style={{ marginTop: 10 }}>
@@ -1152,11 +1334,17 @@ export function WatchPage() {
                       className={`alt-source-item ${activeAlternativeIndex === idx ? "is-active" : ""}`}
                       onClick={() => void handlePlayAlternative(alt, idx)}
                     >
-                      <span className="alt-source-quality">{qualityLabel(alt.selectedQuality)}</span>
+                      <span className="alt-source-quality">
+                        {qualityLabel(alt.selectedQuality)}
+                        {alt.chosen.score > 0 ? ` · ${Math.round(alt.chosen.score)}pts` : ""}
+                      </span>
                       <span className="alt-source-name">{alt.chosen.displayName}</span>
                       <span className="alt-source-meta">
-                        {alt.streamKind === "direct" ? "Directo" : "HLS"}
+                        {alt.chosen.fileExtension ? alt.chosen.fileExtension.toUpperCase() : ""}
+                        {formatLanguageHints(alt.chosen.languageHints) ? ` · ${formatLanguageHints(alt.chosen.languageHints)}` : ""}
+                        {" · "}{alt.streamKind === "direct" ? "Directo" : "HLS"}
                         {alt.chosen.seeders > 0 ? ` · ${alt.chosen.seeders}s` : ""}
+                        {alt.chosen.videoSizeBytes > 0 ? ` · ${formatFileSize(alt.chosen.videoSizeBytes)}` : ""}
                       </span>
                     </button>
                   ))}
@@ -1169,6 +1357,18 @@ export function WatchPage() {
                 ? `Calidad actual: ${qualityLabel(selectedQuality)} | Opciones: ${availableQualities.map((item) => qualityLabel(item)).join(" | ")}`
                 : `Calidad actual: ${qualityLabel(selectedQuality)}.`}
             </p>
+            {activeChosenCandidate?.languageHints?.length ? (
+              <p className="muted">
+                Audio detectado: {formatLanguageHints(activeChosenCandidate.languageHints)}
+              </p>
+            ) : null}
+            {activeChosenCandidate?.resolution && activeChosenCandidate.resolution > 0 ? (
+              <p className="muted">
+                Resolución real: {activeChosenCandidate.resolution}p
+                {activeChosenCandidate.fileExtension ? ` · ${activeChosenCandidate.fileExtension.toUpperCase()}` : ""}
+                {activeChosenCandidate.videoSizeBytes > 0 ? ` · ${formatFileSize(activeChosenCandidate.videoSizeBytes)}` : ""}
+              </p>
+            ) : null}
           </div>
 
           <div className="watch-block watch-block-subtitles">
@@ -1176,20 +1376,54 @@ export function WatchPage() {
               <Captions size={14} />
               <span>Subtitulos (solo espanol)</span>
             </div>
-            <label className="season-select">
+            <div className="watch-select-field watch-subtitle-select">
               <span>Seleccion</span>
-              <select
-                value={selectedSubtitleIndex}
-                onChange={(event) => setSelectedSubtitleIndex(Number(event.target.value))}
+              <button
+                id="watch-subtitle-filter"
+                type="button"
+                className="watch-select-trigger"
+                onClick={() => {
+                  if (isSubtitleMenuOpen) {
+                    setIsSubtitleMenuOpen(false);
+                    return;
+                  }
+                  openSubtitleMenu();
+                }}
+                aria-haspopup="listbox"
+                aria-expanded={isSubtitleMenuOpen}
               >
-                <option value={-1}>Sin subtitulos</option>
-                {subtitleTracks.map((item, index) => (
-                  <option key={item.id} value={index}>
-                    {`Opcion ${index + 1}`}
-                  </option>
-                ))}
-              </select>
-            </label>
+                <span>{selectedSubtitleOption.label}</span>
+              </button>
+              {isSubtitleMenuOpen ? (
+                <div ref={subtitleMenuRef} className="watch-select-menu" role="listbox" aria-label="Seleccionar subtitulo">
+                  {subtitleOptions.map((option, index) => (
+                    <button
+                      key={`subtitle-option-${option.value}`}
+                      type="button"
+                      className={`watch-select-option ${index === subtitleMenuIndex ? "is-active" : ""}`}
+                      onClick={() => applySubtitleOptionByIndex(index)}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+            {/* keep native select for browser autofill/compat fallback */}
+            <select
+              value={selectedSubtitleIndex}
+              onChange={(event) => setSelectedSubtitleIndex(Number(event.target.value))}
+              style={{ display: "none" }}
+              aria-hidden="true"
+              tabIndex={-1}
+            >
+              <option value={-1}>Sin subtitulos</option>
+              {subtitleTracks.map((item, index) => (
+                <option key={item.id} value={index}>
+                  {`Opcion ${index + 1}`}
+                </option>
+              ))}
+            </select>
             {rememberedSubtitleIndex >= 0 ? <p className="muted">Preferencia aprendida aplicada.</p> : null}
             {loadingSubtitles ? <p className="muted">Actualizando subtitulos...</p> : null}
           </div>
@@ -1199,19 +1433,32 @@ export function WatchPage() {
               <Languages size={14} />
               <span>Audio</span>
             </div>
-            <label className="season-select">
+            <div className="watch-select-field">
               <span>Audio preferido</span>
-              <select
-                value={audioPreference}
-                onChange={(event) => handleAudioPreferenceChange(event.target.value as AudioPreference)}
-              >
-                <option value="original">Original + subtitulos</option>
-                <option value="es">Espanol latino</option>
-              </select>
-            </label>
+              <div className="watch-radio-group" role="radiogroup" aria-label="Audio preferido">
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={audioPreference === "original"}
+                  className={`watch-radio-option ${audioPreference === "original" ? "is-active" : ""}`}
+                  onClick={() => handleAudioPreferenceChange("original")}
+                >
+                  Original + subtitulos
+                </button>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={audioPreference === "es"}
+                  className={`watch-radio-option ${audioPreference === "es" ? "is-active" : ""}`}
+                  onClick={() => handleAudioPreferenceChange("es")}
+                >
+                  Espanol latino
+                </button>
+              </div>
+            </div>
             {showMkvAudioTrackSelector ? (
               <label className="season-select">
-                <span>Pista MKV</span>
+                <span>Pista de audio</span>
                 <select
                   value={selectedMkvAudioTrackIndex}
                   onChange={(event) => handleMkvAudioTrackChange(Number(event.target.value))}
@@ -1223,6 +1470,17 @@ export function WatchPage() {
                   ))}
                 </select>
               </label>
+            ) : null}
+            {activeStreamKind === "direct" && activeChosenCandidate?.sourceKey ? (
+              <button
+                type="button"
+                className="secondary-btn"
+                style={{ marginTop: 8, width: "100%" }}
+                onClick={() => void handleForceHls()}
+                disabled={isPreparingPlayback}
+              >
+                Forzar HLS (soluciona audio incompatible)
+              </button>
             ) : null}
           </div>
 

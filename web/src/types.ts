@@ -266,6 +266,11 @@ export interface LiveTvCategoriesPayload {
   categories: LiveTvCategoryItem[];
 }
 
+export interface LiveTvQualitiesPayload {
+  qualities: string[];
+  default: string;
+}
+
 export interface LiveTvChannelsPayload {
   loadedAt: string | null;
   category: string;
@@ -305,6 +310,8 @@ export interface AutoPlaybackCandidateSummary {
   hasDirectUrl: boolean;
   fileIdx: number | null;
   sourceKey?: string;
+  languageHints: string[];
+  videoSizeBytes: number;
 }
 
 export interface AutoPlaybackAlternative {

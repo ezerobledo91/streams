@@ -5,6 +5,7 @@ import type {
   Category,
   ContinueWatchingEntry,
   LiveTvCategoriesPayload,
+  LiveTvQualitiesPayload,
   LiveTvChannelsPayload,
   MetaDetailsPayload,
   PlaybackPreflightPayload,
@@ -211,6 +212,21 @@ export function startAutoPlayback(payload: {
   });
 }
 
+export function forceHlsPlayback(payload: {
+  type: string;
+  itemId: string;
+  season?: number;
+  episode?: number;
+  sourceKey: string;
+}, signal?: AbortSignal): Promise<AutoPlaybackPayload> {
+  return apiFetch<AutoPlaybackPayload>("/api/playback/force-hls", {
+    method: "POST",
+    body: JSON.stringify(payload),
+    signal,
+    timeoutMs: 45000
+  });
+}
+
 export function fetchPlaybackPreflight(payload: {
   type: string;
   itemId: string;
@@ -290,6 +306,12 @@ export function destroyPlaybackSession(sessionId: string): Promise<void> {
 export function fetchLiveTvCategories(): Promise<LiveTvCategoriesPayload> {
   return apiFetch<LiveTvCategoriesPayload>("/api/live-tv/categories", {
     timeoutMs: 15000
+  });
+}
+
+export function fetchLiveTvQualities(): Promise<LiveTvQualitiesPayload> {
+  return apiFetch<LiveTvQualitiesPayload>("/api/live-tv/qualities", {
+    timeoutMs: 10000
   });
 }
 

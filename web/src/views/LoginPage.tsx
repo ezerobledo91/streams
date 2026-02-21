@@ -39,10 +39,25 @@ export function LoginPage() {
   }, [loading, users.length, focusFirst]);
 
   useEffect(() => {
-    fetchUserList()
-      .then((res) => setUsers(res.users))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    let cancelled = false;
+    const attempt = (retriesLeft: number) => {
+      fetchUserList()
+        .then((res) => {
+          if (!cancelled) {
+            setUsers(res.users);
+            setLoading(false);
+          }
+        })
+        .catch(() => {
+          if (!cancelled && retriesLeft > 0) {
+            setTimeout(() => attempt(retriesLeft - 1), 2000);
+          } else if (!cancelled) {
+            setLoading(false);
+          }
+        });
+    };
+    attempt(3);
+    return () => { cancelled = true; };
   }, []);
 
   async function handleSelectUser(user: UserRecord) {

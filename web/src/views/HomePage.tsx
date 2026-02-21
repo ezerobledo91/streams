@@ -93,6 +93,19 @@ function suggestionScore(item: CatalogItem, term: string): number {
   return score;
 }
 
+function truncateText(value: string, maxChars: number): string {
+  const text = String(value || "");
+  if (text.length <= maxChars) return text;
+  if (maxChars <= 3) return text.slice(0, maxChars);
+  return `${text.slice(0, maxChars - 3).trimEnd()}...`;
+}
+
+function toHighResTmdbImage(url: string): string {
+  const input = String(url || "").trim();
+  if (!input.includes("image.tmdb.org/t/p/")) return input;
+  return input.replace(/\/t\/p\/(?:w\d+|original)\//, "/t/p/original/");
+}
+
 function isEditableTarget(target: EventTarget | null): boolean {
   const element = target as HTMLElement | null;
   const tag = element?.tagName;
@@ -794,8 +807,9 @@ export function HomePage() {
     return () => window.clearInterval(interval);
   }, [heroPool.length]);
 
-  const heroImage = heroItem ? heroItem.background || heroItem.poster || "" : "";
+  const heroImage = heroItem ? toHighResTmdbImage(heroItem.background || heroItem.poster || "") : "";
   const heroPosterFallback = Boolean(heroItem?.poster && !heroItem?.background);
+  const heroTitle = truncateText(heroItem?.name || "Explora el catalogo", 25);
   const activeRows = GENRE_ROWS[activeHomeCategory] || [];
 
   useGamepad(true);
@@ -1177,10 +1191,11 @@ export function HomePage() {
             key={heroItem?.id}
           />
         ) : null}
+        <div className="hero-media-overlay" aria-hidden="true" />
         <div className="hero-overlay">
           <div className="hero-content-wrap">
             <span className="hero-kicker">{categoryTitle(activeHomeCategory)}</span>
-            <h1>{heroItem?.name || "Explora el catalogo"}</h1>
+            <h1 title={heroItem?.name || "Explora el catalogo"}>{heroTitle}</h1>
 
             <div className="hero-meta">
               <span className="hero-rating">

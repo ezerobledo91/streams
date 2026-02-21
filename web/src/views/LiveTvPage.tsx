@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import {
   fetchLiveTvCategories,
+  fetchLiveTvQualities,
   fetchLiveTvChannels,
   reloadLiveTvChannels,
   fetchLiveTvPreferences,
@@ -43,6 +44,24 @@ type SelectorPane = "categories" | "channels" | "chan-actions";
 
 const ADULT_PASSWORD = "12345";
 const LAST_CHANNEL_STORAGE_KEY = "streams_last_channel_live_tv";
+const DEFAULT_LIVE_TV_QUALITY_OPTIONS = ["360p", "480p", "720p", "1080p"];
+
+function normalizeQualityOptions(input: string[]): string[] {
+  const unique = Array.from(
+    new Set(
+      (Array.isArray(input) ? input : [])
+        .map((value) => String(value || "").trim())
+        .filter(Boolean)
+    )
+  );
+  if (!unique.length) return [...DEFAULT_LIVE_TV_QUALITY_OPTIONS];
+  return unique.sort((a, b) => {
+    const aNum = Number.parseInt(a, 10);
+    const bNum = Number.parseInt(b, 10);
+    if (Number.isFinite(aNum) && Number.isFinite(bNum)) return aNum - bNum;
+    return a.localeCompare(b);
+  });
+}
 
 function formatRelativeDate(iso: string): string {
   try {
@@ -126,10 +145,11 @@ export function LiveTvPage() {
   const reconnectAttemptRef = useRef(0);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const MAX_RECONNECT_ATTEMPTS = 5;
-  const QUALITY_OPTIONS = ["360p", "480p", "720p", "1080p"] as const;
-  const [transcodeQuality, setTranscodeQuality] = useState(() => localStorage.getItem("streams_live_tv_quality") || "480p");
+  const [qualityOptions, setQualityOptions] = useState<string[]>(() => [...DEFAULT_LIVE_TV_QUALITY_OPTIONS]);
+  const [transcodeQuality, setTranscodeQuality] = useState(() => localStorage.getItem("streams_live_tv_quality") || "720p");
   const [forceTranscode, setForceTranscode] = useState(() => localStorage.getItem("streams_live_tv_force_transcode") === "true");
   const [showQualityMenu, setShowQualityMenu] = useState(false);
+  const [directFallbackChannelIds, setDirectFallbackChannelIds] = useState<Set<string>>(new Set());
   const keyboardNavigatedRef = useRef(false);
 
   // ── Refs — TV navigation ──────────────────────────────────────────────────
@@ -163,19 +183,38 @@ export function LiveTvPage() {
     }).catch(() => {});
   }, []);
 
-  // ── Player failures ───────────────────────────────────────────────────────
-  const channelsById = useMemo(() => new Map(channels.map((ch) => [ch.id, ch])), [channels]);
+  useEffect(() => {
+    let cancelled = false;
+    fetchLiveTvQualities().then((payload) => {
+      if (cancelled) return;
+      const normalized = normalizeQualityOptions(payload.qualities || []);
+      const apiDefault = String(payload.default || "").trim();
+      const fallback = normalized.includes(apiDefault)
+        ? apiDefault
+        : (normalized.includes("720p") ? "720p" : normalized[normalized.length - 1]);
+      setQualityOptions(normalized);
+      setTranscodeQuality((current) => {
+        const currentValue = String(current || "").trim();
+        const nextValue = normalized.includes(currentValue) ? currentValue : fallback;
+        if (nextValue !== currentValue) {
+          localStorage.setItem("streams_live_tv_quality", nextValue);
+        }
+        return nextValue;
+      });
+    }).catch(() => {});
 
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // ── Player failures ───────────────────────────────────────────────────────
   const markChannelFailure = useCallback(() => {
     const channelId = selectedChannelIdRef.current;
     if (!channelId) return;
-    const failedChannel = channelsById.get(channelId);
     const currentCount = channelFailureCountRef.current.get(channelId) || 0;
     channelFailureCountRef.current.set(channelId, currentCount + 1);
-    if (!failedChannel) return;
-    const canTranscode = /^https?:\/\//i.test(String(failedChannel.streamUrl || ""));
-    if (!canTranscode) return;
-  }, [channelsById]);
+  }, []);
 
   const onRuntimeFailure = useCallback((reason: string) => {
     markChannelFailure();
@@ -211,6 +250,19 @@ export function LiveTvPage() {
       });
       if (seq !== channelsLoadSeqRef.current) return;
       const nextItems = payload.items || [];
+      const availableIds = new Set(nextItems.map((item) => item.id));
+      for (const id of [...channelFailureCountRef.current.keys()]) {
+        if (!availableIds.has(id)) channelFailureCountRef.current.delete(id);
+      }
+      setDirectFallbackChannelIds((prev) => {
+        let changed = false;
+        const next = new Set<string>();
+        for (const id of prev) {
+          if (availableIds.has(id)) next.add(id);
+          else changed = true;
+        }
+        return changed ? next : prev;
+      });
       setChannels(nextItems);
       setSelectedChannelId((current) => {
         if (current && nextItems.some((item) => item.id === current)) return current;
@@ -250,6 +302,12 @@ export function LiveTvPage() {
   }, [selectedChannelId]);
 
   useEffect(() => {
+    if (!forceTranscode) {
+      setDirectFallbackChannelIds(new Set());
+    }
+  }, [forceTranscode]);
+
+  useEffect(() => {
     if (!keyboardNavigatedRef.current) return;
     keyboardNavigatedRef.current = false;
     requestAnimationFrame(() => {
@@ -273,27 +331,40 @@ export function LiveTvPage() {
     if (!selectedChannel) return null;
     const channelId = selectedChannel.id;
     const streamUrl = String(selectedChannel.streamUrl || "");
-    const looksLikeHls = /\.m3u8(?:$|\?)/i.test(streamUrl) || streamUrl.toLowerCase().includes("/hls");
+    const looksLikeHls =
+      /\.m3u8(?:$|\?)/i.test(streamUrl) ||
+      /\/(?:hls|playlist|master|manifest)(?:$|[/?#])/i.test(streamUrl);
     const canTranscode = /^https?:\/\//i.test(streamUrl);
-    const needsTranscode = forceTranscode && canTranscode;
+    const needsTranscode = canTranscode && forceTranscode;
     const encodedId = encodeURIComponent(channelId);
 
     let sourceUrl: string;
     let forceHls: boolean;
+    let sourceMode: "direct" | "proxy" | "stream" | "hls";
 
     if (needsTranscode) {
       sourceUrl = `/api/live-tv/channels/${encodedId}/hls/index.m3u8?quality=${transcodeQuality}`;
       forceHls = true;
+      sourceMode = "hls";
     } else if (canTranscode) {
-      sourceUrl = `/api/live-tv/channels/${encodedId}/proxy`;
-      forceHls = looksLikeHls;
+      const canTryRealDirect = !directFallbackChannelIds.has(channelId);
+      if (canTryRealDirect) {
+        sourceUrl = streamUrl;
+        forceHls = looksLikeHls;
+        sourceMode = "direct";
+      } else {
+        sourceUrl = `/api/live-tv/channels/${encodedId}/proxy`;
+        forceHls = looksLikeHls;
+        sourceMode = "proxy";
+      }
     } else {
       sourceUrl = `/api/live-tv/channels/${encodedId}/stream`;
       forceHls = false;
+      sourceMode = "stream";
     }
 
-    return { channelId, key: `${channelId}|${sourceUrl}`, sourceUrl, forceHls };
-  }, [selectedChannel, transcodeQuality, forceTranscode]);
+    return { channelId, key: `${channelId}|${sourceUrl}`, sourceUrl, forceHls, sourceMode };
+  }, [selectedChannel, transcodeQuality, forceTranscode, directFallbackChannelIds]);
 
   const visibleChannels = useMemo(() => {
     if (activeCategory === "__favorites__") {
@@ -480,6 +551,15 @@ export function LiveTvPage() {
       } catch (runtimeError) {
         if (cancelled || attemptId !== playbackAttemptSeqRef.current) return;
         markChannelFailure();
+        if (playbackTarget.sourceMode === "direct") {
+          setDirectFallbackChannelIds((prev) => {
+            if (prev.has(playbackTarget.channelId)) return prev;
+            const next = new Set(prev);
+            next.add(playbackTarget.channelId);
+            return next;
+          });
+          lastPlaybackKeyRef.current = "";
+        }
         setPlayerState("error");
         setError(runtimeError instanceof Error ? runtimeError.message : "No se pudo cargar este canal.");
       }
@@ -937,7 +1017,7 @@ export function LiveTvPage() {
                         {forceTranscode ? "Transcode: ON" : "Transcode: OFF"}
                       </button>
                       <div className="live-tv-quality-divider" />
-                      {QUALITY_OPTIONS.map((q) => (
+                      {qualityOptions.map((q) => (
                         <button
                           key={q}
                           type="button"

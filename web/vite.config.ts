@@ -11,7 +11,12 @@ export default defineConfig({
     proxy: {
       "/api": {
         target: "http://localhost:8787",
-        changeOrigin: true
+        changeOrigin: true,
+        configure: (proxy) => {
+          proxy.on("error", () => {
+            // Silenciar errores de proxy cuando el backend está reiniciando
+          });
+        }
       }
     }
   }

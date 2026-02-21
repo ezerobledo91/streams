@@ -83,16 +83,23 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
       }
     })();
     if (stored?.username) {
-      loginUser({ username: stored.username, displayName: stored.displayName })
-        .then((response) => {
-          actions.setUser(response.user);
-        })
-        .catch(() => {
-          localStorage.removeItem(LOCAL_USER_KEY);
-        })
-        .finally(() => {
-          setInitializing(false);
-        });
+      const attemptLogin = (retriesLeft: number) => {
+        loginUser({ username: stored.username, displayName: stored.displayName })
+          .then((response) => {
+            actions.setUser(response.user);
+            setInitializing(false);
+          })
+          .catch((err) => {
+            const isServerError = String(err?.message || "").includes("500") || String(err?.message || "").includes("fetch");
+            if (isServerError && retriesLeft > 0) {
+              setTimeout(() => attemptLogin(retriesLeft - 1), 2000);
+            } else {
+              localStorage.removeItem(LOCAL_USER_KEY);
+              setInitializing(false);
+            }
+          });
+      };
+      attemptLogin(3);
     } else {
       setInitializing(false);
     }
